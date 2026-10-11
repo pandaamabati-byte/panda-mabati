@@ -29,6 +29,7 @@ describe("product catalogue model", () => {
       description: "A verified description",
       use: "Residential",
       tone: "box",
+      priceStatus: "confirmed",
       unitPriceKes: 1250,
       effectiveCoverageM: 0.9,
       colours: ["Charcoal"],
@@ -38,11 +39,27 @@ describe("product catalogue model", () => {
     expect(product).toMatchObject({
       id: "custom-profile",
       published: true,
+      priceStatus: "confirmed",
       unitPriceKes: 1250,
       effectiveCoverageM: 0.9,
       colours: ["Charcoal"],
       gaugesMm: [0.4],
     });
+  });
+
+  it("never accepts a price without explicit confirmation", () => {
+    const product = normalizeProduct("unverified", {
+      published: true,
+      name: "Unverified Profile",
+      short: "A sample profile",
+      description: "Profile description",
+      use: "Residential",
+      tone: "box",
+      unitPriceKes: 1250,
+    });
+
+    expect(product).not.toBeNull();
+    expect(product?.unitPriceKes).toBeUndefined();
   });
 
   it("rejects unpublished or incomplete products", () => {

@@ -6,6 +6,7 @@ export type Product = {
   use: string;
   tone: string;
   published: boolean;
+  priceStatus?: "confirmed" | "pending";
   unitPriceKes?: number;
   effectiveCoverageM?: number;
   colours?: string[];
@@ -88,7 +89,14 @@ export function normalizeProduct(
     published: true,
   };
 
-  if (isPositiveNumber(data.unitPriceKes)) {
+  if (data.priceStatus === "confirmed" || data.priceStatus === "pending") {
+    product.priceStatus = data.priceStatus;
+  }
+
+  if (
+    data.priceStatus === "confirmed" &&
+    isPositiveNumber(data.unitPriceKes)
+  ) {
     product.unitPriceKes = data.unitPriceKes;
   }
 
