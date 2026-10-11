@@ -2,8 +2,14 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Deny all client access until explicit, tested authorization rules
-    // are defined for each collection.
+    // Public visitors may read only products explicitly published by staff.
+    // Product creation and editing must happen through a trusted admin workflow.
+    match /products/{productId} {
+      allow get, list: if resource.data.published == true;
+      allow create, update, delete: if false;
+    }
+
+    // All other collections remain inaccessible from the client.
     match /{document=**} {
       allow read, write: if false;
     }

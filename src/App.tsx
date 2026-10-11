@@ -1,19 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight, Check, ChevronDown, Download, Menu, ShieldCheck,
   Sparkles, X, Calculator, Layers3, Truck, BadgeCheck, Plus, Minus,
 } from "lucide-react";
 import { jsPDF } from "jspdf";
+import { BUSINESS_CONTACT } from "./config/business";
+import { FALLBACK_PRODUCTS, type Product } from "./features/products/productModel";
+import { loadProducts } from "./services/products/catalogue";
 import "./App.css";
-
-type Product = {
-  id: string;
-  name: string;
-  short: string;
-  description: string;
-  use: string;
-  tone: string;
-};
 
 type QuoteLine = {
   id: string;
@@ -21,45 +15,6 @@ type QuoteLine = {
   quantity: number;
   unitPrice: string;
 };
-
-const products: Product[] = [
-  {
-    id: "d-tile",
-    name: "D-Tile",
-    short: "Timeless roof character",
-    description:
-      "A tile-inspired roofing profile for homeowners who want a more traditional, refined roofline with the practical format of metal roofing.",
-    use: "Residential homes",
-    tone: "tile",
-  },
-  {
-    id: "versatile",
-    name: "Versatile",
-    short: "A distinctive tiled finish",
-    description:
-      "A decorative steel roofing profile designed to bring classic tile character to contemporary and traditional homes. Confirm the exact profile and specifications with your supplier.",
-    use: "Signature homes",
-    tone: "versatile",
-  },
-  {
-    id: "box-profile",
-    name: "Box Profile",
-    short: "Clean, modern lines",
-    description:
-      "A ribbed, geometric profile with a crisp architectural look. A versatile option for homes, workshops and commercial buildings.",
-    use: "Modern homes & commercial",
-    tone: "box",
-  },
-  {
-    id: "startile",
-    name: "StarTile",
-    short: "A statement roof finish",
-    description:
-      "A tile-effect option for projects where the roof contributes strongly to the overall look. Confirm the available finish, gauge and coverage for your selected product.",
-    use: "Design-led homes",
-    tone: "star",
-  },
-];
 
 const money = (amount: number) =>
   new Intl.NumberFormat("en-KE", {
@@ -95,6 +50,22 @@ function RoofArtwork({ tone }: { tone: string }) {
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
+  const [catalogueSource, setCatalogueSource] = useState<"fallback" | "firestore">("fallback");
+
+  useEffect(() => {
+    let active = true;
+
+    void loadProducts().then((result) => {
+      if (!active) return;
+      setProducts(result.products);
+      setCatalogueSource(result.source);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
   const [lines, setLines] = useState<QuoteLine[]>([makeLine()]);
   const [customer, setCustomer] = useState("");
   const [project, setProject] = useState("");
@@ -398,6 +369,9 @@ function App() {
             ))}
           </div>
           <p className="catalogue-note">
+            {catalogueSource === "firestore"
+              ? "Live published catalogue loaded. "
+              : "Showing the local catalogue until the live catalogue is available. "}
             Product illustrations are temporary design placeholders. Actual product photographs,
             colours, gauges, coverage and technical specifications will be confirmed against Panda
             Mabati's product catalogue.
@@ -537,6 +511,7 @@ function App() {
         <span>Thoughtful roofing. Clearer decisions.</span>
         <a href="mailto:pandaamabati@gmail.com">Contact Panda Mabati <ArrowUpRight size={14} /></a>
         <small>© {new Date().getFullYear()} Panda Mabati. Product availability and prices require confirmation.</small>
+        <small>Sales: <a href={`mailto:${BUSINESS_CONTACT.salesEmail}`}>{BUSINESS_CONTACT.salesEmail}</a> · {BUSINESS_CONTACT.contactName} · <a href={`tel:${BUSINESS_CONTACT.phoneDial}`}>{BUSINESS_CONTACT.phoneDisplay}</a></small>
       </footer>
     </div>
   );
