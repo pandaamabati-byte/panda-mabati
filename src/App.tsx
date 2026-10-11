@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { BUSINESS_CONTACT } from "./config/business";
+import { BOX_PROFILE_VARIANTS } from "./features/products/boxProfileVariants";
 import { FALLBACK_PRODUCTS, type Product } from "./features/products/productModel";
 import { loadProducts } from "./services/products/catalogue";
 import "./App.css";
@@ -12,6 +13,7 @@ import "./App.css";
 type QuoteLine = {
   id: string;
   productId: string;
+  variantId?: string;
   quantity: number;
   unitPrice: string;
 };
@@ -26,6 +28,7 @@ const money = (amount: number) =>
 const makeLine = (productId = "box-profile"): QuoteLine => ({
   id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   productId,
+  variantId: productId === "box-profile" ? BOX_PROFILE_VARIANTS[0]?.id : undefined,
   quantity: 1,
   unitPrice: "",
 });
@@ -75,23 +78,28 @@ function App() {
 
   const quote = useMemo(() => {
     const totalQuantity = lines.reduce(
-      (sum, line) => sum + Math.max(0, Number(line.quantity) || 0),
-      0,
+      (sum, line) => sum + Math.max(0, Number(line.quantity) || 0), 0,
     );
-    const hasMissingPrice = lines.some(
-      (line) =>
-        line.quantity > 0 &&
-        (line.unitPrice.trim() === "" ||
-          !Number.isFinite(Number(line.unitPrice)) ||
-          Number(line.unitPrice) < 0),
-    );
-    const pricedTotal = lines.reduce((sum, line) => {
+
+    const hasMissingPrice = lines.some((line) => {
+      if (line.quantity <= 0) return false;
+      if (line.productId === "box-profile") {
+        return !BOX_PROFILE_VARIANTS.some((variant) => variant.id === line.variantId);
+      }
       const rate = Number(line.unitPrice);
-      if (
+      return line.unitPrice.trim() === "" || !Number.isFinite(rate) || rate < 0;
+    });
+
+    const pricedTotal = lines.reduce((sum, line) => {
+      const variant = line.productId === "box-profile"
+        ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
+        : undefined;
+      const rate = variant ? variant.ratePerM : Number(line.unitPrice);
+      if (!variant && (
         line.unitPrice.trim() === "" ||
         !Number.isFinite(rate) ||
         rate < 0
-      ) return sum;
+      )) return sum;
       return sum + Math.max(0, Number(line.quantity) || 0) * rate;
     }, 0);
 
@@ -156,7 +164,7 @@ function App() {
     doc.rect(left, y - 5, right - left, 10, "F");
     doc.setFont("helvetica", "bold");
     doc.text("ROOFING PRODUCT", left + 2, y + 1);
-    doc.text("QTY", 112, y + 1, { align: "right" });
+    doc.text("QTY / LENGTH", 112, y + 1, { align: "right" });
     doc.text("UNIT RATE", 151, y + 1, { align: "right" });
     doc.text("AMOUNT", right - 2, y + 1, { align: "right" });
     y += 10;
@@ -165,16 +173,28 @@ function App() {
     lines.forEach((line) => {
       const product = products.find((item) => item.id === line.productId);
       const quantity = Math.max(0, Number(line.quantity) || 0);
-      const hasRate =
+      const variant = line.productId === "box-profile"
+        ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
+        : undefined;
+      const manualRate = Number(line.unitPrice);
+      const hasRate = variant !== undefined || (
         line.unitPrice.trim() !== "" &&
-        Number.isFinite(Number(line.unitPrice)) &&
-        Number(line.unitPrice) >= 0;
-      const rate = hasRate ? Number(line.unitPrice) : null;
+        Number.isFinite(manualRate) &&
+        manualRate >= 0
+      );
+      const rate = hasRate ? (variant ? variant.ratePerM : manualRate) : null;
       const amount = rate === null ? null : quantity * rate;
-      const nameLines = doc.splitTextToSize(product?.name ?? "Roofing product", 68);
+      const productLabel = variant
+        ? `${product?.name ?? "Box Profile"} — ${variant.colour} ${variant.finish} ${variant.gauge}`
+        : product?.name ?? "Roofing product";
+      const nameLines = doc.splitTextToSize(productLabel, 68);
       doc.text(nameLines, left + 2, y);
-      doc.text(String(quantity), 112, y, { align: "right" });
-      doc.text(rate === null ? "To confirm" : money(rate), 151, y, {
+      doc.text(variant ? `${quantity} m` : String(quantity), 112, y, { align: "right" });
+      doc.text(
+        rate === null ? "To confirm" : `${money(rate)}${variant ? " / m" : ""}`,
+        151,
+        y,
+        {
         align: "right",
       });
       doc.text(amount === null ? "To confirm" : money(amount), right - 2, y, {
@@ -347,7 +367,16 @@ function App() {
             {products.map((product, index) => (
               <article className="product-card" key={product.id}>
                 <div className="product-card__image">
-                  <RoofArtwork tone={product.tone} />
+                  {product.id === "box-profile" ? (
+                    <img
+                      src={BOX_PROFILE_VARIANTS[2].image}
+                      alt="Box Profile Tile Red Gloss 30G roofing sheet"
+                      className="product-card__photo"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <RoofArtwork tone={product.tone} />
+                  )}
                   <span className="product-card__number">0{index + 1}</span>
                 </div>
                 <div className="product-card__body">
@@ -423,33 +452,93 @@ function App() {
               <div className="line-list">
                 {lines.map((line, index) => {
                   const product = products.find((item) => item.id === line.productId);
-                  const hasRate = line.unitPrice.trim() !== "" && Number.isFinite(Number(line.unitPrice)) && Number(line.unitPrice) >= 0;
-                  const lineTotal = hasRate ? Math.max(0, Number(line.quantity) || 0) * Number(line.unitPrice) : null;
+                  const variant = line.productId === "box-profile"
+                    ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
+                    : undefined;
+                  const manualRate = Number(line.unitPrice);
+                  const hasRate = variant !== undefined || (
+                    line.unitPrice.trim() !== "" &&
+                    Number.isFinite(manualRate) &&
+                    manualRate >= 0
+                  );
+                  const rate = variant ? variant.ratePerM : manualRate;
+                  const lineTotal = hasRate
+                    ? Math.max(0, Number(line.quantity) || 0) * rate
+                    : null;
                   return (
                     <div className="quote-line" key={line.id}>
                       <div className="quote-line__index">{String(index + 1).padStart(2, "0")}</div>
                       <div className="quote-line__fields">
                         <label className="field-wide">Roofing profile
                           <span className="select-wrap">
-                            <select value={line.productId} onChange={(e) => updateLine(line.id, { productId: e.target.value })}>
+                            <select
+                              value={line.productId}
+                              onChange={(e) => {
+                                const productId = e.target.value;
+                                updateLine(line.id, {
+                                  productId,
+                                  variantId: productId === "box-profile"
+                                    ? BOX_PROFILE_VARIANTS[0]?.id
+                                    : undefined,
+                                  unitPrice: "",
+                                });
+                              }}
+                            >
                               {products.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
                             </select>
                             <ChevronDown size={15} />
                           </span>
                         </label>
-                        <label>Quantity
+                        {line.productId === "box-profile" && (
+                          <label className="field-wide">Colour / finish / gauge
+                            <span className="select-wrap">
+                              <select
+                                value={line.variantId ?? ""}
+                                onChange={(e) => updateLine(line.id, { variantId: e.target.value })}
+                              >
+                                {BOX_PROFILE_VARIANTS.map((item) => (
+                                  <option key={item.id} value={item.id}>
+                                    {item.colour} — {item.finish} — {item.gauge}
+                                  </option>
+                                ))}
+                              </select>
+                              <ChevronDown size={15} />
+                            </span>
+                          </label>
+                        )}
+                        <label>{variant ? "Length (metres)" : "Quantity"}
                           <div className="quantity-control">
                             <button aria-label="Decrease quantity" onClick={() => updateLine(line.id, { quantity: Math.max(0, line.quantity - 1) })}><Minus size={14} /></button>
-                            <input type="number" min="0" step="1" value={line.quantity} onChange={(e) => updateLine(line.id, { quantity: Math.max(0, Number(e.target.value) || 0) })} />
+                            <input
+                              type="number"
+                              min="0"
+                              step={variant ? "0.1" : "1"}
+                              value={line.quantity}
+                              onChange={(e) => updateLine(line.id, {
+                                quantity: Math.max(0, Number(e.target.value) || 0),
+                              })}
+                            />
                             <button aria-label="Increase quantity" onClick={() => updateLine(line.id, { quantity: line.quantity + 1 })}><Plus size={14} /></button>
                           </div>
                         </label>
-                        <label>Unit rate (KES)
-                          <input type="number" min="0" step="0.01" value={line.unitPrice} onChange={(e) => updateLine(line.id, { unitPrice: e.target.value })} placeholder="Confirm price" />
+                        <label>{variant ? "Rate (KES / metre)" : "Unit rate (KES)"}
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={variant ? String(variant.ratePerM) : line.unitPrice}
+                            onChange={(e) => updateLine(line.id, { unitPrice: e.target.value })}
+                            placeholder="Confirm price"
+                            disabled={Boolean(variant)}
+                          />
                         </label>
                       </div>
                       <div className="quote-line__bottom">
-                        <span>{product?.short}</span>
+                        <span>
+                          {variant
+                            ? `${variant.colour} · ${variant.finish} · ${variant.gauge}`
+                            : product?.short}
+                        </span>
                         <strong>{lineTotal === null ? "Price to be confirmed" : money(lineTotal)}</strong>
                         <button className="remove-line" onClick={() => removeLine(line.id)} disabled={lines.length === 1} aria-label={`Remove ${product?.name ?? "product"}`}><X size={15} /></button>
                       </div>
@@ -468,7 +557,7 @@ function App() {
               <div className="summary-kicker"><span className="summary-pulse" /> LIVE SUMMARY</div>
               <h3>Your project<br />at a glance.</h3>
               <p>Quantities and totals update automatically.</p>
-              <div className="summary-metric"><span>Total quantity</span><strong>{quote.totalQuantity.toLocaleString("en-KE")}</strong><small>units across selected items</small></div>
+              <div className="summary-metric"><span>Total quantity</span><strong>{quote.totalQuantity.toLocaleString("en-KE")}</strong><small>Box Profile in metres; other profiles in units</small></div>
               <div className="summary-total"><span>Priced items subtotal</span><strong>{money(quote.pricedTotal)}</strong><small>{quote.hasMissingPrice ? "Excludes products without a confirmed rate" : "Based on the unit rates entered"}</small></div>
               <div className="chart-card">
                 <div className="chart-card__heading"><span>Quantity by profile</span><Layers3 size={16} /></div>
