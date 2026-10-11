@@ -252,7 +252,7 @@ function App() {
   const navLinks = [
     ["Home", "#home"],
     ["Roofing", "#roofing"],
-    ["How it works", "#how-it-works"],
+    ["Products", "#roofing"],
     ["Calculator", "#calculator"],
   ];
 
@@ -322,17 +322,13 @@ function App() {
           </div>
           <div className="hero__visual">
             <div className="hero__image-frame">
-              <div className="hero__image-sky" />
-              <div className="hero__landscape landscape-one" />
-              <div className="hero__landscape landscape-two" />
-              <div className="hero-house">
-                <div className="hero-house__roof" />
-                <div className="hero-house__body">
-                  <div className="hero-house__window" />
-                  <div className="hero-house__door" />
-                  <div className="hero-house__window hero-house__window--right" />
-                </div>
-              </div>
+              <img
+                className="hero__photo"
+                src="/images/hero/modern-roof-house.jpg"
+                alt="Contemporary home with a prominent metal roof and landscaped garden"
+                fetchPriority="high"
+              />
+              <div className="hero__photo-shade" />
               <div className="hero__image-note"><span /> ROOFS WITH PURPOSE</div>
             </div>
             <div className="hero-stat hero-stat--top">
@@ -407,18 +403,45 @@ function App() {
           </p>
         </section>
 
-        <section className="feature-band" id="how-it-works">
-          <div className="feature-band__inner">
-            <div>
-              <div className="eyebrow eyebrow--light">Less waiting. More planning.</div>
-              <h2>Your quotation,<br /><span>on your time.</span></h2>
-              <p>Build a product list, enter the quantities you need, add confirmed unit prices when available, then save a PDF for your records.</p>
-              <a href="#calculator" className="button button--lime">Start a quotation <ArrowUpRight size={17} /></a>
+        <section className="feature-band" id="product-range">
+          <div className="feature-band__inner product-feature__inner">
+            <div className="product-feature__intro">
+              <div className="eyebrow eyebrow--light">Explore the range</div>
+              <h2>Find the right roof <span>for your project.</span></h2>
+              <p>
+                Compare our main roofing profiles and add your selection to a
+                quotation. Variant pricing and specifications are shown only
+                where confirmed.
+              </p>
+              <a href="#roofing" className="button button--lime">
+                Explore products <ArrowUpRight size={17} />
+              </a>
             </div>
-            <div className="steps-list">
-              <div className="step-item"><span>01</span><div><strong>Choose your roofing</strong><p>Select one or several profiles for your project.</p></div><Check size={18} /></div>
-              <div className="step-item"><span>02</span><div><strong>Enter quantities</strong><p>Adjust quantities and optional unit rates.</p></div><Check size={18} /></div>
-              <div className="step-item"><span>03</span><div><strong>Download your PDF</strong><p>Save your quotation instantly — no waiting for a reply.</p></div><Download size={18} /></div>
+            <div className="product-feature__grid">
+              <a href="#roofing" className="product-feature__item">
+                <span className="product-feature__icon"><ShieldCheck size={22} /></span>
+                <strong>D-Tile</strong>
+                <small>Tile-inspired character</small>
+                <ArrowUpRight className="product-feature__arrow" size={17} />
+              </a>
+              <a href="#roofing" className="product-feature__item">
+                <span className="product-feature__icon"><Layers3 size={22} /></span>
+                <strong>Versatile</strong>
+                <small>A distinctive profile</small>
+                <ArrowUpRight className="product-feature__arrow" size={17} />
+              </a>
+              <a href="#roofing" className="product-feature__item">
+                <span className="product-feature__icon"><Sparkles size={22} /></span>
+                <strong>StarTile</strong>
+                <small>Tile-effect styling</small>
+                <ArrowUpRight className="product-feature__arrow" size={17} />
+              </a>
+              <a href="#roofing" className="product-feature__item">
+                <span className="product-feature__icon"><Truck size={22} /></span>
+                <strong>Box Profile</strong>
+                <small>Modern ribbed lines</small>
+                <ArrowUpRight className="product-feature__arrow" size={17} />
+              </a>
             </div>
           </div>
         </section>
