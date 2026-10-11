@@ -15,6 +15,7 @@ type QuoteLine = {
   productId: string;
   variantId?: string;
   quantity: number;
+  sheetLengthM: number;
   unitPrice: string;
 };
 
@@ -30,6 +31,7 @@ const makeLine = (productId = "box-profile"): QuoteLine => ({
   productId,
   variantId: productId === "box-profile" ? BOX_PROFILE_VARIANTS[0]?.id : undefined,
   quantity: 1,
+  sheetLengthM: 2.5,
   unitPrice: "",
 });
 
@@ -77,30 +79,35 @@ function App() {
   const [notes, setNotes] = useState("");
 
   const quote = useMemo(() => {
-    const totalQuantity = lines.reduce(
-      (sum, line) => sum + Math.max(0, Number(line.quantity) || 0), 0,
-    );
+    const totalQuantity = lines.reduce((sum, line) => {
+      const quantity = Math.max(0, Number(line.quantity) || 0);
+      if (line.productId !== "box-profile") return sum;
+      const length = Math.max(0, Number(line.sheetLengthM) || 0);
+      return sum + quantity * length;
+    }, 0);
 
     const hasMissingPrice = lines.some((line) => {
       if (line.quantity <= 0) return false;
       if (line.productId === "box-profile") {
-        return !BOX_PROFILE_VARIANTS.some((variant) => variant.id === line.variantId);
+        return true;
       }
       const rate = Number(line.unitPrice);
       return line.unitPrice.trim() === "" || !Number.isFinite(rate) || rate < 0;
     });
 
     const pricedTotal = lines.reduce((sum, line) => {
-      const variant = line.productId === "box-profile"
-        ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
-        : undefined;
-      const rate = variant ? variant.ratePerM : Number(line.unitPrice);
-      if (!variant && (
+      // Preliminary Box Profile rates must never enter the subtotal.
+      if (line.productId === "box-profile") return sum;
+
+      const rate = Number(line.unitPrice);
+      if (
         line.unitPrice.trim() === "" ||
         !Number.isFinite(rate) ||
         rate < 0
-      )) return sum;
-      return sum + Math.max(0, Number(line.quantity) || 0) * rate;
+      ) return sum;
+
+      const quantity = Math.max(0, Number(line.quantity) || 0);
+      return sum + quantity * rate;
     }, 0);
 
     return { totalQuantity, hasMissingPrice, pricedTotal };
@@ -177,19 +184,18 @@ function App() {
         ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
         : undefined;
       const manualRate = Number(line.unitPrice);
-      const hasRate = variant !== undefined || (
+      const hasRate = line.productId !== "box-profile" &&
         line.unitPrice.trim() !== "" &&
         Number.isFinite(manualRate) &&
-        manualRate >= 0
-      );
-      const rate = hasRate ? (variant ? variant.ratePerM : manualRate) : null;
+        manualRate >= 0;
+      const rate = hasRate ? manualRate : null;
       const amount = rate === null ? null : quantity * rate;
       const productLabel = variant
         ? `${product?.name ?? "Box Profile"} — ${variant.colour} ${variant.finish} ${variant.gauge}`
         : product?.name ?? "Roofing product";
       const nameLines = doc.splitTextToSize(productLabel, 68);
       doc.text(nameLines, left + 2, y);
-      doc.text(variant ? `${quantity} m` : String(quantity), 112, y, { align: "right" });
+      doc.text(variant ? `${quantity} x ${line.sheetLengthM}m` : String(quantity), 112, y, { align: "right" });
       doc.text(
         rate === null ? "To confirm" : `${money(rate)}${variant ? " / m" : ""}`,
         151,
@@ -479,12 +485,11 @@ function App() {
                     ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
                     : undefined;
                   const manualRate = Number(line.unitPrice);
-                  const hasRate = variant !== undefined || (
+                  const hasRate = line.productId !== "box-profile" &&
                     line.unitPrice.trim() !== "" &&
                     Number.isFinite(manualRate) &&
-                    manualRate >= 0
-                  );
-                  const rate = variant ? variant.ratePerM : manualRate;
+                    manualRate >= 0;
+                  const rate = manualRate;
                   const lineTotal = hasRate
                     ? Math.max(0, Number(line.quantity) || 0) * rate
                     : null;
@@ -529,13 +534,13 @@ function App() {
                             </span>
                           </label>
                         )}
-                        <label>{variant ? "Length (metres)" : "Quantity"}
+                        <label>{variant ? "Number of sheets" : "Quantity"}
                           <div className="quantity-control">
                             <button aria-label="Decrease quantity" onClick={() => updateLine(line.id, { quantity: Math.max(0, line.quantity - 1) })}><Minus size={14} /></button>
                             <input
                               type="number"
                               min="0"
-                              step={variant ? "0.1" : "1"}
+                              step="1"
                               value={line.quantity}
                               onChange={(e) => updateLine(line.id, {
                                 quantity: Math.max(0, Number(e.target.value) || 0),
@@ -544,14 +549,28 @@ function App() {
                             <button aria-label="Increase quantity" onClick={() => updateLine(line.id, { quantity: line.quantity + 1 })}><Plus size={14} /></button>
                           </div>
                         </label>
+                        {variant && (
+                          <label>Length per sheet (metres)
+                            <input
+                              type="number"
+                              min="0.5"
+                              max="12"
+                              step="0.1"
+                              value={line.sheetLengthM}
+                              onChange={(e) => updateLine(line.id, {
+                                sheetLengthM: Math.max(0.5, Number(e.target.value) || 0.5),
+                              })}
+                            />
+                          </label>
+                        )}
                         <label>{variant ? "Rate (KES / metre)" : "Unit rate (KES)"}
                           <input
                             type="number"
                             min="0"
                             step="0.01"
-                            value={variant ? String(variant.ratePerM) : line.unitPrice}
+                            value={variant ? "" : line.unitPrice}
                             onChange={(e) => updateLine(line.id, { unitPrice: e.target.value })}
-                            placeholder="Confirm price"
+                            placeholder={variant ? "Price to confirm" : "Enter unit rate"}
                             disabled={Boolean(variant)}
                           />
                         </label>
@@ -580,7 +599,7 @@ function App() {
               <div className="summary-kicker"><span className="summary-pulse" /> LIVE SUMMARY</div>
               <h3>Your project<br />at a glance.</h3>
               <p>Quantities and totals update automatically.</p>
-              <div className="summary-metric"><span>Total quantity</span><strong>{quote.totalQuantity.toLocaleString("en-KE")}</strong><small>Box Profile in metres; other profiles in units</small></div>
+              <div className="summary-metric"><span>Box Profile length</span><strong>{quote.totalQuantity.toLocaleString("en-KE")} m</strong><small>Other profiles are counted separately in the chart</small></div>
               <div className="summary-total"><span>Priced items subtotal</span><strong>{money(quote.pricedTotal)}</strong><small>{quote.hasMissingPrice ? "Excludes products without a confirmed rate" : "Based on the unit rates entered"}</small></div>
               <div className="chart-card">
                 <div className="chart-card__heading"><span>Quantity by profile</span><Layers3 size={16} /></div>
