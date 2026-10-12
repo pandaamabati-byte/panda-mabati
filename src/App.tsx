@@ -646,17 +646,17 @@ function App() {
           </section>
           <nav className="site-footer__nav" aria-label="Footer navigation">
             <h2>Explore</h2>
-            <a href="#home">Home <ArrowUpRight size={14} /></a>
-            <a href="#products">Roofing products <ArrowUpRight size={14} /></a>
-            <a href="#calculator">Roof calculator <ArrowUpRight size={14} /></a>
-            <a href="#about">About Panda Mabati <ArrowUpRight size={14} /></a>
+            <a href="#home">Home</a>
+            <a href="#roofing">Roofing products</a>
+            <a href="#calculator">Roof calculator</a>
+            <a href="#about">About Panda Mabati</a>
           </nav>
           <section className="site-footer__contact">
             <h2>Talk to our team</h2>
             <p>Need help choosing roofing sheets for your project? Contact our sales team.</p>
-            <a className="site-footer__contact-link" href={`mailto:${BUSINESS_CONTACT.salesEmail}`}>{BUSINESS_CONTACT.salesEmail} <ArrowUpRight size={15} /></a>
-            <a className="site-footer__contact-link" href={`tel:${BUSINESS_CONTACT.phoneDial}`}>{BUSINESS_CONTACT.contactName} · {BUSINESS_CONTACT.phoneDisplay} <ArrowUpRight size={15} /></a>
-            <a className="site-footer__contact-button" href="https://wa.me/254713207844" target="_blank" rel="noreferrer">Chat on WhatsApp <ArrowUpRight size={15} /></a>
+            <a className="site-footer__contact-link" href={`mailto:${BUSINESS_CONTACT.salesEmail}`}>{BUSINESS_CONTACT.salesEmail}</a>
+            <a className="site-footer__contact-link" href={`tel:${BUSINESS_CONTACT.phoneDial}`}>{BUSINESS_CONTACT.contactName} · {BUSINESS_CONTACT.phoneDisplay}</a>
+            <a className="site-footer__contact-button" href="https://wa.me/254713207844" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
           </section>
           <section className="site-footer__social">
             <h2>Stay connected</h2>

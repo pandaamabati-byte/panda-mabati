@@ -385,3 +385,47 @@
 @media(max-width:1050px){.site-footer__main{grid-template-columns:1fr 1fr;gap:35px}}
 @media(max-width:760px){.site-footer__main{grid-template-columns:1fr 1fr;gap:30px 20px;padding:42px 6% 34px}.site-footer__brand,.site-footer__social{grid-column:1/-1}.site-footer__main h2{font-size:11px}.site-footer__nav>a,.site-footer__contact-link{font-size:11px}.site-footer__bottom{flex-direction:column;gap:8px;padding:18px 6%}.site-footer__social-links>a{min-width:40px;height:40px}}
 @media(max-width:390px){.site-footer__main{grid-template-columns:1fr}.site-footer__brand,.site-footer__social{grid-column:auto}.site-footer__social-links>a{min-width:38px;padding:0 8px}}
+
+
+/* Panda footer finishing polish */
+.site-footer__nav a,
+.site-footer__contact-link,
+.site-footer__contact-button,
+.site-footer__social-links a {
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.site-footer__nav a:hover,
+.site-footer__contact-link:hover {
+  transform: translateX(3px);
+}
+
+.site-footer__contact-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 16%);
+}
+
+.site-footer__social-links a:hover {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer__nav a,
+  .site-footer__contact-link,
+  .site-footer__contact-button,
+  .site-footer__social-links a {
+    transition: none;
+  }
+
+  .site-footer__nav a:hover,
+  .site-footer__contact-link:hover,
+  .site-footer__contact-button:hover,
+  .site-footer__social-links a:hover {
+    transform: none;
+  }
+}
