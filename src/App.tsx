@@ -635,14 +635,47 @@ function App() {
       </main>
 
       <footer className="site-footer">
-        <a href="#home" className="brand brand--footer">
-          <span className="brand__mark"><Layers3 size={21} /></span>
-          <span className="brand__words"><strong>PANDA <em>MABATI</em></strong><small>ROOFING SOLUTIONS</small></span>
-        </a>
-        <span>Thoughtful roofing. Clearer decisions.</span>
-        <a href="mailto:pandaamabati@gmail.com">Contact Panda Mabati <ArrowUpRight size={14} /></a>
-        <small>© {new Date().getFullYear()} Panda Mabati. Product availability and prices require confirmation.</small>
-        <small>Sales: <a href={`mailto:${BUSINESS_CONTACT.salesEmail}`}>{BUSINESS_CONTACT.salesEmail}</a> · {BUSINESS_CONTACT.contactName} · <a href={`tel:${BUSINESS_CONTACT.phoneDial}`}>{BUSINESS_CONTACT.phoneDisplay}</a></small>
+        <div className="site-footer__main">
+          <section className="site-footer__brand">
+            <a href="#home" className="brand brand--footer" aria-label="Panda Mabati home">
+              <span className="brand__mark"><Layers3 size={22} /></span>
+              <span className="brand__words"><strong>PANDA <em>MABATI</em></strong><small>ROOFING SOLUTIONS</small></span>
+            </a>
+            <p>Thoughtful roofing. Clearer decisions.</p>
+            <p className="site-footer__description">Explore roofing options, compare finishes, and plan your project with confidence.</p>
+          </section>
+          <nav className="site-footer__nav" aria-label="Footer navigation">
+            <h2>Explore</h2>
+            <a href="#home">Home <ArrowUpRight size={14} /></a>
+            <a href="#products">Roofing products <ArrowUpRight size={14} /></a>
+            <a href="#calculator">Roof calculator <ArrowUpRight size={14} /></a>
+            <a href="#about">About Panda Mabati <ArrowUpRight size={14} /></a>
+          </nav>
+          <section className="site-footer__contact">
+            <h2>Talk to our team</h2>
+            <p>Need help choosing roofing sheets for your project? Contact our sales team.</p>
+            <a className="site-footer__contact-link" href={`mailto:${BUSINESS_CONTACT.salesEmail}`}>{BUSINESS_CONTACT.salesEmail} <ArrowUpRight size={15} /></a>
+            <a className="site-footer__contact-link" href={`tel:${BUSINESS_CONTACT.phoneDial}`}>{BUSINESS_CONTACT.contactName} · {BUSINESS_CONTACT.phoneDisplay} <ArrowUpRight size={15} /></a>
+            <a className="site-footer__contact-button" href="https://wa.me/254713207844" target="_blank" rel="noreferrer">Chat on WhatsApp <ArrowUpRight size={15} /></a>
+          </section>
+          <section className="site-footer__social">
+            <h2>Stay connected</h2>
+            <p>Follow the platforms you use. Our official social accounts will be added when available.</p>
+            <div className="site-footer__social-links">
+              <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook">f <span>Facebook</span></a>
+              <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram">◎ <span>Instagram</span></a>
+              <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok">♪ <span>TikTok</span></a>
+              <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube">▶ <span>YouTube</span></a>
+              <a href="https://www.whatsapp.com/" target="_blank" rel="noreferrer" aria-label="WhatsApp">W <span>WhatsApp</span></a>
+              <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" aria-label="LinkedIn">in <span>LinkedIn</span></a>
+              <a href="https://x.com/" target="_blank" rel="noreferrer" aria-label="X">X <span>X</span></a>
+            </div>
+          </section>
+        </div>
+        <div className="site-footer__bottom">
+          <small>© {new Date().getFullYear()} Panda Mabati. All rights reserved.</small>
+          <small>Product availability and prices require confirmation.</small>
+        </div>
       </footer>
     </div>
   );
