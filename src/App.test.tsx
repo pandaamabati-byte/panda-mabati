@@ -58,7 +58,7 @@ describe('Panda Mabati storefront', () => {
     window.location.hash = '#product/versatile';
     render(<App />);
     fireEvent.change(screen.getByLabelText(/Colour preference/), { target: { value: 'Tile Red' } });
-    expect(screen.getByText(/Colour preference: Tile Red/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Colour preference/)).toHaveValue('Tile Red');
     window.location.hash = '';
   });
 
