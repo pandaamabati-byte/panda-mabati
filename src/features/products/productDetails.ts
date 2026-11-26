@@ -75,5 +75,5 @@ export const getProductPriceInfo=(id:string):ProductPriceInfo|undefined=>{
 export const getProductStartingPrice=(id:string):number|undefined=>{
  const values=getProductVariants(id).map((item)=>item.unitPriceKes);
  if(values.length) return Math.min(...values);
- return getProductPriceInfo(id)?.unitPriceKes;
+ return undefined;
 };
