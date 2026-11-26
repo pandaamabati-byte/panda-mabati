@@ -196,29 +196,44 @@ function App() {
     const lime: [number, number, number] = [194, 220, 77];
     let y = 12;
 
-    // Branded quotation masthead, styled to follow the supplied Panda Mabati reference.
+    // Official OBOR Technology Kenya Ltd quotation identity, upgraded with Panda Mabati trading brand.
+    doc.setFillColor(255,255,255);
+    doc.rect(0, 0, pageWidth, 47, "F");
     doc.setFillColor(...green);
-    doc.rect(0, 0, pageWidth, 39, "F");
+    doc.rect(0, 0, pageWidth, 3, "F");
     doc.setFillColor(...lime);
-    doc.rect(0, 39, pageWidth, 2, "F");
-    doc.setTextColor(255,255,255);
+    doc.rect(0, 47, pageWidth, 2, "F");
+    doc.setTextColor(...green);
     doc.setFont("helvetica","bold");
-    doc.setFontSize(20);
-    doc.text("PANDA MABATI", left, 18);
+    doc.setFontSize(15);
+    doc.text("OBOR TECHNOLOGY KENYA LTD", left, 13);
     doc.setFont("helvetica","normal");
-    doc.setFontSize(8);
-    doc.text("ROOFING SOLUTIONS  |  WE REPRESENT QUALITY", left, 25);
-    doc.text(BUSINESS_CONTACT.phoneDisplay, left, 31);
+    doc.setFontSize(7.4);
+    doc.setTextColor(65,75,68);
+    doc.text("Plaza Business Park, Mombasa Road, Nairobi", left, 19);
+    doc.text("P.O. Box 37838-00100, Nairobi, Kenya  |  PTN: P051909470Y", left, 24);
     doc.setFont("helvetica","bold");
-    doc.setFontSize(18);
-    doc.text("QUOTATION", right, 17, { align: "right" });
+    doc.setFontSize(10);
+    doc.setTextColor(...green);
+    doc.text("PANDA MABATI", left, 34);
     doc.setFont("helvetica","normal");
-    doc.setFontSize(8);
-    doc.text(`Quote No: ${quoteNumber}`, right, 24, { align: "right" });
-    doc.text(`Date: ${dateLabel(quoteDate)}`, right, 29, { align: "right" });
-    doc.text(`Valid until: ${dateLabel(expiryDate)}`, right, 34, { align: "right" });
+    doc.setFontSize(7);
+    doc.setTextColor(65,75,68);
+    doc.text("Roofing Solutions  |  We Represent Quality", left, 39);
+    doc.text(`Tel: ${BUSINESS_CONTACT.phoneDisplay}  |  ${BUSINESS_CONTACT.salesEmail}`, left, 44);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(17);
+    doc.setTextColor(...green);
+    doc.text("QUOTATION", right, 15, { align: "right" });
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(65,75,68);
+    doc.text(`Quote No: ${quoteNumber}`, right, 23, { align: "right" });
+    doc.text(`Date of issue: ${dateLabel(quoteDate)}`, right, 29, { align: "right" });
+    doc.text(`Date of expiry: ${dateLabel(expiryDate)}`, right, 35, { align: "right" });
+    doc.text("Place of delivery: To be confirmed", right, 41, { align: "right" });
 
-    y = 49;
+    y = 56;
     doc.setTextColor(...green);
     doc.setFont("helvetica","bold");
     doc.setFontSize(9);
@@ -337,7 +352,7 @@ function App() {
     y+=7;
     doc.setFont("helvetica","bold");doc.setTextColor(...green);doc.setFontSize(7.5);
     doc.text("CUSTOMER ACCEPTANCE",left,y);
-    doc.text("FOR PANDA MABATI",112,y);
+    doc.text("FOR OBOR TECHNOLOGY KENYA LTD",112,y);
     y+=13;
     doc.setDrawColor(130,145,135);
     doc.line(left,y,right-88,y);
@@ -354,7 +369,7 @@ function App() {
       doc.setDrawColor(190,202,192);
       doc.line(left,pageHeight-14,right,pageHeight-14);
       doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.setTextColor(105,115,108);
-      doc.text(`Panda Mabati | ${BUSINESS_CONTACT.salesEmail} | ${BUSINESS_CONTACT.phoneDisplay}`,left,pageHeight-9);
+      doc.text(`OBOR TECHNOLOGY KENYA LTD  |  Panda Mabati  |  ${BUSINESS_CONTACT.salesEmail}  |  ${BUSINESS_CONTACT.phoneDisplay}`,left,pageHeight-9);
       doc.text(`Page ${page} of ${pageCount}`,right,pageHeight-9,{align:"right"});
     }
     doc.save(`Panda-Mabati-Quotation-${quoteDate.toISOString().slice(0,10)}.pdf`);
