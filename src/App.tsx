@@ -87,15 +87,15 @@ function App() {
   const quote = useMemo(() => {
     const totalQuantity = lines.reduce((sum, line) => {
       const quantity = Math.max(0, Number(line.quantity) || 0);
-      if (line.productId !== "box-profile") return sum;
+      if (line.productId !== "box-profile" || !line.variantId) return sum;
       const length = Math.max(0, Number(line.sheetLengthM) || 0);
       return sum + quantity * length;
     }, 0);
 
     const hasMissingPrice = lines.some((line) => {
       if (line.quantity <= 0) return false;
-      if (line.productId === "box-profile") {
-        return true;
+      if (line.productId === "box-profile" && line.variantId) {
+        return !BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId);
       }
       const rate = Number(line.unitPrice);
       return line.unitPrice.trim() === "" || !Number.isFinite(rate) || rate < 0;
@@ -103,7 +103,10 @@ function App() {
 
     const pricedTotal = lines.reduce((sum, line) => {
       // Preliminary Box Profile rates must never enter the subtotal.
-      if (line.productId === "box-profile") return sum;
+      if (line.productId === "box-profile" && line.variantId) {
+        const variant = BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId);
+        return sum + (variant ? Math.max(0, Number(line.quantity) || 0) * Math.max(0, Number(line.sheetLengthM) || 0) * variant.ratePerM : 0);
+      }
 
       const rate = Number(line.unitPrice);
       if (
@@ -190,12 +193,11 @@ function App() {
         ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
         : undefined;
       const manualRate = Number(line.unitPrice);
-      const hasRate = line.productId !== "box-profile" &&
-        line.unitPrice.trim() !== "" &&
+      const hasRate = Boolean(variant) || (line.unitPrice.trim() !== "" &&
         Number.isFinite(manualRate) &&
-        manualRate >= 0;
-      const rate = hasRate ? manualRate : null;
-      const amount = rate === null ? null : quantity * rate;
+        manualRate >= 0);
+      const rate = variant ? variant.ratePerM : hasRate ? manualRate : null;
+      const amount = rate === null ? null : quantity * (variant ? line.sheetLengthM : 1) * rate;
       const productLabel = variant
         ? `${product?.name ?? "Box Profile"} — ${variant.colour} ${variant.finish} ${variant.gauge}`
         : [product?.name ?? "Roofing product", line.variantLabel].filter(Boolean).join(" — ");
@@ -501,13 +503,12 @@ function App() {
                     ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
                     : undefined;
                   const manualRate = Number(line.unitPrice);
-                  const hasRate = line.productId !== "box-profile" &&
-                    line.unitPrice.trim() !== "" &&
+                  const hasRate = Boolean(variant) || (line.unitPrice.trim() !== "" &&
                     Number.isFinite(manualRate) &&
-                    manualRate >= 0;
+                    manualRate >= 0);
                   const rate = manualRate;
                   const lineTotal = hasRate
-                    ? Math.max(0, Number(line.quantity) || 0) * rate
+                    ? Math.max(0, Number(line.quantity) || 0) * (variant ? line.sheetLengthM : 1) * (variant ? variant.ratePerM : rate)
                     : null;
                   return (
                     <div className="quote-line" key={line.id}>
@@ -585,9 +586,9 @@ function App() {
                             type="number"
                             min="0"
                             step="0.01"
-                            value={variant ? "" : line.unitPrice}
+                            value={variant ? String(variant.ratePerM) : line.unitPrice}
                             onChange={(e) => updateLine(line.id, { unitPrice: e.target.value })}
-                            placeholder={variant ? "Price to confirm" : "Enter unit rate"}
+                            placeholder={variant ? "Catalogue rate per metre" : "Enter unit rate"}
                             disabled={Boolean(variant)}
                           />
                         </label>
