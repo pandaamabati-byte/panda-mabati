@@ -32,6 +32,19 @@ export const FALLBACK_PRODUCTS: Product[] = [
     sourceName: "Panda Mabati · owner-approved catalogue addition",
   },
   {
+    id: "roman-tile",
+    name: "Panda Roman Tile",
+    short: "Premium Roman clay-tile appearance in a rigid metal roofing profile",
+    description:
+      "PANDA Roman Tile is a prestigious, premium roofing profile designed to give a roof the appearance of Roman clay tiles. It offers the beauty of a tiled roof without the leaks, maintenance and additional structural cost associated with supporting the weight of conventional roof tiles. Its construction makes it one of the most rigid profiles. Aluminium's high thermal efficiency also helps provide a cooler roof environment. Confirm available colours, gauge, coverage, sheet lengths and current pricing with Panda Mabati sales.",
+    use: "Premium residential homes",
+    tone: "tile",
+    published: true,
+    category: "Premium tile-effect roofing",
+    sourceName: "Panda Mabati · owner-provided product description",
+    priceStatus: "pending",
+  },
+  {
     id: "d-tile",
     name: "D-Tile",
     short: "Timeless roof character",
