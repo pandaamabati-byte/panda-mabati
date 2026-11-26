@@ -37,7 +37,7 @@ The register tracks:
 - Ridge caps / normal ridge (Kofia), roll tops and valley trays
 - Roofing nails and fasteners
 
-D-Tile and Versatile remain standard product pages without colour selectors, as instructed. Their price information is handled separately from colour variants.
+D-Tile and Versatile remain product pages without colour selectors, as instructed. D-Tile offers published sheet-length/packet price choices; Versatile offers only its published G28/G30 gauge and sheet-length choices. Neither product exposes colour variants.
 
 ## Price and catalogue source policy
 
