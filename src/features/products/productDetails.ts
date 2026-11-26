@@ -2,7 +2,7 @@ import type { Product } from "./productModel";
 export type ProductVariant={id:string;colour:string;gauge:string;finish:string;sourceUrl:string};
 const source="https://pandamabatifactory.co.ke/wp/";
 const make=(id:string,rows:string[][]):ProductVariant[]=>rows.map(([colour,finish,gauge],i)=>({id:id+"-"+i,colour,finish,gauge,sourceUrl:source}));
-const variants:Record<string,ProductVariant[]>={
+const variants:Record<string,ProductVariant[]> = {
 "box-profile":make("box",[["Brick Red","Gloss","30G"],["Tile Red","Gloss","30G"],["Tile Red","Matt","30G"],["Dark Green","Gloss","30G"],["Grey","Gloss","30G"],["Grey","Matt","30G"],["Maroon","Gloss","30G"],["Maroon","Matt","30G"],["Sky Blue","Gloss","30G"],["Tile Red","Matt","28G"],["Tile Red","Gloss","28G"],["Sky Blue","Gloss","28G"],["Maroon","Matt","28G"]]),
 corrugated:make("corrugated",[["Red","Matt","30G"],["Grey","Gloss","30G"],["Green","Matt","30G"],["Brick Red","Gloss","30G"],["Red","Gloss","28G"],["Grey","Gloss","28G"],["Green","Gloss","28G"],["Brick Red","Gloss","28G"]]),
 startile:make("startile",[["Tile Red","Matt","28G"],["Sky Blue","Gloss","28G"],["Maroon","Gloss","28G"],["Dark Green","Matt","28G"],["Tile Red","Matt","30G"],["Sky Blue","Gloss","30G"]]),
