@@ -98,6 +98,24 @@ describe('Panda Mabati storefront', () => {
     expect(screen.getAllByText(/PROFILE VISUAL · PHOTO PENDING/i).length).toBeGreaterThan(0);
   });
 
+  it('keeps the approved Panda Mabati logo on selected product detail pages', () => {
+    window.location.hash = '#product/d-tile';
+    const { container } = render(<App />);
+    const logo = container.querySelector('.product-detail-header .brand__logo');
+    expect(logo).toHaveAttribute('alt', 'Panda Mabati — We Represent Quality');
+    expect(logo?.getAttribute('src')).toContain('panda-mabati-logo');
+    window.location.hash = '';
+  });
+
+  it('collects separate delivery point, site address and receiving contact details', () => {
+    render(<App />);
+    expect(screen.getByLabelText(/place of delivery/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/site \/ delivery address/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/landmark \/ directions/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/delivery contact person/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/delivery contact phone/i)).toBeInTheDocument();
+  });
+
   it('renders the quotation builder and PDF download action', () => {
     render(<App />)
 
