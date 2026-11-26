@@ -69,8 +69,6 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const variantImage = getVerifiedProductImage(product.id, selected?.id);
   const verifiedImage = variantImage ?? getVerifiedProductImage(product.id);
   const previewImage = verifiedImage?.src;
-  const aiVisualIds = ["versatile", "glazed-tile", "elegantile", "decra", "ridge-caps", "flashings", "gutters", "roll-tops", "valley-trays", "roofing-fasteners"];
-  const aiVisualSrc = aiVisualIds.includes(product.id) ? "/images/ai-product-visuals/" + product.id + ".svg" : undefined;
   const needsColourPreview = Boolean(colour && !variantImage);
   const swatchColour = colour.toLowerCase().includes("red") ? "#a83228"
     : colour.toLowerCase().includes("blue") ? "#2778b9"
@@ -109,11 +107,6 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
                 <img src={previewImage} alt={verifiedImage?.alt ?? (product.name + " product photograph")} key={previewImage} onError={() => setImageUnavailable(true)} />
                 {needsColourPreview && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} aria-hidden="true" />}
               </div>
-            ) : aiVisualSrc && !imageUnavailable ? (
-              <div className="product-detail-photo-stage product-detail-photo-stage--visualisation">
-                <img src={aiVisualSrc} alt={"Product visualisation of " + product.name + "; exact manufacturer profile and finish to be confirmed"} onError={() => setImageUnavailable(true)} />
-                {needsColourPreview && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} aria-hidden="true" />}
-              </div>
             ) : (
               <div className="product-detail-placeholder">
                 <ProductProfileVisual productId={product.id} productName={product.name} tone={product.tone} colour={colour} />
@@ -123,7 +116,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
               </div>
             )}
             <span className="product-detail-photo-note">
-              {variantImage ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage && !imageUnavailable ? (needsColourPreview ? "PANDA PRODUCT PHOTO · COLOUR PREVIEW" : "PANDA MABATI PRODUCT PHOTOGRAPH") : aiVisualSrc && !imageUnavailable ? "PRODUCT VISUALISATION · CONFIRM SPEC" : "PRODUCT PROFILE VISUAL"}
+              {variantImage ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage && !imageUnavailable ? (needsColourPreview ? "PANDA PRODUCT PHOTO · COLOUR PREVIEW" : "PANDA MABATI PRODUCT PHOTOGRAPH") : "PRODUCT PROFILE VISUAL · PHOTO PENDING"}
             </span>
           </div>
 
