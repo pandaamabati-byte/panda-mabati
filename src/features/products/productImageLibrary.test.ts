@@ -38,7 +38,8 @@ describe("product image library", () => {
   });
 
   it("tracks image-library coverage for every live catalogue product", () => {
-    expect(PRODUCT_IMAGE_TARGETS).toHaveLength(14);
+    expect(PRODUCT_IMAGE_TARGETS).toHaveLength(15);
+    expect(PRODUCT_IMAGE_TARGETS).toContain("eurotile");
     for (const id of PRODUCT_IMAGE_TARGETS) {
       const status = getProductImageStatus(id);
       expect(status.verifiedCount + status.pendingCount).toBeGreaterThan(0);
