@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 type Props = { productId: string; productName: string; tone?: string };
 export default function ProductProfileVisual({ productId, productName, tone = "box" }: Props) {
   const id = productId.replace(/[^a-z0-9]/gi, "");
