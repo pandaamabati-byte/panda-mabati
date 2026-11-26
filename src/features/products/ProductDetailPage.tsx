@@ -66,9 +66,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const priceNote = selected?.minimumOrder ? `Viwanda listing minimum order: ${selected.minimumOrder}.` : selectedPriceOption?.minimumOrder ? `Marketplace minimum order: ${selectedPriceOption.minimumOrder}.` : priceInfo?.note;
 
   const verifiedImage = getVerifiedProductImage(product.id, selected?.id) ?? getVerifiedProductImage(product.id);
-  const dTileReferenceImage = "https://storage.googleapis.com/takeapp/media/clvebadzw00020fl9dehabkv3.jpg";
-  const isDTileReference = product.id === "d-tile" && !verifiedImage;
-  const previewImage = verifiedImage?.src ?? (isDTileReference ? dTileReferenceImage : undefined);
+  const previewImage = verifiedImage?.src;
   const swatchColour = colour.toLowerCase().includes("red") ? "#a83228"
     : colour.toLowerCase().includes("blue") ? "#2778b9"
     : colour.toLowerCase().includes("green") ? "#39734a"
@@ -102,18 +100,18 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
         <section className="product-detail-hero">
           <div className="product-detail-visual">
             {previewImage && !imageUnavailable ? (
-              <div className="product-detail-photo-stage"><img src={previewImage} alt={verifiedImage?.alt ?? "Real tile-profile roofing sheet reference photograph"} key={previewImage} onError={() => setImageUnavailable(true)} />{isDTileReference && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} />}</div>
+              <div className="product-detail-photo-stage"><img src={previewImage} alt={verifiedImage?.alt ?? `${product.name} product visual`} key={previewImage} onError={() => setImageUnavailable(true)} /></div>
             ) : (
               <div className="product-detail-placeholder">
                 <Layers3 size={58} />
-                <span>Illustrative profile preview</span>
+                <span>{product.name} product visual</span>
                 <small className="product-detail-colour-label">
                   {selected ? `Selected colour: ${colour}` : selectedPriceOption?.label ?? (variants.length ? "Select a product option" : "No colour variants")}
                 </small>
               </div>
             )}
             <span className="product-detail-photo-note">
-              {isDTileReference ? "REAL TILE-PROFILE REFERENCE · NOT A PANDA D-TILE PHOTO" : verifiedImage?.kind === "variant-photo" ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage && !imageUnavailable ? "VERIFIED PRODUCT PHOTOGRAPH" : "ILLUSTRATIVE · NOT A PRODUCT PHOTO"}
+              {verifiedImage?.kind === "variant-photo" ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage && !imageUnavailable ? "PANDA MABATI PRODUCT PHOTOGRAPH" : "PRODUCT VISUAL"}
             </span>
           </div>
 
@@ -198,7 +196,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
                 <div>
                   <span className="eyebrow">Selected option</span>
                   <h3>{label}</h3>
-                  <p>{isDTileReference ? "The photograph is a real tile-profile reference from an independent retailer, not a Panda D-Tile product photo. The colour overlay is a visual preview only; compare a physical colour sample before ordering." : "Colour swatch is a visual guide. The displayed price is the published catalogue rate for this option."}</p>
+                  <p>{"Colour swatch is a visual guide. The displayed price is the published catalogue rate for this option."}</p>
                 </div>
                 <span className="variant-pending">{selected ? getVariantPriceLabel(selected) : "Catalogue price"}</span>
               </div>
