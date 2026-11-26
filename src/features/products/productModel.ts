@@ -8,6 +8,9 @@ export type Product = {
   published: boolean;
   priceStatus?: "confirmed" | "pending";
   unitPriceKes?: number;
+  priceUnit?: string;
+  imageUrl?: string;
+  sourceUrl?: string;
   effectiveCoverageM?: number;
   colours?: string[];
   gaugesMm?: number[];
@@ -98,7 +101,11 @@ export function normalizeProduct(
     isPositiveNumber(data.unitPriceKes)
   ) {
     product.unitPriceKes = data.unitPriceKes;
+    if (isNonEmptyString(data.priceUnit)) product.priceUnit = data.priceUnit.trim();
   }
+
+  if (isNonEmptyString(data.imageUrl)) product.imageUrl = data.imageUrl.trim();
+  if (isNonEmptyString(data.sourceUrl)) product.sourceUrl = data.sourceUrl.trim();
 
   if (isPositiveNumber(data.effectiveCoverageM)) {
     product.effectiveCoverageM = data.effectiveCoverageM;
