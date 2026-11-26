@@ -393,6 +393,8 @@ function App() {
                   <h3>{product.name}</h3>
                   <p className="product-card__short">{product.short}</p>
                   <p className="product-card__description">{product.description}</p>
+                  {product.sourceName && <p className="product-card__source">Catalogue source: {product.sourceName}</p>}
+                  {product.sourceUrl && <a className="product-card__source-link" href={product.sourceUrl} target="_blank" rel="noreferrer">View source listing <ArrowUpRight size={13} /></a>}
                   <button
                     className="product-card__link"
                     onClick={() => {
@@ -410,9 +412,7 @@ function App() {
             {catalogueSource === "firestore"
               ? "Live published catalogue loaded. "
               : "Showing the local catalogue until the live catalogue is available. "}
-            Product illustrations are temporary design placeholders. Actual product photographs,
-            colours, gauges, coverage and technical specifications will be confirmed against Panda
-            Mabati's product catalogue.
+            Some cards use illustrative artwork until verified manufacturer photographs are attached. Product variants, prices, selling units, coverage and technical specifications must be confirmed before ordering.
           </p>
         </section>
 
