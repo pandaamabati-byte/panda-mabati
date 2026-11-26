@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight, Check, ChevronDown, Download, Menu, ShieldCheck,
-  Sparkles, X, Calculator, Layers3, Truck, BadgeCheck, Plus, Minus,
+  Sparkles, X, Calculator, Layers3, Truck, BadgeCheck, Plus, Minus, Search,
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { BUSINESS_CONTACT } from "./config/business";
@@ -92,6 +92,8 @@ function App() {
   const [activeProductId, setActiveProductId] = useState(() => window.location.hash.startsWith("#product/") ? decodeURIComponent(window.location.hash.slice(9)) : "");
   const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
   const [catalogueSource, setCatalogueSource] = useState<"fallback" | "firestore">("fallback");
+  const [productSearch, setProductSearch] = useState("");
+  const [productFilter, setProductFilter] = useState<"all" | "sheets" | "tiles" | "accessories">("all");
 
   useEffect(() => {
     let active = true;
@@ -318,6 +320,16 @@ function App() {
     ["Calculator", "#calculator"],
   ];
 
+  const visibleProducts = useMemo(() => {
+    const query = productSearch.trim().toLocaleLowerCase();
+    return products.map((product, index) => ({ product, index })).filter(({ product }) => {
+      const isAccessory = product.category === "Roofing accessories" || ["ridge-caps", "flashings", "gutters", "roll-tops", "valley-trays", "roofing-fasteners"].includes(product.id);
+      const isTile = ["d-tile", "versatile", "startile", "glazed-tile", "elegantile", "decra"].includes(product.id);
+      const categoryMatch = productFilter === "all" || (productFilter === "accessories" && isAccessory) || (productFilter === "tiles" && isTile && !isAccessory) || (productFilter === "sheets" && !isTile && !isAccessory);
+      const searchMatch = !query || [product.name, product.short, product.description, product.use, product.category].filter(Boolean).join(" ").toLocaleLowerCase().includes(query);
+      return categoryMatch && searchMatch;
+    });
+  }, [products, productSearch, productFilter]);
   const activeProduct = products.find((product) => product.id === activeProductId);
   if (activeProduct) return <ProductDetailPage key={activeProduct.id} product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel, price, priceUnit, sheetLengthM) => { const baseLine = makeLine(productId); const boxVariant = productId === "box-profile" ? BOX_PROFILE_VARIANTS.find((item) => `${item.colour} · ${item.finish} · ${item.gauge}` === variantLabel) : undefined; setLines((current) => [...current, { ...baseLine, variantId: boxVariant?.id, priceUnit: priceUnit ?? (boxVariant ? "metre" : undefined), sheetLengthM: sheetLengthM ?? baseLine.sheetLengthM, variantLabel, unitPrice: price === undefined ? "" : String(price) }]); window.location.hash = "#calculator"; }} />;
 
@@ -433,8 +445,22 @@ function App() {
             </div>
             <p>Start with the look you love. Select a profile to add it to your cart and quotation.</p>
           </div>
+          <div className="catalogue-tools" aria-label="Find products">
+            <label className="catalogue-search">
+              <Search size={18} aria-hidden="true" />
+              <span className="sr-only">Search roofing products</span>
+              <input type="search" value={productSearch} onChange={(event) => setProductSearch(event.target.value)} placeholder="Search profiles, tiles and accessories" />
+              {productSearch && <button type="button" onClick={() => setProductSearch("")} aria-label="Clear product search"><X size={16} /></button>}
+            </label>
+            <div className="catalogue-filters" role="group" aria-label="Filter product category">
+              {[{id:"all",label:"All products"},{id:"sheets",label:"Roofing sheets"},{id:"tiles",label:"Tile profiles"},{id:"accessories",label:"Accessories"}].map((filter) => (
+                <button type="button" key={filter.id} className={productFilter === filter.id ? "catalogue-filter catalogue-filter--active" : "catalogue-filter"} aria-pressed={productFilter === filter.id} onClick={() => setProductFilter(filter.id as "all" | "sheets" | "tiles" | "accessories")}>{filter.label}</button>
+              ))}
+            </div>
+            <p className="catalogue-results" aria-live="polite">Showing {visibleProducts.length} of {products.length} products</p>
+          </div>
           <div className="product-grid">
-            {products.map((product, index) => (
+            {visibleProducts.map(({ product, index }) => (
               <article className="product-card" key={product.id}>
                 <ProductCardVisual product={product} index={index} />
                 <div className="product-card__body">
@@ -458,6 +484,13 @@ function App() {
               </article>
             ))}
           </div>
+          {visibleProducts.length === 0 && (
+            <div className="catalogue-empty" role="status">
+              <strong>No matching products found.</strong>
+              <p>Try another search term or view all products.</p>
+              <button type="button" onClick={() => { setProductSearch(""); setProductFilter("all"); }}>Clear filters</button>
+            </div>
+          )}
           <p className="catalogue-note">
             {catalogueSource === "firestore"
               ? "Live catalogue connected; Panda Mabati product groups are shown alongside live catalogue records. "
