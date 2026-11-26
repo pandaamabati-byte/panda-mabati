@@ -45,6 +45,7 @@ D-Tile and Versatile remain standard product pages without colour selectors, as 
 - Panda Mabati Ltd's linked Take App product list provides length-based retail prices for Box Profile/coloured Corrugated, Versatile, Decra, Roll Tops/Valleys and PVC gutters.
 - Where the two Panda sources differ, the customer-facing price schedule uses the Panda Mabati Ltd retail listing as the retail benchmark where it provides a comparable unit, while retaining factory-specific finish distinctions where the retail listing groups them together.
 - D-Tile is not itemized on the supplied Panda Mabati websites. A clearly labelled marketplace benchmark is used for the 2m packet price; it is not presented as a factory-confirmed price.
+- Flashings have no specific Panda price on the supplied sites. The storefront uses a clearly labelled Kenya market guide starting-price estimate (KSh 500–1,200 per piece depending on type and dimensions).
 - Sheet products priced per metre use sheet count × length × rate in the quotation. Accessories and packet-priced products use their listed selling unit.
 - Delivery, fittings, installation and project-specific extras are excluded unless explicitly included in the listed product.
 
