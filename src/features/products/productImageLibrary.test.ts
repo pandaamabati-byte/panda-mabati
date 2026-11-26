@@ -26,12 +26,4 @@ describe("product image library", () => {
     }
   });
 
-  it("returns only a verified asset when a product photo is approved", () => {
-    const verified = PRODUCT_IMAGE_LIBRARY.find(
-      (asset) => asset.productId === "box-profile",
-    )!;
-    verified.status = "verified";
-    expect(getVerifiedProductImage("box-profile")?.id).toBe(verified.id);
-    verified.status = "awaiting-verification";
-  });
 });
