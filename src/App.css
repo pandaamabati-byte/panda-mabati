@@ -556,3 +556,45 @@
 .brand__logo--footer { width: min(190px, 100%); max-height:none; }
 .site-footer__brand .brand { align-items:flex-start; }
 @media (max-width: 640px) { .brand__logo { width:116px; max-height:58px; } .brand__logo--footer { width:168px; max-height:none; } }
+
+
+/* Premium brand header: the white logo tile intentionally blends with the
+   supplied white-background master logo while the surrounding header uses
+   Panda's deep forest-green brand colour. */
+.site-header {
+  background: #0d2d24;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.brand__logo {
+  display: block;
+  width: clamp(124px, 13vw, 156px);
+  height: 64px;
+  max-height: 64px;
+  padding: 3px 8px;
+  box-sizing: border-box;
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 10px;
+  box-shadow: 0 5px 16px rgba(0,0,0,.13);
+}
+.desktop-nav > a { color: #e1eae3; }
+.desktop-nav > a:hover { color: #d9f078; }
+.site-header .button--dark {
+  background: #d9f078;
+  color: #173c2b;
+}
+.site-header .button--dark:hover { background: #e4f99b; }
+.mobile-menu-button { color: #d9f078; }
+@media (max-width: 760px) {
+  .site-header { background: #0d2d24; }
+  .desktop-nav {
+    background: #0d2d24;
+    border-bottom: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 15px 25px rgba(7,24,18,.2);
+  }
+  .desktop-nav > a { color: #e1eae3; border-bottom-color: rgba(255,255,255,.12); }
+  .desktop-nav > a:hover { color: #d9f078; }
+  .brand__logo { width: 124px; height: 58px; max-height: 58px; }
+}
