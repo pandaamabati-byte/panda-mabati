@@ -21,6 +21,7 @@ export function ProductsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [tone, setTone] = useState('all')
+  const [failedImages, setFailedImages] = useState<string[]>([])
 
   useEffect(() => {
     let active = true
@@ -159,12 +160,13 @@ export function ProductsPage() {
                 </div>
 
                 <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-xl bg-gradient-to-br from-emerald-50 via-stone-100 to-amber-50">
-                  {productImage ? (
+                  {productImage && !failedImages.includes(product.id) ? (
                     <img
                       src={productImage.src}
                       alt={productImage.alt}
                       loading="lazy"
                       decoding="async"
+                      onError={() => setFailedImages((current) => current.includes(product.id) ? current : [...current, product.id])}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -174,7 +176,7 @@ export function ProductsPage() {
                       <span className="text-xs text-slate-600">Product photograph being verified</span>
                     </div>
                   )}
-                  {productImage && (
+                  {productImage && !failedImages.includes(product.id) && (
                     <span className="absolute bottom-3 left-3 rounded-full bg-emerald-950/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
                       Official product photo
                     </span>
