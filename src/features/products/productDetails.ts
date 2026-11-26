@@ -17,14 +17,14 @@ const make = (id: string, rows: Row[]): ProductVariant[] => rows.map(([colour,fi
 // Exact colour/gauge/finish/price combinations transcribed from Panda Mabati Factory listings.
 const variants: Record<string, ProductVariant[]> = {
   "box-profile": make("box",[
-    ["Brick Red","Gloss","30G",500],["Tile Red","Gloss","30G",500],["Tile Red","Matt","30G",600],
-    ["Dark Green","Gloss","30G",500],["Grey","Gloss","30G",500],["Grey","Matt","30G",600],
-    ["Maroon","Gloss","30G",500],["Maroon","Matt","30G",600],["Sky Blue","Gloss","30G",500],
-    ["Tile Red","Matt","28G",700],["Tile Red","Gloss","28G",700],["Sky Blue","Gloss","28G",700],["Maroon","Matt","28G",700]
+    ["Brick Red","Gloss","30G",520],["Tile Red","Gloss","30G",520],["Tile Red","Matt","30G",600],
+    ["Dark Green","Gloss","30G",520],["Grey","Gloss","30G",520],["Grey","Matt","30G",600],
+    ["Maroon","Gloss","30G",520],["Maroon","Matt","30G",600],["Sky Blue","Gloss","30G",520],
+    ["Tile Red","Matt","28G",680],["Tile Red","Gloss","28G",680],["Sky Blue","Gloss","28G",680],["Maroon","Matt","28G",680]
   ]),
   corrugated:make("corrugated",[
-    ["Red","Matt","30G",600],["Grey","Gloss","30G",500],["Green","Matt","30G",600],["Brick Red","Gloss","30G",500],
-    ["Red","Gloss","28G",700],["Grey","Gloss","28G",700],["Green","Gloss","28G",700],["Brick Red","Gloss","28G",700]
+    ["Red","Matt","30G",600],["Grey","Gloss","30G",520],["Green","Matt","30G",600],["Brick Red","Gloss","30G",520],
+    ["Red","Gloss","28G",680],["Grey","Gloss","28G",680],["Green","Gloss","28G",680],["Brick Red","Gloss","28G",680]
   ]),
   startile:make("startile",[
     ["Tile Red","Matt","28G",720],["Sky Blue","Gloss","28G",720],["Maroon","Gloss","28G",720],["Dark Green","Matt","28G",720],
@@ -41,7 +41,7 @@ const variants: Record<string, ProductVariant[]> = {
     ["Shingle Tile Black","Stone-coated","26G",730],["Shingle Tile Brick Red","Stone-coated","26G",730],
     ["Classic Tile Coffee Brown","Stone-coated","26G",730],["Classic Tile Black","Stone-coated","26G",730]
   ]),
-  "roll-tops":make("roll-top",[["Standard","Standard","28G",850],["Standard","Standard","30G",750]]),
+  "roll-tops":make("roll-top",[["Standard","Standard","28G",800],["Standard","Standard","30G",700]]),
   "ridge-caps":make("ridge",[["Normal Ridge / Kofia","Standard","—",600]]),
   "valley-trays":make("valley",[["Decra Valley Tray","Standard","—",750]]),
   "roofing-fasteners":make("fastener",[["Decra Touch-up Kit","Standard","—",800],["Decra Serrated Nails","Standard","—",800],["Decra Badge Board","Standard","—",750]])
@@ -58,7 +58,7 @@ const copy:Record<string,{overview:string;benefits:string[];notes:string[]}> = {
   "ridge-caps":{overview:"Ridge and roll-top accessories finish the roof apex and protect the ridge junction.",benefits:["Completes roof ridge detailing","Factory-listed Normal Ridge / Kofia"],notes:["Factory catalogue price is displayed for Normal Ridge / Kofia"]},
   flashings:{overview:"Formed components used to finish roof edges, junctions and transitions.",benefits:["Finishes roof junctions","Specified to suit the project"],notes:["Included in the Panda Mabati product range; add the required flashing to a project quotation"]},
   gutters:{overview:"Rainwater gutters collect and direct runoff from the roof edge.",benefits:["Supports controlled rainwater drainage","Coordinates with downpipes and fittings"],notes:["Included in the Panda Mabati product range; add the required guttering to a project quotation"]},
-  "roll-tops":{overview:"Roll-top ridge accessories finish roof ridge lines.",benefits:["Finishes roof ridge lines","Factory lists 28G and 30G"],notes:["Factory catalogue prices are displayed for 28G and 30G roll tops"]},
+  "roll-tops":{overview:"Roll-top ridge accessories finish roof ridge lines.",benefits:["Finishes roof ridge lines","Factory lists 28G and 30G"],notes:["Panda Mabati Ltd listing: G28 KSh 800 and G30 KSh 700 for Rolltops / Valleys"]},
   "valley-trays":{overview:"A Decra valley tray is listed in the factory accessories range.",benefits:["Roof valley junction accessory","For compatible Decra roofing systems"],notes:["Factory catalogue price is displayed for Decra Valley Tray"]},
   "roofing-fasteners":{overview:"Roofing nails and maintenance accessories for compatible roofing systems.",benefits:["Installation and maintenance accessories"],notes:["Factory catalogue prices are displayed for Decra nails, touch-up kits and badge board"]}
 };
@@ -68,7 +68,8 @@ export const getVariantPriceLabel=(variant:ProductVariant)=>`KSh ${variant.unitP
 export type ProductPriceInfo={display:string;note:string;unitPriceKes:number;cartLabel:string};
 export const getProductPriceInfo=(id:string):ProductPriceInfo|undefined=>{
   if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile retail listing; length and seller price vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark"};
-  if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 and G28 length prices; G28 benchmark is KSh 730 per metre. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre"};
+  if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 at KSh 630/m and G28 at KSh 730/m. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre"};
+  if(id==="gutters") return {display:"KSh 400 per 4m PVC gutter",note:"Panda Mabati Ltd product listing; fittings and delivery are separate.",unitPriceKes:400,cartLabel:"PVC gutter · 4m"};
   return undefined;
 };
 
