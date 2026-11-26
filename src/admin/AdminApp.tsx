@@ -70,7 +70,7 @@ export default function AdminApp() {
     if (!db || !user) return;
     const id = form.id || slug(form.name);
     if (!id || !form.name.trim()) return setMessage("Enter a product name.");
-    if (form.priceStatus === "confirmed" && (!form.unitPriceKes || form.unitPriceKes <= 0 || !form.priceUnit.trim() || form.priceUnit === "To confirm")) {
+    if (form.priceStatus === "confirmed" && (!form.unitPriceKes || form.unitPriceKes <= 0 || !(form.priceUnit || "").trim() || form.priceUnit === "To confirm")) {
       return setMessage("A confirmed price needs a positive amount and an explicit pricing unit.");
     }
     setBusy(true); setMessage("");
@@ -86,9 +86,9 @@ export default function AdminApp() {
       const payload = {
         name: form.name.trim(), short: form.short.trim(), description: form.description.trim(),
         use: form.use.trim(), tone: form.tone.trim(), published: form.published,
-        priceStatus: form.priceStatus, ...(form.priceStatus === "confirmed" ? { unitPriceKes: Number(form.unitPriceKes), priceUnit: form.priceUnit.trim() } : { unitPriceKes: null, priceUnit: "To confirm" }),
+        priceStatus: form.priceStatus, ...(form.priceStatus === "confirmed" ? { unitPriceKes: Number(form.unitPriceKes), priceUnit: (form.priceUnit || "").trim() } : { unitPriceKes: null, priceUnit: "To confirm" }),
         effectiveCoverageM: form.effectiveCoverageM ? Number(form.effectiveCoverageM) : null,
-        imageUrl, sourceUrl: form.sourceUrl.trim(), updatedAt: new Date().toISOString(), updatedBy: user.uid,
+        imageUrl, sourceUrl: (form.sourceUrl || "").trim(), updatedAt: new Date().toISOString(), updatedBy: user.uid,
       };
       await setDoc(doc(db, "products", id), payload, { merge: true });
       const updated = { ...payload, id } as ProductRecord;
