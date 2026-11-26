@@ -58,3 +58,7 @@ Before setting any record to `verified`:
 - Confirm whether gutters, flashings, valleys and ridge accessories have product-specific photos or only catalogue text.
 - Build a complete, approved variant photo set so changing a colour/gauge/finish selects the matching photograph. If a matching photograph does not exist, retain the honest swatch-only state.
 - Confirm all product prices, units and technical dimensions separately before exposing them as confirmed storefront data.
+
+## Deployment gate
+
+The first Cloudflare attempt for this branch failed on an earlier intermediate commit while the code was still being updated. The subsequent source changes removed the unused import and completed the pending catalogue records. The current branch head must receive a fresh successful Cloudflare build before its preview is reviewed. No change from this branch is deployed to production.
