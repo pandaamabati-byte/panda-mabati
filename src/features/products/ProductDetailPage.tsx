@@ -66,8 +66,10 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const priceDisplay = selected ? `${getVariantPriceLabel(selected)} · ${selected.sheetLengthM ? `${selected.sheetLengthM}m sheet` : ""}` : selectedPriceOption?.display ?? priceInfo?.display;
   const priceNote = selected?.minimumOrder ? `Viwanda listing minimum order: ${selected.minimumOrder}.` : selectedPriceOption?.minimumOrder ? `Marketplace minimum order: ${selectedPriceOption.minimumOrder}.` : priceInfo?.note;
 
-  const verifiedImage = getVerifiedProductImage(product.id, selected?.id) ?? getVerifiedProductImage(product.id);
+  const variantImage = getVerifiedProductImage(product.id, selected?.id);
+  const verifiedImage = variantImage ?? getVerifiedProductImage(product.id);
   const previewImage = verifiedImage?.src;
+  const needsColourPreview = Boolean(colour && !variantImage);
   const swatchColour = colour.toLowerCase().includes("red") ? "#a83228"
     : colour.toLowerCase().includes("blue") ? "#2778b9"
     : colour.toLowerCase().includes("green") ? "#39734a"
@@ -101,17 +103,17 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
         <section className="product-detail-hero">
           <div className="product-detail-visual">
             {previewImage && !imageUnavailable ? (
-              <div className="product-detail-photo-stage"><img src={previewImage} alt={verifiedImage?.alt ?? `${product.name} product visual`} key={previewImage} onError={() => setImageUnavailable(true)} /></div>
+              <div className="product-detail-photo-stage"><img src={previewImage} alt={verifiedImage?.alt ?? `${product.name} product visual`} key={previewImage} onError={() => setImageUnavailable(true)} />{needsColourPreview && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} aria-hidden="true" />}</div>
             ) : (
               <div className="product-detail-placeholder">
-                <ProductProfileVisual productId={product.id} productName={product.name} tone={product.tone} />
+                <ProductProfileVisual productId={product.id} productName={product.name} tone={product.tone} colour={colour} />
                 <small className="product-detail-colour-label">
                   {selected ? `Selected colour: ${colour}` : selectedPriceOption?.label ?? (variants.length ? "Select a product option" : "No colour variants")}
                 </small>
               </div>
             )}
             <span className="product-detail-photo-note">
-              {verifiedImage?.kind === "variant-photo" ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage && !imageUnavailable ? "PANDA MABATI PRODUCT PHOTOGRAPH" : "PRODUCT VISUAL"}
+              {variantImage ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage && !imageUnavailable ? (needsColourPreview ? "PANDA PRODUCT PHOTO · COLOUR PREVIEW" : "PANDA MABATI PRODUCT PHOTOGRAPH") : "PRODUCT VISUAL"}
             </span>
           </div>
 
