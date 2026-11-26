@@ -102,7 +102,7 @@ function App() {
     });
 
     const pricedTotal = lines.reduce((sum, line) => {
-      // Preliminary Box Profile rates must never enter the subtotal.
+      // Published factory rates are applied to selected Box Profile lengths.
       if (line.productId === "box-profile" && line.variantId) {
         const variant = BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId);
         return sum + (variant ? Math.max(0, Number(line.quantity) || 0) * Math.max(0, Number(line.sheetLengthM) || 0) * variant.ratePerM : 0);
@@ -424,12 +424,9 @@ function App() {
                   <button className="product-card__details" onClick={() => { window.location.hash = `#product/${product.id}`; }}>View product details <ArrowUpRight size={15} /></button>
                   <button
                     className="product-card__link"
-                    onClick={() => {
-                      setLines((current) => [...current, makeLine(product.id)]);
-                      document.querySelector("#calculator")?.scrollIntoView({ behavior: "smooth" });
-                    }}
+                    onClick={() => { window.location.hash = `#product/${product.id}`; }}
                   >
-                    Add to quotation <ArrowUpRight size={16} />
+                    Configure quotation <ArrowUpRight size={16} />
                   </button>
                 </div>
               </article>
