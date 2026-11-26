@@ -494,7 +494,7 @@ function App() {
             {catalogueSource === "firestore"
               ? "Live catalogue connected; Panda Mabati product groups are shown alongside live catalogue records. "
               : "Showing the local catalogue until the live catalogue is available. "}
-            Cards without a sourced product photograph use clearly labelled illustrative profile artwork. Published catalogue prices are displayed on product pages; project totals include selected quantities and exclude delivery unless stated.
+            Products without verified photography use a dedicated product visual until an approved product photograph is added. Published catalogue prices are displayed on product pages; project totals include selected quantities and exclude delivery unless stated.
           </p>
         </section>
 
