@@ -68,7 +68,7 @@ export const getProductDetails=(product:Product)=>copy[product.id]??{overview:pr
 export const getVariantPriceLabel=(variant:ProductVariant)=>`KSh ${variant.unitPriceKes.toLocaleString("en-KE")} / ${variant.priceUnit==="metre"?"m":"piece"}`;
 export type ProductPriceInfo={display:string;note:string;unitPriceKes:number;cartLabel:string;priceUnit:"metre"|"piece"|"packet"};
 export const getProductPriceInfo=(id:string):ProductPriceInfo|undefined=>{
-  if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile retail listing; length and seller price vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark",priceUnit:"packet"};
+  if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile marketplace listing; its 2m offer shows a 10-packet minimum and seller prices vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark",priceUnit:"packet"};
   if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 at KSh 630/m and G28 at KSh 730/m. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre",priceUnit:"metre"};
   if(id==="gutters") return {display:"KSh 400 per 4m PVC gutter",note:"Panda Mabati Ltd product listing; fittings and delivery are separate.",unitPriceKes:400,cartLabel:"PVC gutter · 4m",priceUnit:"piece"};
   return undefined;
@@ -79,3 +79,5 @@ export const getProductStartingPrice=(id:string):number|undefined=>{
  if(values.length) return Math.min(...values);
  return undefined;
 };
+
+export const getProductStartingPriceUnit=(id:string):"metre"|"piece"|undefined=>getProductVariants(id)[0]?.priceUnit;
