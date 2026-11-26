@@ -43,35 +43,10 @@ const makeLine = (productId = "box-profile"): QuoteLine => ({
   unitPrice: "",
 });
 
-function RoofArtwork({ tone }: { tone: string }) {
-  return (
-    <div className={`roof-art roof-art--${tone}`} aria-hidden="true">
-      <div className="roof-art__sun" />
-      <div className="roof-art__house">
-        <div className="roof-art__roof" />
-        <div className="roof-art__wall">
-          <span />
-          <span />
-          <i />
-        </div>
-      </div>
-      <div className="roof-art__ground" />
-      <span className="roof-art__label">PANDA / ROOFING</span>
-    </div>
-  );
-}
-
 function ProductCardVisual({ product, index }: { product: Product; index: number }) {
   const [imageUnavailable, setImageUnavailable] = useState(false);
   const image = getVerifiedProductImage(product.id);
   const imageStatus = getProductImageStatus(product.id);
-  const productPhotoSources: Record<string, string> = {
-    eurotile: "https://roofmasters.co.ke/wp-content/uploads/2025/06/Elegant-Tile-Tile-Red-Matt-1-1.jpg",
-    "d-tile": "https://static.wixstatic.com/media/e26807_1022c82c8c2e476e8a6580ea8580d766~mv2.webp/v1/fill/w_788%2Ch_788%2Cal_c%2Cq_85%2Cenc_avif%2Cquality_auto/e26807_1022c82c8c2e476e8a6580ea8580d766~mv2.webp",
-    versatile: "https://i0.wp.com/smartbuilders.africa/wp-content/uploads/2023/02/bricky-soily-red-tile.webp?fit=500%2C500&ssl=1",
-    "box-profile": "https://pandamabati.com/wp-content/uploads/2026/06/download.jpg",
-  };
-  const aiVisualSrc = productPhotoSources[product.id] ?? "";
   const showPhoto = Boolean(image && !imageUnavailable);
   const showAiVisual = Boolean(aiVisualSrc && !imageUnavailable);
 
@@ -85,14 +60,6 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
           loading="lazy"
           onError={() => setImageUnavailable(true)}
         />
-      ) : showAiVisual ? (
-        <img
-          src={aiVisualSrc}
-          alt={`Single-sheet ${product.name} product reference photograph; confirm exact manufacturer profile and finish`}
-          className="product-card__photo product-card__photo--visualisation"
-          loading="lazy"
-          onError={() => setImageUnavailable(true)}
-        />
       ) : (
         <>
           <ProductProfileVisual productId={product.id} productName={product.name} tone={product.tone} />
@@ -100,7 +67,6 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
         </>
       )}
       {showPhoto && <span className="product-card__image-note product-card__image-note--photo">PANDA PRODUCT PHOTO</span>}
-      {showAiVisual && <span className="product-card__image-note product-card__image-note--ai">REFERENCE PRODUCT PHOTO · VERIFY FINISH</span>}
       <span className="product-card__number">0{index + 1}</span>
     </div>
   );
@@ -111,7 +77,6 @@ function App() {
   const [heroImageUnavailable, setHeroImageUnavailable] = useState(false);
   const [activeProductId, setActiveProductId] = useState(() => window.location.hash.startsWith("#product/") ? decodeURIComponent(window.location.hash.slice(9)) : "");
   const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
-  const [catalogueSource, setCatalogueSource] = useState<"fallback" | "firestore">("fallback");
   const [productSearch, setProductSearch] = useState("");
   const [productFilter, setProductFilter] = useState<"all" | "sheets" | "tiles" | "accessories">("all");
 
@@ -121,7 +86,6 @@ function App() {
     void loadProducts().then((result) => {
       if (!active) return;
       setProducts(result.products);
-      setCatalogueSource(result.source);
     });
 
     return () => {
