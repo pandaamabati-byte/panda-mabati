@@ -71,3 +71,9 @@ export const getProductPriceInfo=(id:string):ProductPriceInfo|undefined=>{
   if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 and G28 length prices; G28 benchmark is KSh 730 per metre. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre"};
   return undefined;
 };
+
+export const getProductStartingPrice=(id:string):number|undefined=>{
+ const values=getProductVariants(id).map((item)=>item.unitPriceKes);
+ if(values.length) return Math.min(...values);
+ return getProductPriceInfo(id)?.unitPriceKes;
+};
