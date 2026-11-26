@@ -21,6 +21,17 @@ export type ProductImageAsset = {
  */
 export const PRODUCT_IMAGE_LIBRARY: ProductImageAsset[] = [
   {
+    id: "eurotile-burgundy-owner-approved-ai-concept",
+    productId: "eurotile",
+    src: "",
+    sourceUrl: "https://pandamabati.com/",
+    sourceName: "Panda Mabati · owner-approved AI concept",
+    status: "awaiting-verification",
+    kind: "product-photo",
+    alt: "Single burgundy Eurotile metal roofing sheet with repeating tile-profile ridges",
+    notes: "The owner approved the generated single-sheet burgundy Eurotile concept on 2026-11-26. It is an illustrative AI visual, not a verified stock photograph. Binary asset still needs to be added to the repository before it can be displayed.",
+  },
+  {
     id: "box-profile-grey-matt-30g",
     productId: "box-profile",
     variantId: "box-5",
@@ -150,7 +161,7 @@ export function getVerifiedProductImage(
 }
 
 export const PRODUCT_IMAGE_TARGETS = [
-  "d-tile", "versatile", "box-profile", "corrugated", "startile", "glazed-tile",
+  "eurotile", "d-tile", "versatile", "box-profile", "corrugated", "startile", "glazed-tile",
   "elegantile", "decra", "ridge-caps", "flashings", "gutters", "roll-tops",
   "valley-trays", "roofing-fasteners",
 ] as const;
