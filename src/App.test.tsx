@@ -62,15 +62,15 @@ describe('Panda Mabati storefront', () => {
     window.location.hash = '';
   });
 
-  it('shows dedicated AI visualisations for all ten remaining product families', () => {
+  it('shows dedicated product visualisations for all ten remaining product families', () => {
     const { container } = render(<App />);
     const ids = ['versatile', 'glazed-tile', 'elegantile', 'decra', 'ridge-caps', 'flashings', 'gutters', 'roll-tops', 'valley-trays', 'roofing-fasteners'];
     for (const id of ids) {
       const card = container.querySelector(`[data-product-id="${id}"]`);
-      expect(card?.getAttribute('data-image-status')).toBe('ai-visualisation');
+      expect(card?.getAttribute('data-image-status')).toBe('product-visualisation');
       expect(card?.querySelector('img.product-card__photo')).toHaveAttribute('src', `/images/ai-product-visuals/${id}.svg`);
     }
-    expect(screen.getAllByText(/AI PRODUCT VISUALISATION/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/PRODUCT VISUALISATION/i).length).toBeGreaterThan(0);
   });
 
   it('shows real manufacturer photos where verified and profile visuals for the remaining catalogue cards', () => {
