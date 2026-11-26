@@ -181,132 +181,178 @@ function App() {
     );
 
   const downloadQuote = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
-    const left = 18;
-    const right = pageWidth - 18;
-    let y = 20;
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const left = 14;
+    const right = pageWidth - 14;
+    const contentWidth = right - left;
+    const quoteDate = new Date();
+    const expiryDate = new Date(quoteDate);
+    expiryDate.setDate(expiryDate.getDate() + 14);
+    const dateLabel = (date: Date) => date.toLocaleDateString("en-KE", { day: "2-digit", month: "short", year: "numeric" });
+    const quoteNumber = `PM-${quoteDate.getFullYear()}${String(quoteDate.getMonth()+1).padStart(2,"0")}-${String(quoteDate.getDate()).padStart(2,"0")}-${String(quoteDate.getTime()).slice(-5)}`;
+    const green: [number, number, number] = [18, 53, 43];
+    const lime: [number, number, number] = [194, 220, 77];
+    let y = 12;
 
-    doc.setFillColor(18, 53, 43);
-    doc.rect(0, 0, pageWidth, 43, "F");
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    doc.text("PANDA MABATI", left, y + 3);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text("ROOFING SOLUTIONS  /  KENYA", left, y + 11);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("QUOTATION", right, y + 3, { align: "right" });
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text(`Date: ${new Date().toLocaleDateString("en-KE")}`, right, y + 11, {
-      align: "right",
-    });
+    // Branded quotation masthead, styled to follow the supplied Panda Mabati reference.
+    doc.setFillColor(...green);
+    doc.rect(0, 0, pageWidth, 39, "F");
+    doc.setFillColor(...lime);
+    doc.rect(0, 39, pageWidth, 2, "F");
+    doc.setTextColor(255,255,255);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(20);
+    doc.text("PANDA MABATI", left, 18);
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(8);
+    doc.text("ROOFING SOLUTIONS  |  WE REPRESENT QUALITY", left, 25);
+    doc.text(BUSINESS_CONTACT.phoneDisplay, left, 31);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(18);
+    doc.text("QUOTATION", right, 17, { align: "right" });
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(8);
+    doc.text(`Quote No: ${quoteNumber}`, right, 24, { align: "right" });
+    doc.text(`Date: ${dateLabel(quoteDate)}`, right, 29, { align: "right" });
+    doc.text(`Valid until: ${dateLabel(expiryDate)}`, right, 34, { align: "right" });
 
-    y = 56;
-    doc.setTextColor(30, 41, 38);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("CUSTOMER & PROJECT", left, y);
-    y += 8;
-    doc.setFont("helvetica", "normal");
+    y = 49;
+    doc.setTextColor(...green);
+    doc.setFont("helvetica","bold");
     doc.setFontSize(9);
+    doc.text("CUSTOMER DETAILS", left, y);
+    doc.text("PROJECT / DELIVERY DETAILS", 112, y);
+    y += 3;
+    doc.setDrawColor(205,215,207);
+    doc.line(left,y,right,y);
+    y += 7;
+    doc.setTextColor(45,55,50);
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(8);
     doc.text(`Customer: ${customer.trim() || "Not provided"}`, left, y);
-    y += 6;
-    doc.text(`Project: ${project.trim() || "Not provided"}`, left, y);
-    y += 6;
-    doc.text(`County / location: ${county.trim() || "Not provided"}`, left, y);
+    doc.text(`Project: ${project.trim() || "Not provided"}`, 112, y);
     y += 6;
     doc.text(`Phone: ${phone.trim() || "Not provided"}`, left, y);
-
-    y += 13;
-    doc.setFillColor(240, 242, 235);
-    doc.rect(left, y - 5, right - left, 10, "F");
-    doc.setFont("helvetica", "bold");
-    doc.text("ROOFING PRODUCT", left + 2, y + 1);
-    doc.text("QTY / LENGTH", 112, y + 1, { align: "right" });
-    doc.text("UNIT RATE", 151, y + 1, { align: "right" });
-    doc.text("AMOUNT", right - 2, y + 1, { align: "right" });
+    doc.text(`Location: ${county.trim() || "Not provided"}`, 112, y);
     y += 10;
 
-    doc.setFont("helvetica", "normal");
-    lines.forEach((line) => {
+    // Item table: product attributes and length-based pricing remain explicit.
+    const columns = [
+      { title: "No.", x: left + 2, w: 8 },
+      { title: "TYPE / DESCRIPTION", x: left + 12, w: 48 },
+      { title: "COLOUR / GAUGE", x: left + 62, w: 31 },
+      { title: "LENGTH", x: left + 95, w: 16 },
+      { title: "PCS", x: left + 113, w: 10 },
+      { title: "PRICE", x: left + 125, w: 21 },
+      { title: "AMOUNT (KSh)", x: right - 2, w: 27 },
+    ];
+    const drawTableHeader = () => {
+      doc.setFillColor(...green);
+      doc.rect(left,y,contentWidth,9,"F");
+      doc.setTextColor(255,255,255);
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(6.5);
+      columns.forEach((col,index) => doc.text(col.title, index===6 ? col.x : col.x, y+5.8, { align: index>=4 ? "right" : "left" }));
+      y += 9;
+    };
+    drawTableHeader();
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7.2);
+    lines.forEach((line,index) => {
       const product = products.find((item) => item.id === line.productId);
-      const quantity = Math.max(0, Number(line.quantity) || 0);
-      const variant = line.productId === "box-profile"
-        ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
-        : undefined;
-      const manualRate = Number(line.unitPrice);
-      const hasRate = Boolean(variant) || (line.unitPrice.trim() !== "" &&
-        Number.isFinite(manualRate) &&
-        manualRate >= 0);
-      const rate = variant ? variant.ratePerM : hasRate ? manualRate : null;
-      const amount = rate === null ? null : quantity * (line.priceUnit === "metre" ? line.sheetLengthM : 1) * rate;
-      const productLabel = variant
-        ? `${product?.name ?? "Box Profile"} — ${variant.colour} ${variant.finish} ${variant.gauge}`
-        : [product?.name ?? "Roofing product", line.variantLabel].filter(Boolean).join(" — ");
-      const nameLines = doc.splitTextToSize(productLabel, 68);
-      doc.text(nameLines, left + 2, y);
-      doc.text(line.priceUnit === "metre" ? `${quantity} x ${line.sheetLengthM}m` : String(quantity), 112, y, { align: "right" });
-      doc.text(
-        rate === null ? "To confirm" : `${money(rate)}${line.priceUnit === "metre" ? " / m" : ""}`,
-        151,
-        y,
-        {
-        align: "right",
-      });
-      doc.text(amount === null ? "To confirm" : money(amount), right - 2, y, {
-        align: "right",
-      });
-      y += Math.max(9, nameLines.length * 5 + 3);
-      doc.setDrawColor(225, 229, 222);
-      doc.line(left, y - 3, right, y - 3);
-      if (y > 255) {
-        doc.addPage();
-        y = 22;
-      }
+      const qty = Math.max(0, Number(line.quantity)||0);
+      const variant = line.productId === "box-profile" ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId) : undefined;
+      const enteredRate = Number(line.unitPrice);
+      const hasRate = Boolean(variant) || (line.unitPrice.trim() !== "" && Number.isFinite(enteredRate) && enteredRate >= 0);
+      const rate = variant ? variant.ratePerM : hasRate ? enteredRate : null;
+      const length = line.priceUnit === "metre" ? line.sheetLengthM : null;
+      const amount = rate === null ? null : qty * (length ?? 1) * rate;
+      const details = variant ? [variant.colour,variant.gauge].filter(Boolean).join(" / ") : (line.variantLabel || "To be confirmed");
+      const rowHeight = 12;
+      if (y + rowHeight > pageHeight - 48) { doc.addPage(); y=18; drawTableHeader(); }
+      if(index%2===0){doc.setFillColor(246,248,244);doc.rect(left,y,contentWidth,rowHeight,"F");}
+      doc.setTextColor(40,48,43);
+      doc.text(String(index+1),columns[0].x,y+7);
+      doc.text(doc.splitTextToSize(product?.name ?? "Roofing product",columns[1].w)[0],columns[1].x,y+7);
+      doc.text(doc.splitTextToSize(details,columns[2].w)[0],columns[2].x,y+7);
+      doc.text(length===null ? "—" : `${length}m`,columns[3].x+columns[3].w,y+7,{align:"right"});
+      doc.text(String(qty),columns[4].x+columns[4].w,y+7,{align:"right"});
+      doc.text(rate===null ? "Confirm" : `${money(rate)}${line.priceUnit==="metre" ? "/m" : ""}`,columns[5].x+columns[5].w,y+7,{align:"right"});
+      doc.text(amount===null ? "Confirm" : money(amount).replace("Ksh","").trim(),columns[6].x,y+7,{align:"right"});
+      doc.setDrawColor(220,226,219);
+      doc.line(left,y+rowHeight,right,y+rowHeight);
+      y += rowHeight;
     });
 
-    y += 5;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text(
-      quote.hasMissingPrice
-        ? "Priced items subtotal (excludes unpriced items):"
-        : "Items subtotal:",
-      left,
-      y,
-    );
-    doc.text(money(quote.pricedTotal), right, y, { align: "right" });
-    y += 9;
-
-    doc.setFont("helvetica", "normal");
+    y += 8;
+    const totalLabel = quote.hasMissingPrice ? "PRICED ITEMS SUBTOTAL" : "SUBTOTAL";
+    doc.setTextColor(...green);
+    doc.setFont("helvetica","bold");
     doc.setFontSize(9);
-    const disclaimer = quote.hasMissingPrice
-      ? "IMPORTANT: This is a preliminary product and quantity quotation. Some unit prices have not been provided, so the displayed subtotal is not the full project total. Delivery, accessories, installation, taxes and final specifications are not included unless separately confirmed."
-      : "IMPORTANT: This document reflects the quantities and unit rates entered by the user. Delivery, accessories, installation, taxes and final specifications are not included unless separately confirmed.";
-    const wrappedDisclaimer = doc.splitTextToSize(disclaimer, right - left);
-    doc.text(wrappedDisclaimer, left, y);
-    y += wrappedDisclaimer.length * 5 + 7;
-
-    if (notes.trim()) {
-      doc.setFont("helvetica", "bold");
-      doc.text("Additional notes", left, y);
-      y += 6;
-      doc.setFont("helvetica", "normal");
-      doc.text(doc.splitTextToSize(notes.trim(), right - left), left, y);
-    }
-
+    doc.text(totalLabel,right-55,y);
+    doc.text(money(quote.pricedTotal),right,y,{align:"right"});
+    y += 7;
+    doc.setFont("helvetica","normal");
     doc.setFontSize(8);
-    doc.setTextColor(95, 105, 98);
-    doc.text(
-      "Panda Mabati | Roofing solutions made clearer.",
-      left,
-      285,
-    );
-    doc.save(`Panda-Mabati-Quotation-${new Date().toISOString().slice(0, 10)}.pdf`);
+    doc.setTextColor(65,75,68);
+    doc.text("VAT / taxes: Not included — confirm applicable treatment with Panda Mabati.",right-95,y);
+    y += 8;
+    doc.setFillColor(239,244,232);
+    doc.roundedRect(right-75,y-5,75,13,2,2,"F");
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...green);
+    doc.text("TOTAL (BEFORE TAX)",right-71,y+3);
+    doc.text(money(quote.pricedTotal),right-3,y+3,{align:"right"});
+    y += 18;
+
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(8);
+    doc.setTextColor(...green);
+    doc.text("TERMS & CUSTOMER DECLARATION",left,y);
+    y += 5;
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7.2);
+    doc.setTextColor(65,75,68);
+    const terms = quote.hasMissingPrice
+      ? "This is a preliminary quotation: some selected products do not yet have a confirmed unit rate. Final pricing, stock, colour, gauge, delivery, taxes and specifications must be confirmed by Panda Mabati before an order is accepted."
+      : "This quotation is based on the selected products, options, quantities and entered rates. Stock, final specifications, delivery charges, applicable taxes and the final order total are subject to confirmation by Panda Mabati.";
+    const termLines = doc.splitTextToSize(terms,contentWidth);
+    doc.text(termLines,left,y);
+    y += termLines.length*4+7;
+    if(notes.trim()){
+      doc.setFont("helvetica","bold");doc.setTextColor(...green);doc.text("ADDITIONAL NOTES",left,y);y+=5;
+      doc.setFont("helvetica","normal");doc.setTextColor(65,75,68);
+      const noteLines=doc.splitTextToSize(notes.trim(),contentWidth);doc.text(noteLines,left,y);y+=noteLines.length*4+7;
+    }
+    doc.setDrawColor(190,202,192);
+    doc.line(left,y,right,y);
+    y+=7;
+    doc.setFont("helvetica","bold");doc.setTextColor(...green);doc.setFontSize(7.5);
+    doc.text("CUSTOMER ACCEPTANCE",left,y);
+    doc.text("FOR PANDA MABATI",112,y);
+    y+=13;
+    doc.setDrawColor(130,145,135);
+    doc.line(left,y,right-88,y);
+    doc.line(112,y,right,y);
+    y+=4;
+    doc.setFont("helvetica","normal");doc.setTextColor(90,100,93);doc.setFontSize(6.5);
+    doc.text("Name / Signature / Date",left,y);
+    doc.text("Authorised signature / Date",112,y);
+
+    // Repeated footer on every page; no unverified bank or M-Pesa details are invented.
+    const pageCount=doc.getNumberOfPages();
+    for(let page=1;page<=pageCount;page++){
+      doc.setPage(page);
+      doc.setDrawColor(190,202,192);
+      doc.line(left,pageHeight-14,right,pageHeight-14);
+      doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.setTextColor(105,115,108);
+      doc.text(`Panda Mabati | ${BUSINESS_CONTACT.salesEmail} | ${BUSINESS_CONTACT.phoneDisplay}`,left,pageHeight-9);
+      doc.text(`Page ${page} of ${pageCount}`,right,pageHeight-9,{align:"right"});
+    }
+    doc.save(`Panda-Mabati-Quotation-${quoteDate.toISOString().slice(0,10)}.pdf`);
   };
 
   const orderMessage = [
