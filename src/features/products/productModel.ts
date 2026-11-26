@@ -48,7 +48,6 @@ export const FALLBACK_PRODUCTS: Product[] = [
     use: "Modern homes & commercial",
     tone: "box",
     published: true,
-    imageUrl: "https://pandamabati.com/wp-content/uploads/2026/06/download.jpg",
     sourceName: "Panda Mabati", sourceUrl: "https://pandamabati.com/",
   },
   {
@@ -60,7 +59,6 @@ export const FALLBACK_PRODUCTS: Product[] = [
     use: "Design-led homes",
     tone: "star",
     published: true,
-    imageUrl: "https://pandamabati.com/wp-content/uploads/2026/06/download-1.jpg",
     sourceName: "Panda Mabati", sourceUrl: "https://pandamabati.com/",
   },
   {
@@ -68,7 +66,6 @@ export const FALLBACK_PRODUCTS: Product[] = [
     description: "Traditional corrugated roofing sheets. Confirm gauge, sheet length, effective cover and current selling unit before ordering.",
     use: "Residential & utility buildings", tone: "tile", published: true,
     category: "Roofing sheets", sourceName: "Panda Mabati Factory",
-    imageUrl: "https://pandamabati.com/wp-content/uploads/2026/06/Corrugated-Roofing-Sheets.jpg",
     sourceUrl: "https://pandamabatifactory.co.ke/wp/", priceStatus: "pending",
   },
   {
@@ -112,6 +109,20 @@ export const FALLBACK_PRODUCTS: Product[] = [
     use: "Rainwater management", tone: "tile", published: true,
     category: "Roofing accessories", sourceName: "Panda Mabati",
     sourceUrl: "https://pandamabati.com/", priceStatus: "pending",
+  },
+  {
+    id: "roll-tops", name: "Roll Tops", short: "Roof ridge finishing",
+    description: "Roll-top ridge accessories are listed in 28G and 30G options. Confirm dimensions, material, finish and compatibility before ordering.",
+    use: "Roof ridge finishing", tone: "versatile", published: true,
+    category: "Roofing accessories", sourceName: "Panda Mabati Factory",
+    sourceUrl: "https://pandamabatifactory.co.ke/wp/", priceStatus: "pending",
+  },
+  {
+    id: "valley-trays", name: "Valley Trays", short: "Roof valley drainage",
+    description: "A Decra valley tray is listed in the factory accessories range. Confirm dimensions, material, profile compatibility and current price.",
+    use: "Roof valleys & junctions", tone: "box", published: true,
+    category: "Roofing accessories", sourceName: "Panda Mabati Factory",
+    sourceUrl: "https://pandamabatifactory.co.ke/wp/", priceStatus: "pending",
   },
   {
     id: "roofing-fasteners", name: "Roofing Nails & Fasteners", short: "Fixings for roofing projects",
