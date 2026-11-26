@@ -7,7 +7,9 @@ export type ProductVariant = {
   finish: string;
   sourceUrl: string;
   unitPriceKes: number;
-  priceUnit: "metre" | "piece";
+  priceUnit: "metre" | "piece" | "packet";
+  sheetLengthM?: number;
+  minimumOrder?: string;
   priceSourceUrl?: string;
 };
 const source = "https://pandamabatifactory.co.ke/wp/";
@@ -19,6 +21,15 @@ const make = (id: string, rows: Row[], priceUnit: "metre" | "piece" = "metre", p
 
 // Colour/gauge/finish names come from the factory catalogue. Rates use the Panda Mabati Ltd retail list where it publishes a comparable unit, and the factory listing otherwise.
 const variants: Record<string, ProductVariant[]> = {
+  "d-tile": [
+    {id:"dtile-blue-2m",colour:"Blue",finish:"Glossy",gauge:"30G",unitPriceKes:1165,priceUnit:"packet",sheetLengthM:2,minimumOrder:"10 packets",sourceUrl:"https://viwanda.ke/brands/panda/",priceSourceUrl:"https://viwanda.ke/brands/panda/"},
+    {id:"dtile-blue-25m",colour:"Blue",finish:"Glossy",gauge:"30G",unitPriceKes:1456,priceUnit:"packet",sheetLengthM:2.5,minimumOrder:"8 packets",sourceUrl:"https://viwanda.ke/brands/panda/",priceSourceUrl:"https://viwanda.ke/brands/panda/"},
+    {id:"dtile-blue-3m",colour:"Blue",finish:"Glossy",gauge:"30G",unitPriceKes:1747,priceUnit:"packet",sheetLengthM:3,minimumOrder:"6 packets",sourceUrl:"https://viwanda.ke/brands/panda/",priceSourceUrl:"https://viwanda.ke/brands/panda/"},
+    {id:"dtile-charcoal-25m",colour:"Charcoal Grey",finish:"Glossy",gauge:"30G",unitPriceKes:1456,priceUnit:"packet",sheetLengthM:2.5,minimumOrder:"8 packets",sourceUrl:"https://viwanda.ke/brands/panda/",priceSourceUrl:"https://viwanda.ke/brands/panda/"},
+    {id:"dtile-darkgrey-2m",colour:"Dark Grey",finish:"Glossy",gauge:"30G",unitPriceKes:1130,priceUnit:"packet",sheetLengthM:2,minimumOrder:"10 packets",sourceUrl:"https://viwanda.ke/brands/panda/",priceSourceUrl:"https://viwanda.ke/brands/panda/"},
+    {id:"dtile-darkgrey-25m",colour:"Dark Grey",finish:"Glossy",gauge:"30G",unitPriceKes:1420,priceUnit:"packet",sheetLengthM:2.5,minimumOrder:"8 packets",sourceUrl:"https://viwanda.ke/brands/panda/",priceSourceUrl:"https://viwanda.ke/brands/panda/"},
+    {id:"dtile-darkgrey-3m",colour:"Dark Grey",finish:"Glossy",gauge:"30G",unitPriceKes:1700,priceUnit:"packet",sheetLengthM:3,minimumOrder:"6 packets",sourceUrl:"https://viwanda.ke/brands/panda/",priceSourceUrl:"https://viwanda.ke/brands/panda/"}
+  ],
   "box-profile": make("box",[
     ["Brick Red","Gloss","30G",520],["Tile Red","Gloss","30G",520],["Tile Red","Matt","30G",600],
     ["Dark Green","Gloss","30G",520],["Grey","Gloss","30G",520],["Grey","Matt","30G",600],
@@ -56,7 +67,7 @@ const copy:Record<string,{overview:string;benefits:string[];notes:string[]}> = {
   "glazed-tile":{overview:"A tile-effect metal roofing profile listed in selected colours, gauges and matt/gloss finishes.",benefits:["Decorative tile-profile appearance","Published 28G and 30G options","Factory product pages state 950mm overall cover and 870mm effective cover"],notes:["Catalogue prices are shown alongside each published product option","Factory pages specify maximum purlin spacing of 600mm centres"]},
   elegantile:{overview:"A decorative tile-effect roofing option with factory-listed Wine Red 28G, Matte C/Gray 28G and Matte Green 30G options.",benefits:["Decorative roof finish","Published colour and gauge combinations"],notes:["Catalogue prices are shown alongside each published product option"]},
   decra:{overview:"Stone-coated style shingle and classic tile products listed in the factory catalogue.",benefits:["Stone-coated style appearance","Shingle and classic tile options"],notes:["Catalogue prices are shown alongside each listed product"]},
-  "d-tile":{overview:"A D-Tile roofing profile in the Panda Mabati range.",benefits:["Distinctive tile-inspired roof appearance","Suitable for residential roofing projects"],notes:["No colour selector is shown. The marketplace price reference is offered by standard sheet length; the listed minimum order depends on length."]},
+  "d-tile":{overview:"A D-Tile roofing profile in the Panda Mabati range.",benefits:["Distinctive tile-inspired roof appearance","Suitable for residential roofing projects"],notes:["Viwanda Panda Mabati listing shows Glossy 30G Blue, Charcoal Grey and Dark Grey D-Tile options","Published packet prices and minimum order quantities vary by sheet length"]},
   versatile:{overview:"A Versatile roofing profile in the Panda Mabati range.",benefits:["Distinctive roofing profile","Suitable for residential roofing projects"],notes:["No colour selector is shown. Choose the published G28 or G30 gauge and standard sheet length; no colour variants are offered in this storefront."]},
   "ridge-caps":{overview:"Ridge and roll-top accessories finish the roof apex and protect the ridge junction.",benefits:["Completes roof ridge detailing","Factory-listed Normal Ridge / Kofia"],notes:["Factory catalogue price is displayed for Normal Ridge / Kofia"]},
   flashings:{overview:"Formed components used to finish roof edges, junctions and transitions.",benefits:["Finishes roof junctions","Specified to suit the project"],notes:["Included in the Panda Mabati product range; add the required flashing to a project quotation"]},
@@ -67,7 +78,7 @@ const copy:Record<string,{overview:string;benefits:string[];notes:string[]}> = {
 };
 export const getProductVariants=(id:string)=>variants[id]??[];
 export const getProductDetails=(product:Product)=>copy[product.id]??{overview:product.description,benefits:["Roofing product in the Panda Mabati range"],notes:["Select the product and required quantity for your quotation"]};
-export const getVariantPriceLabel=(variant:ProductVariant)=>`KSh ${variant.unitPriceKes.toLocaleString("en-KE")} / ${variant.priceUnit==="metre"?"m":"piece"}`;
+export const getVariantPriceLabel=(variant:ProductVariant)=>`KSh ${variant.unitPriceKes.toLocaleString("en-KE")} / ${variant.priceUnit==="metre"?"m":variant.priceUnit==="packet"?"packet":"piece"}`;
 export type ProductPriceInfo={display:string;note:string;unitPriceKes:number;cartLabel:string;priceUnit:"metre"|"piece"|"packet";sourceUrl:string};
 export const getProductPriceInfo=(id:string):ProductPriceInfo|undefined=>{
   if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile marketplace listing; its 2m offer shows a 10-packet minimum and seller prices vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark",priceUnit:"packet",sourceUrl:"https://viwanda.ke/brands/panda/"};
