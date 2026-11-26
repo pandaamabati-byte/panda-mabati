@@ -420,6 +420,7 @@ function App() {
                   {getProductStartingPrice(product.id)!==undefined&&<p className="product-card__price">From KSh {getProductStartingPrice(product.id)!.toLocaleString("en-KE")} · factory catalogue</p>}
                   {product.id==="d-tile"&&<p className="product-card__price">From KSh 1,130 · 2m packet</p>}
                   {product.id==="versatile"&&<p className="product-card__price">From KSh 630 / m · G30</p>}
+                  {product.id==="gutters"&&<p className="product-card__price">KSh 400 · 4m PVC gutter</p>}
                   <p className="product-card__description">{product.description}</p>
                   <button className="product-card__details" onClick={() => { window.location.hash = `#product/${product.id}`; }}>View product details <ArrowUpRight size={15} /></button>
                   <button
