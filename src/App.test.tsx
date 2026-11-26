@@ -93,7 +93,7 @@ describe('Panda Mabati storefront', () => {
     const versatile = container.querySelector('[data-product-id="versatile"]');
     expect(dTile?.getAttribute('data-image-status')).toBe('verified-photo');
     expect(versatile?.getAttribute('data-image-status')).toBe('product-visualisation');
-    expect(screen.getAllByText(/Genuine Panda photos: 4 of 14 product families/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Genuine Panda photos: 4 of 15 product families/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/PRODUCT VISUALISATION · CONFIRM SPEC/i).length).toBeGreaterThan(0);
   });
 
