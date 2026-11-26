@@ -54,8 +54,8 @@ const copy:Record<string,{overview:string;benefits:string[];notes:string[]}> = {
   "glazed-tile":{overview:"A tile-effect metal roofing profile listed in selected colours, gauges and matt/gloss finishes.",benefits:["Decorative tile-profile appearance","Published 28G and 30G options","Factory product pages state 950mm overall cover and 870mm effective cover"],notes:["Catalogue prices are shown alongside each published product option","Factory pages specify maximum purlin spacing of 600mm centres"]},
   elegantile:{overview:"A decorative tile-effect roofing option with factory-listed Wine Red 28G, Matte C/Gray 28G and Matte Green 30G options.",benefits:["Decorative roof finish","Published colour and gauge combinations"],notes:["Catalogue prices are shown alongside each published product option"]},
   decra:{overview:"Stone-coated style shingle and classic tile products listed in the factory catalogue.",benefits:["Stone-coated style appearance","Shingle and classic tile options"],notes:["Catalogue prices are shown alongside each listed product"]},
-  "d-tile":{overview:"A D-Tile roofing profile in the Panda Mabati range.",benefits:["Distinctive tile-inspired roof appearance","Suitable for residential roofing projects"],notes:["No colour/gauge selector is shown because the supplied Panda Mabati catalogue does not publish a D-Tile variant schedule. The product can still be added to a project quotation."]},
-  versatile:{overview:"A Versatile roofing profile in the Panda Mabati range.",benefits:["Distinctive roofing profile","Suitable for residential roofing projects"],notes:["No colour/gauge selector is shown because the supplied Panda Mabati catalogue does not publish a Versatile variant schedule. The product can still be added to a project quotation."]},
+  "d-tile":{overview:"A D-Tile roofing profile in the Panda Mabati range.",benefits:["Distinctive tile-inspired roof appearance","Suitable for residential roofing projects"],notes:["No colour selector is shown. The marketplace price reference is offered by standard sheet length; the listed minimum order depends on length."]},
+  versatile:{overview:"A Versatile roofing profile in the Panda Mabati range.",benefits:["Distinctive roofing profile","Suitable for residential roofing projects"],notes:["No colour selector is shown. Choose the published G28 or G30 gauge and standard sheet length; no colour variants are offered in this storefront."]},
   "ridge-caps":{overview:"Ridge and roll-top accessories finish the roof apex and protect the ridge junction.",benefits:["Completes roof ridge detailing","Factory-listed Normal Ridge / Kofia"],notes:["Factory catalogue price is displayed for Normal Ridge / Kofia"]},
   flashings:{overview:"Formed components used to finish roof edges, junctions and transitions.",benefits:["Finishes roof junctions","Specified to suit the project"],notes:["Included in the Panda Mabati product range; add the required flashing to a project quotation"]},
   gutters:{overview:"Rainwater gutters collect and direct runoff from the roof edge.",benefits:["Supports controlled rainwater drainage","Coordinates with downpipes and fittings"],notes:["Included in the Panda Mabati product range; add the required guttering to a project quotation"]},
@@ -82,3 +82,17 @@ export const getProductStartingPrice=(id:string):number|undefined=>{
 };
 
 export const getProductStartingPriceUnit=(id:string):"metre"|"piece"|undefined=>getProductVariants(id)[0]?.priceUnit;
+
+export type ProductPriceOption={id:string;label:string;display:string;unitPriceKes:number;priceUnit:"metre"|"packet";sheetLengthM:number;minimumOrder?:string;gauge?:string};
+const specialPriceOptions:Record<string,ProductPriceOption[]> = {
+  "d-tile":[
+    {id:"dtile-2m",label:"2m packet",display:"KSh 1,130 / 2m packet",unitPriceKes:1130,priceUnit:"packet",sheetLengthM:2,minimumOrder:"10 packets"},
+    {id:"dtile-25m",label:"2.5m packet",display:"KSh 1,420 / 2.5m packet",unitPriceKes:1420,priceUnit:"packet",sheetLengthM:2.5,minimumOrder:"8 packets"},
+    {id:"dtile-3m",label:"3m packet",display:"KSh 1,700 / 3m packet",unitPriceKes:1700,priceUnit:"packet",sheetLengthM:3,minimumOrder:"6 packets"}
+  ],
+  versatile:[
+    ...[1,2,2.5,3].map((length)=>({id:`versatile-g30-${length}`,label:`G30 · ${length}m`,display:`KSh ${(630*length).toLocaleString("en-KE")} / ${length}m sheet (KSh 630/m)`,unitPriceKes:630,priceUnit:"metre" as const,sheetLengthM:length,gauge:"G30"})),
+    ...[1,2,2.5,3].map((length)=>({id:`versatile-g28-${length}`,label:`G28 · ${length}m`,display:`KSh ${(730*length).toLocaleString("en-KE")} / ${length}m sheet (KSh 730/m)`,unitPriceKes:730,priceUnit:"metre" as const,sheetLengthM:length,gauge:"G28"}))
+  ]
+};
+export const getProductPriceOptions=(id:string):ProductPriceOption[]=>specialPriceOptions[id]??[];
