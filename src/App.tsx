@@ -38,9 +38,6 @@ const makeLine = (productId = "box-profile"): QuoteLine => ({
 });
 
 function RoofArtwork({ tone }: { tone: string }) {
-  const activeProduct = products.find((product) => product.id === activeProductId);
-  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel) => { setLines((current) => [...current, { ...makeLine(productId), variantLabel }]); window.location.hash = "#calculator"; }} />;
-
   return (
     <div className={`roof-art roof-art--${tone}`} aria-hidden="true">
       <div className="roof-art__sun" />
@@ -268,6 +265,9 @@ function App() {
     ["Products", "#roofing"],
     ["Calculator", "#calculator"],
   ];
+
+  const activeProduct = products.find((product) => product.id === activeProductId);
+  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel) => { setLines((current) => [...current, { ...makeLine(productId), variantLabel }]); window.location.hash = "#calculator"; }} />;
 
   return (
     <div className="site-shell">
