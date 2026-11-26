@@ -9,6 +9,7 @@ import { BOX_PROFILE_VARIANTS } from "./features/products/boxProfileVariants";
 import { FALLBACK_PRODUCTS, type Product } from "./features/products/productModel";
 import { loadProducts } from "./services/products/catalogue";
 import ProductDetailPage from "./features/products/ProductDetailPage";
+import ProductProfileVisual from "./features/products/ProductProfileVisual";
 import { getVerifiedProductImage } from "./features/products/productImageLibrary";
 import { getProductStartingPrice, getProductStartingPriceUnit } from "./features/products/productDetails";
 import "./App.css";
@@ -75,10 +76,8 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
         />
       ) : (
         <>
-          <RoofArtwork tone={product.tone} />
-          <span className="product-card__image-note">
-            {image ? "PHOTO UNAVAILABLE · ILLUSTRATIVE PREVIEW" : "ILLUSTRATIVE · NOT A PRODUCT PHOTO"}
-          </span>
+          <ProductProfileVisual productId={product.id} productName={product.name} tone={product.tone} />
+          <span className="product-card__image-note">PRODUCT VISUAL</span>
         </>
       )}
       <span className="product-card__number">0{index + 1}</span>
@@ -563,8 +562,9 @@ function App() {
                     Number.isFinite(manualRate) &&
                     manualRate >= 0);
                   const rate = manualRate;
+                  const effectiveRate = variant ? variant.ratePerM : rate;
                   const lineTotal = hasRate
-                    ? Math.max(0, Number(line.quantity) || 0) * (line.priceUnit === "metre" ? line.sheetLengthM : 1) * (variant ? variant.ratePerM : rate)
+                    ? Math.max(0, Number(line.quantity) || 0) * (line.priceUnit === "metre" ? line.sheetLengthM : 1) * effectiveRate
                     : null;
                   return (
                     <div className="quote-line" key={line.id}>
@@ -633,9 +633,14 @@ function App() {
                               step="0.1"
                               value={line.sheetLengthM}
                               onChange={(e) => updateLine(line.id, {
-                                sheetLengthM: Math.max(0.5, Number(e.target.value) || 0.5),
+                                sheetLengthM: Math.min(12, Math.max(0.5, Number(e.target.value) || 0.5)),
                               })}
                             />
+                            <div className="length-presets" aria-label="Common sheet lengths">
+                              {[2, 2.5, 3].map((length) => (
+                                <button key={length} type="button" className={line.sheetLengthM === length ? "length-preset length-preset--active" : "length-preset"} aria-pressed={line.sheetLengthM === length} onClick={() => updateLine(line.id, { sheetLengthM: length })}>{length}m</button>
+                              ))}
+                            </div>
                           </label>
                         )}
                         <label>{line.priceUnit === "metre" ? "Rate (KES / metre)" : "Unit rate (KES)"}
@@ -657,6 +662,7 @@ function App() {
                             : line.variantLabel || product?.short}
                         </span>
                         <strong>{lineTotal === null ? "Price to be confirmed" : money(lineTotal)}</strong>
+                        {line.priceUnit === "metre" && hasRate && <small className="quote-line__calculation">{money(effectiveRate)} / m × {line.sheetLengthM} m × {line.quantity} {line.quantity === 1 ? "sheet" : "sheets"}</small>}
                         <button className="remove-line" onClick={() => removeLine(line.id)} aria-label={`Remove ${product?.name ?? "product"}`}><X size={15} /></button>
                       </div>
                     </div>
