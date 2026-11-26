@@ -156,7 +156,7 @@ export default function AdminApp() {
             </article>)}
           </section>
         </div>
-        <p className="admin-footnote"><ImagePlus size={15}/> Uploaded assets are stored privately by product path; published product image URLs are delivered through Firebase Storage.</p>
+        <p className="admin-footnote"><ImagePlus size={15}/> Product images are publicly readable on the storefront; only administrators can upload, replace or delete them.</p>
       </div>
     </main>
   );
