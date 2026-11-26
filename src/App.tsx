@@ -21,6 +21,7 @@ type QuoteLine = {
   sheetLengthM: number;
   unitPrice: string;
   variantLabel?: string;
+  priceUnit?: "metre" | "piece" | "packet";
 };
 
 const money = (amount: number) =>
@@ -34,6 +35,7 @@ const makeLine = (productId = "box-profile"): QuoteLine => ({
   id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   productId,
   variantId: productId === "box-profile" ? BOX_PROFILE_VARIANTS[0]?.id : undefined,
+  priceUnit: productId === "box-profile" ? "metre" : undefined,
   quantity: 1,
   sheetLengthM: 2.5,
   unitPrice: "",
@@ -87,7 +89,7 @@ function App() {
   const quote = useMemo(() => {
     const totalQuantity = lines.reduce((sum, line) => {
       const quantity = Math.max(0, Number(line.quantity) || 0);
-      if (line.productId !== "box-profile" || !line.variantId) return sum;
+      if (line.priceUnit !== "metre") return sum;
       const length = Math.max(0, Number(line.sheetLengthM) || 0);
       return sum + quantity * length;
     }, 0);
@@ -116,7 +118,7 @@ function App() {
       ) return sum;
 
       const quantity = Math.max(0, Number(line.quantity) || 0);
-      return sum + quantity * rate;
+      return sum + quantity * (line.priceUnit === "metre" ? Math.max(0, Number(line.sheetLengthM) || 0) : 1) * rate;
     }, 0);
 
     return { totalQuantity, hasMissingPrice, pricedTotal };
@@ -197,15 +199,15 @@ function App() {
         Number.isFinite(manualRate) &&
         manualRate >= 0);
       const rate = variant ? variant.ratePerM : hasRate ? manualRate : null;
-      const amount = rate === null ? null : quantity * (variant ? line.sheetLengthM : 1) * rate;
+      const amount = rate === null ? null : quantity * (line.priceUnit === "metre" ? line.sheetLengthM : 1) * rate;
       const productLabel = variant
         ? `${product?.name ?? "Box Profile"} — ${variant.colour} ${variant.finish} ${variant.gauge}`
         : [product?.name ?? "Roofing product", line.variantLabel].filter(Boolean).join(" — ");
       const nameLines = doc.splitTextToSize(productLabel, 68);
       doc.text(nameLines, left + 2, y);
-      doc.text(variant ? `${quantity} x ${line.sheetLengthM}m` : String(quantity), 112, y, { align: "right" });
+      doc.text(line.priceUnit === "metre" ? `${quantity} x ${line.sheetLengthM}m` : String(quantity), 112, y, { align: "right" });
       doc.text(
-        rate === null ? "To confirm" : `${money(rate)}${variant ? " / m" : ""}`,
+        rate === null ? "To confirm" : `${money(rate)}${line.priceUnit === "metre" ? " / m" : ""}`,
         151,
         y,
         {
@@ -274,7 +276,7 @@ function App() {
       const product=products.find(item=>item.id===line.productId);
       const variant=line.productId==="box-profile"?BOX_PROFILE_VARIANTS.find(item=>item.id===line.variantId):undefined;
       const option=variant?[variant.colour,variant.finish,variant.gauge].join(" · "):line.variantLabel;
-      return `${index+1}. ${product?.name??"Roofing product"}${option?` — ${option}`:""} | Quantity: ${line.quantity}${variant?` sheets × ${line.sheetLengthM}m`:""}`;
+      return `${index+1}. ${product?.name??"Roofing product"}${option?` — ${option}`:""} | Quantity: ${line.quantity}${line.priceUnit==="metre"?` sheets × ${line.sheetLengthM}m`:""}`;
     }),
     notes.trim() ? `Project notes: ${notes.trim()}` : "",
     "Please confirm stock, final specifications, delivery cost and the official order total before payment."
@@ -289,7 +291,7 @@ function App() {
   ];
 
   const activeProduct = products.find((product) => product.id === activeProductId);
-  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel, price) => { const boxVariant = productId === "box-profile" ? BOX_PROFILE_VARIANTS.find((item) => `${item.colour} · ${item.finish} · ${item.gauge}` === variantLabel) : undefined; setLines((current) => [...current, { ...makeLine(productId), variantId: boxVariant?.id, variantLabel, unitPrice: price === undefined ? "" : String(price) }]); window.location.hash = "#calculator"; }} />;
+  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel, price, priceUnit) => { const boxVariant = productId === "box-profile" ? BOX_PROFILE_VARIANTS.find((item) => `${item.colour} · ${item.finish} · ${item.gauge}` === variantLabel) : undefined; setLines((current) => [...current, { ...makeLine(productId), variantId: boxVariant?.id, priceUnit: priceUnit ?? (boxVariant ? "metre" : undefined), variantLabel, unitPrice: price === undefined ? "" : String(price) }]); window.location.hash = "#calculator"; }} />;
 
   return (
     <div className="site-shell">
@@ -506,7 +508,7 @@ function App() {
                     manualRate >= 0);
                   const rate = manualRate;
                   const lineTotal = hasRate
-                    ? Math.max(0, Number(line.quantity) || 0) * (variant ? line.sheetLengthM : 1) * (variant ? variant.ratePerM : rate)
+                    ? Math.max(0, Number(line.quantity) || 0) * (line.priceUnit === "metre" ? line.sheetLengthM : 1) * (variant ? variant.ratePerM : rate)
                     : null;
                   return (
                     <div className="quote-line" key={line.id}>
@@ -524,6 +526,7 @@ function App() {
                                   variantId: productId === "box-profile"
                                     ? BOX_PROFILE_VARIANTS[0]?.id
                                     : undefined,
+                                  priceUnit: productId === "box-profile" ? "metre" : undefined,
                                   unitPrice: "",
                                 });
                               }}
@@ -550,7 +553,7 @@ function App() {
                             </span>
                           </label>
                         )}
-                        <label>{variant ? "Number of sheets" : "Quantity"}
+                        <label>{line.priceUnit === "metre" ? "Number of sheets" : "Quantity"}
                           <div className="quantity-control">
                             <button aria-label="Decrease quantity" onClick={() => updateLine(line.id, { quantity: Math.max(0, line.quantity - 1) })}><Minus size={14} /></button>
                             <input
@@ -565,7 +568,7 @@ function App() {
                             <button aria-label="Increase quantity" onClick={() => updateLine(line.id, { quantity: line.quantity + 1 })}><Plus size={14} /></button>
                           </div>
                         </label>
-                        {variant && (
+                        {line.priceUnit === "metre" && (
                           <label>Length per sheet (metres)
                             <input
                               type="number"
@@ -579,14 +582,14 @@ function App() {
                             />
                           </label>
                         )}
-                        <label>{variant ? "Rate (KES / metre)" : "Unit rate (KES)"}
+                        <label>{line.priceUnit === "metre" ? "Rate (KES / metre)" : "Unit rate (KES)"}
                           <input
                             type="number"
                             min="0"
                             step="0.01"
                             value={variant ? String(variant.ratePerM) : line.unitPrice}
                             onChange={(e) => updateLine(line.id, { unitPrice: e.target.value })}
-                            placeholder={variant ? "Catalogue rate per metre" : "Enter unit rate"}
+                            placeholder={line.priceUnit === "metre" ? "Catalogue rate per metre" : "Enter unit rate"}
                             disabled={Boolean(variant)}
                           />
                         </label>
@@ -615,7 +618,7 @@ function App() {
               <div className="summary-kicker"><span className="summary-pulse" /> LIVE SUMMARY</div>
               <h3>Your project<br />at a glance.</h3>
               <p>Quantities and totals update automatically.</p>
-              <div className="summary-metric"><span>Box Profile length</span><strong>{quote.totalQuantity.toLocaleString("en-KE")} m</strong><small>Other profiles are counted separately in the chart</small></div>
+              <div className="summary-metric"><span>Total roofing sheet length</span><strong>{quote.totalQuantity.toLocaleString("en-KE")} m</strong><small>Across all selected per-metre roofing products</small></div>
               <div className="summary-total"><span>Priced items subtotal</span><strong>{money(quote.pricedTotal)}</strong><small>{quote.hasMissingPrice ? "Excludes products without a confirmed rate" : "Based on the unit rates entered"}</small></div>
               <div className="chart-card">
                 <div className="chart-card__heading"><span>Quantity by profile</span><Layers3 size={16} /></div>
