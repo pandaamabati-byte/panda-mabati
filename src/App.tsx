@@ -126,7 +126,7 @@ function App() {
   const addLine = () => setLines((current) => [...current, makeLine("box-profile")]);
   const removeLine = (id: string) =>
     setLines((current) =>
-      current.length > 1 ? current.filter((line) => line.id !== id) : current,
+      current.filter((line) => line.id !== id),
     );
 
   const downloadQuote = () => {
@@ -267,7 +267,7 @@ function App() {
   ];
 
   const activeProduct = products.find((product) => product.id === activeProductId);
-  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel) => { setLines((current) => [...current, { ...makeLine(productId), variantLabel }]); window.location.hash = "#calculator"; }} />;
+  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel) => { setLines((current) => [...current, { ...makeLine(productId), variantId: undefined, variantLabel }]); window.location.hash = "#calculator"; }} />;
 
   return (
     <div className="site-shell">
@@ -581,7 +581,7 @@ function App() {
                             : line.variantLabel || product?.short}
                         </span>
                         <strong>{lineTotal === null ? "Price to be confirmed" : money(lineTotal)}</strong>
-                        <button className="remove-line" onClick={() => removeLine(line.id)} disabled={lines.length === 1} aria-label={`Remove ${product?.name ?? "product"}`}><X size={15} /></button>
+                        <button className="remove-line" onClick={() => removeLine(line.id)} aria-label={`Remove ${product?.name ?? "product"}`}><X size={15} /></button>
                       </div>
                     </div>
                   );
