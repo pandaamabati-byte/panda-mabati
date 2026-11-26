@@ -9,6 +9,7 @@ import { BOX_PROFILE_VARIANTS } from "./features/products/boxProfileVariants";
 import { FALLBACK_PRODUCTS, type Product } from "./features/products/productModel";
 import { loadProducts } from "./services/products/catalogue";
 import ProductDetailPage from "./features/products/ProductDetailPage";
+import { getVerifiedProductImage } from "./features/products/productImageLibrary";
 import "./App.css";
 
 type QuoteLine = {
@@ -394,22 +395,18 @@ function App() {
             {products.map((product, index) => (
               <article className="product-card" key={product.id}>
                 <div className="product-card__image">
-                  {product.imageUrl ? (
+                  {getVerifiedProductImage(product.id) ? (
                     <img
-                      src={product.imageUrl}
-                      alt={`${product.name} roofing product`}
-                      className="product-card__photo"
-                      loading="lazy"
-                    />
-                  ) : product.id === "box-profile" ? (
-                    <img
-                      src={BOX_PROFILE_VARIANTS[2].image}
-                      alt="Box Profile Tile Red Gloss 30G roofing sheet"
+                      src={getVerifiedProductImage(product.id)!.src}
+                      alt={getVerifiedProductImage(product.id)!.alt}
                       className="product-card__photo"
                       loading="lazy"
                     />
                   ) : (
-                    <RoofArtwork tone={product.tone} />
+                    <>
+                      <RoofArtwork tone={product.tone} />
+                      <span className="product-card__image-note">ILLUSTRATIVE · NOT A PRODUCT PHOTO</span>
+                    </>
                   )}
                   <span className="product-card__number">0{index + 1}</span>
                 </div>
