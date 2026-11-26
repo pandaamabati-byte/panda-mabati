@@ -64,15 +64,26 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
   const [imageUnavailable, setImageUnavailable] = useState(false);
   const image = getVerifiedProductImage(product.id);
   const imageStatus = getProductImageStatus(product.id);
+  const aiVisualIds = ["versatile", "glazed-tile", "elegantile", "decra", "ridge-caps", "flashings", "gutters", "roll-tops", "valley-trays", "roofing-fasteners"];
+  const aiVisualSrc = aiVisualIds.includes(product.id) ? `/images/ai-product-visuals/${product.id}.svg` : "";
   const showPhoto = Boolean(image && !imageUnavailable);
+  const showAiVisual = Boolean(aiVisualSrc && !imageUnavailable);
 
   return (
-    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : "profile-visual"} data-photo-coverage={imageStatus.hasGenuinePhoto ? "verified" : "pending"}>
+    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : showAiVisual ? "ai-visualisation" : "profile-visual"} data-photo-coverage={imageStatus.hasGenuinePhoto ? "verified" : "pending"}>
       {showPhoto && image ? (
         <img
           src={image.src}
           alt={image.alt}
           className="product-card__photo"
+          loading="lazy"
+          onError={() => setImageUnavailable(true)}
+        />
+      ) : showAiVisual ? (
+        <img
+          src={aiVisualSrc}
+          alt={`AI product visualisation of ${product.name}; confirm exact manufacturer profile and finish`}
+          className="product-card__photo product-card__photo--visualisation"
           loading="lazy"
           onError={() => setImageUnavailable(true)}
         />
@@ -83,6 +94,7 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
         </>
       )}
       {showPhoto && <span className="product-card__image-note product-card__image-note--photo">PANDA PRODUCT PHOTO</span>}
+      {showAiVisual && <span className="product-card__image-note product-card__image-note--ai">AI PRODUCT VISUALISATION</span>}
       <span className="product-card__number">0{index + 1}</span>
     </div>
   );
