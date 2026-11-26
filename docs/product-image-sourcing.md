@@ -10,11 +10,18 @@ The following image assets are currently registered as verified manufacturer-sit
 
 | Product family | Asset ID | Source |
 | --- | --- | --- |
+| D-Tile | `d-tile-panda-confirmed-primary` | Owner-confirmed original Panda D-Tile image |
 | Box Profile | `box-profile-official-primary` | [Panda Mabati official website](https://pandamabati.com/) |
 | Corrugated | `corrugated-official-primary` | [Panda Mabati official website](https://pandamabati.com/) |
 | StarTile | `startile-official-primary` | [Panda Mabati official website](https://pandamabati.com/) |
 
-The official Panda Mabati homepage currently presents these three product families with matching product sections. It also lists ridge caps, flashings, gutters, roofing nails and roofing fasteners as additional products. See [Panda Mabati](https://pandamabati.com/).
+The official Panda Mabati homepage currently presents Box Profile, Corrugated and StarTile with matching product sections. The D-Tile photograph is separately confirmed by the site owner. It also lists ridge caps, flashings, gutters, roofing nails and roofing fasteners as additional products. See [Panda Mabati](https://pandamabati.com/).
+
+## Coverage status
+
+The 14-product image register is now complete as an inventory. Four product families have an accepted genuine Panda photograph: D-Tile, Box Profile, Corrugated and StarTile. The other ten families remain explicitly marked as awaiting genuine, rights-cleared photography: Versatile, Glazed Tile, Elegantile, Decra, Ridge Caps, Flashings, Gutters, Roll Tops, Valley Trays and Roofing Fasteners. They continue to use product-specific designed visuals until approved photography is supplied or located with documented permission.
+
+Where a generic manufacturer photograph is displayed with a selected colour overlay, the image is still a family photograph; the colour treatment is only a customer-facing preview, not proof of a colour-specific photo. Exact variant photographs take priority whenever verified assets are added.
 
 ## Additional catalogue research
 
@@ -29,7 +36,7 @@ Catalogue listings are useful for product-name and variant research. They are **
 3. Use competitor websites for market and product research only. Do not copy their product photographs or present competitor products as Panda products without written permission.
 4. AI-generated architectural imagery may be used for mood, lifestyle and campaign visuals, but must not be labelled as a real Panda installation or as a photograph of a specific product variant.
 5. Do not mark a variant photograph verified unless its exact colour, finish, gauge and profile are confirmed.
-6. Keep the existing illustrative fallback visible whenever a real image is unavailable or fails to load.
+6. Keep the designed product visual visible whenever a real image is unavailable or fails to load.
 
 ## Verification checklist for each new asset
 
