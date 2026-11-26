@@ -70,7 +70,7 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
   const showAiVisual = Boolean(aiVisualSrc && !imageUnavailable);
 
   return (
-    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : showAiVisual ? "ai-visualisation" : "profile-visual"} data-photo-coverage={imageStatus.hasGenuinePhoto ? "verified" : "pending"}>
+    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : showAiVisual ? "product-visualisation" : "profile-visual"} data-photo-coverage={imageStatus.hasGenuinePhoto ? "verified" : "pending"}>
       {showPhoto && image ? (
         <img
           src={image.src}
@@ -82,7 +82,7 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
       ) : showAiVisual ? (
         <img
           src={aiVisualSrc}
-          alt={`AI product visualisation of ${product.name}; confirm exact manufacturer profile and finish`}
+          alt={`Product visualisation of ${product.name}; confirm exact manufacturer profile and finish`}
           className="product-card__photo product-card__photo--visualisation"
           loading="lazy"
           onError={() => setImageUnavailable(true)}
@@ -94,7 +94,7 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
         </>
       )}
       {showPhoto && <span className="product-card__image-note product-card__image-note--photo">PANDA PRODUCT PHOTO</span>}
-      {showAiVisual && <span className="product-card__image-note product-card__image-note--ai">AI PRODUCT VISUALISATION</span>}
+      {showAiVisual && <span className="product-card__image-note product-card__image-note--ai">PRODUCT VISUALISATION · CONFIRM SPEC</span>}
       <span className="product-card__number">0{index + 1}</span>
     </div>
   );
