@@ -21,15 +21,26 @@ export type ProductImageAsset = {
  */
 export const PRODUCT_IMAGE_LIBRARY: ProductImageAsset[] = [
   {
-    id: "eurotile-burgundy-owner-approved-ai-concept",
+    id: "eurotile-burgundy-owner-photo",
     productId: "eurotile",
     src: "",
     sourceUrl: "https://pandamabati.com/",
-    sourceName: "Panda Mabati · owner-approved AI concept",
+    sourceName: "Panda Mabati · owner-supplied photograph",
     status: "awaiting-verification",
     kind: "product-photo",
-    alt: "Single burgundy Eurotile metal roofing sheet with repeating tile-profile ridges",
-    notes: "The owner approved the generated single-sheet burgundy Eurotile concept on 2026-11-26. It is an illustrative AI visual, not a verified stock photograph. Binary asset still needs to be added to the repository before it can be displayed.",
+    alt: "Burgundy Eurotile metal roofing sheet photographed at the Panda product facility",
+    notes: "The owner supplied and confirmed this as the genuine Eurotile photograph on 2026-11-27. Awaiting optimized repository asset installation; do not substitute an AI image.",
+  },
+  {
+    id: "roman-tile-owner-supplied-production-photo",
+    productId: "roman-tile",
+    src: "",
+    sourceUrl: "https://pandamabati.com/",
+    sourceName: "Panda Mabati · owner-supplied production photograph",
+    status: "awaiting-verification",
+    kind: "product-photo",
+    alt: "Panda Roman Tile dark charcoal roofing profile on a production line",
+    notes: "Owner supplied the production-line photograph on 2026-11-27. The image includes a Romantile label and surrounding WhatsApp screenshot UI; crop and optimize the actual product area before publishing.",
   },
   {
     id: "box-profile-grey-matt-30g",
@@ -116,6 +127,7 @@ export const PRODUCT_IMAGE_LIBRARY: ProductImageAsset[] = [
     notes: "Official homepage image linked beside the Startile Roofing Sheets product family.",
   },
   ...[
+    ["roman-tile", "Panda Roman Tile", "https://pandamabati.com/"],
     ["d-tile", "D-Tile", "https://pandamabatifactory.co.ke/wp/"],
     ["versatile", "Versatile", "https://take.app/pandamabatiltd/c/cm7cwmwkb000ww4xpqnpb8of1"],
     ["box-profile", "Box Profile", "https://pandamabatifactory.co.ke/wp/product-category/box-profile-30g/"],
@@ -161,7 +173,7 @@ export function getVerifiedProductImage(
 }
 
 export const PRODUCT_IMAGE_TARGETS = [
-  "eurotile", "d-tile", "versatile", "box-profile", "corrugated", "startile", "glazed-tile",
+  "eurotile", "roman-tile", "d-tile", "versatile", "box-profile", "corrugated", "startile", "glazed-tile",
   "elegantile", "decra", "ridge-caps", "flashings", "gutters", "roll-tops",
   "valley-trays", "roofing-fasteners",
 ] as const;
