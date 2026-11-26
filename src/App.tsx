@@ -291,7 +291,7 @@ function App() {
   ];
 
   const activeProduct = products.find((product) => product.id === activeProductId);
-  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel, price, priceUnit) => { const boxVariant = productId === "box-profile" ? BOX_PROFILE_VARIANTS.find((item) => `${item.colour} · ${item.finish} · ${item.gauge}` === variantLabel) : undefined; setLines((current) => [...current, { ...makeLine(productId), variantId: boxVariant?.id, priceUnit: priceUnit ?? (boxVariant ? "metre" : undefined), variantLabel, unitPrice: price === undefined ? "" : String(price) }]); window.location.hash = "#calculator"; }} />;
+  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel, price, priceUnit, sheetLengthM) => { const boxVariant = productId === "box-profile" ? BOX_PROFILE_VARIANTS.find((item) => `${item.colour} · ${item.finish} · ${item.gauge}` === variantLabel) : undefined; setLines((current) => [...current, { ...makeLine(productId), variantId: boxVariant?.id, priceUnit: priceUnit ?? (boxVariant ? "metre" : undefined), sheetLengthM: sheetLengthM ?? makeLine(productId).sheetLengthM, variantLabel, unitPrice: price === undefined ? "" : String(price) }]); window.location.hash = "#calculator"; }} />;
 
   return (
     <div className="site-shell">
