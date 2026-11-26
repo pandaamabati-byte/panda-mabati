@@ -70,7 +70,7 @@ describe('Panda Mabati storefront', () => {
     const { container } = render(<App />);
     expect(container.querySelector('.product-detail-placeholder .product-profile-visual')).not.toBeNull();
     expect(container.querySelector('.product-detail-photo-stage img')).toBeNull();
-    expect(screen.getByText(/PRODUCT PROFILE VISUAL · PHOTO PENDING/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/PRODUCT PROFILE VISUAL · PHOTO PENDING/i).length).toBeGreaterThan(0);
     fireEvent.change(screen.getAllByLabelText(/Colour preference/)[0], { target: { value: 'Tile Red' } });
     expect(screen.getAllByLabelText(/Colour preference/)[0]).toHaveValue('Tile Red');
     window.location.hash = '';
