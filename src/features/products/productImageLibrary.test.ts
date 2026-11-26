@@ -15,6 +15,27 @@ describe("product image library", () => {
     expect(getVerifiedProductImage("d-tile")).toBeUndefined();
   });
 
+  it("requires complete provenance for every image exposed as verified", () => {
+    const verifiedAssets = PRODUCT_IMAGE_LIBRARY.filter((asset) => asset.status === "verified");
+
+    expect(verifiedAssets.length).toBeGreaterThan(0);
+    for (const asset of verifiedAssets) {
+      expect(asset.src.trim()).not.toBe("");
+      expect(asset.sourceUrl.trim()).not.toBe("");
+      expect(asset.sourceName.trim()).not.toBe("");
+      expect(asset.alt.trim()).not.toBe("");
+      expect(asset.verifiedAt).toMatch(/^\\d{4}-\\d{2}-\\d{2}$/);
+      expect(asset.kind).toBe("product-photo");
+      expect(asset.variantId).toBeUndefined();
+    }
+  });
+
+  it("keeps unverified local variant files out of the storefront image lookup", () => {
+    for (const asset of PRODUCT_IMAGE_LIBRARY.filter((item) => item.status === "awaiting-verification")) {
+      expect(getVerifiedProductImage(asset.productId, asset.variantId)).not.toBe(asset);
+    }
+  });
+
   it("tracks pending image coverage for roofing and accessory products", () => {
     for (const id of [
       "d-tile",
