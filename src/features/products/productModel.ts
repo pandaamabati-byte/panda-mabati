@@ -48,6 +48,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     use: "Modern homes & commercial",
     tone: "box",
     published: true,
+    imageUrl: "https://pandamabati.com/wp-content/uploads/2026/06/download.jpg",
+    sourceName: "Panda Mabati", sourceUrl: "https://pandamabati.com/",
   },
   {
     id: "startile",
@@ -58,12 +60,15 @@ export const FALLBACK_PRODUCTS: Product[] = [
     use: "Design-led homes",
     tone: "star",
     published: true,
+    imageUrl: "https://pandamabati.com/wp-content/uploads/2026/06/download-1.jpg",
+    sourceName: "Panda Mabati", sourceUrl: "https://pandamabati.com/",
   },
   {
     id: "corrugated", name: "Corrugated Roofing", short: "Classic wave profile",
     description: "Traditional corrugated roofing sheets. Confirm gauge, sheet length, effective cover and current selling unit before ordering.",
     use: "Residential & utility buildings", tone: "tile", published: true,
     category: "Roofing sheets", sourceName: "Panda Mabati Factory",
+    imageUrl: "https://pandamabati.com/wp-content/uploads/2026/06/Corrugated-Roofing-Sheets.jpg",
     sourceUrl: "https://pandamabatifactory.co.ke/wp/", priceStatus: "pending",
   },
   {
