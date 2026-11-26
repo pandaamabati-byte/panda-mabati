@@ -8,6 +8,7 @@ import { BUSINESS_CONTACT } from "./config/business";
 import { BOX_PROFILE_VARIANTS } from "./features/products/boxProfileVariants";
 import { FALLBACK_PRODUCTS, type Product } from "./features/products/productModel";
 import { loadProducts } from "./services/products/catalogue";
+import ProductDetailPage from "./features/products/ProductDetailPage";
 import "./App.css";
 
 type QuoteLine = {
@@ -17,6 +18,7 @@ type QuoteLine = {
   quantity: number;
   sheetLengthM: number;
   unitPrice: string;
+  variantLabel?: string;
 };
 
 const money = (amount: number) =>
@@ -36,6 +38,9 @@ const makeLine = (productId = "box-profile"): QuoteLine => ({
 });
 
 function RoofArtwork({ tone }: { tone: string }) {
+  const activeProduct = products.find((product) => product.id === activeProductId);
+  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel) => { setLines((current) => [...current, { ...makeLine(productId), variantLabel }]); window.location.hash = "#calculator"; }} />;
+
   return (
     <div className={`roof-art roof-art--${tone}`} aria-hidden="true">
       <div className="roof-art__sun" />
@@ -55,6 +60,7 @@ function RoofArtwork({ tone }: { tone: string }) {
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeProductId, setActiveProductId] = useState(() => window.location.hash.startsWith("#product/") ? decodeURIComponent(window.location.hash.slice(9)) : "");
   const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
   const [catalogueSource, setCatalogueSource] = useState<"fallback" | "firestore">("fallback");
 
@@ -71,7 +77,8 @@ function App() {
       active = false;
     };
   }, []);
-  const [lines, setLines] = useState<QuoteLine[]>([makeLine()]);
+  useEffect(() => { const syncRoute=()=>setActiveProductId(window.location.hash.startsWith("#product/")?decodeURIComponent(window.location.hash.slice(9)):""); window.addEventListener("hashchange",syncRoute); return ()=>window.removeEventListener("hashchange",syncRoute); }, []);
+  const [lines, setLines] = useState<QuoteLine[]>([]);
   const [customer, setCustomer] = useState("");
   const [project, setProject] = useState("");
   const [county, setCounty] = useState("");
@@ -119,7 +126,7 @@ function App() {
     );
   };
 
-  const addLine = () => setLines((current) => [...current, makeLine()]);
+  const addLine = () => setLines((current) => [...current, makeLine("box-profile")]);
   const removeLine = (id: string) =>
     setLines((current) =>
       current.length > 1 ? current.filter((line) => line.id !== id) : current,
@@ -192,7 +199,7 @@ function App() {
       const amount = rate === null ? null : quantity * rate;
       const productLabel = variant
         ? `${product?.name ?? "Box Profile"} — ${variant.colour} ${variant.finish} ${variant.gauge}`
-        : product?.name ?? "Roofing product";
+        : [product?.name ?? "Roofing product", line.variantLabel].filter(Boolean).join(" — ");
       const nameLines = doc.splitTextToSize(productLabel, 68);
       doc.text(nameLines, left + 2, y);
       doc.text(variant ? `${quantity} x ${line.sheetLengthM}m` : String(quantity), 112, y, { align: "right" });
@@ -570,7 +577,7 @@ function App() {
                         <span>
                           {variant
                             ? `${variant.colour} · ${variant.finish} · ${variant.gauge}`
-                            : product?.short}
+                            : line.variantLabel || product?.short}
                         </span>
                         <strong>{lineTotal === null ? "Price to be confirmed" : money(lineTotal)}</strong>
                         <button className="remove-line" onClick={() => removeLine(line.id)} disabled={lines.length === 1} aria-label={`Remove ${product?.name ?? "product"}`}><X size={15} /></button>
