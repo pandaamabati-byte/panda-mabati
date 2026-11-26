@@ -5,6 +5,7 @@ import {
   type CatalogueSource,
 } from '../services/products/catalogue'
 import type { Product } from '../features/products/productModel'
+import { getVerifiedProductImage } from '../features/products/productImageLibrary'
 
 const formatKes = (amount: number) =>
   new Intl.NumberFormat('en-KE', {
@@ -136,6 +137,7 @@ export function ProductsPage() {
       {!loading && filteredProducts.length > 0 && (
         <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filteredProducts.map((product) => {
+            const productImage = getVerifiedProductImage(product.id)
             const hasConfirmedPrice =
               product.priceStatus === 'confirmed' &&
               typeof product.unitPriceKes === 'number' &&
@@ -154,6 +156,29 @@ export function ProductsPage() {
                   <span className="text-xs font-medium text-slate-500">
                     {source === 'firestore' ? 'Published' : 'Reference'}
                   </span>
+                </div>
+
+                <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-xl bg-gradient-to-br from-emerald-50 via-stone-100 to-amber-50">
+                  {productImage ? (
+                    <img
+                      src={productImage.src}
+                      alt={productImage.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-2 px-5 text-center">
+                      <span className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-800">Panda Mabati</span>
+                      <span className="text-lg font-extrabold text-emerald-950">{product.name}</span>
+                      <span className="text-xs text-slate-600">Product photograph being verified</span>
+                    </div>
+                  )}
+                  {productImage && (
+                    <span className="absolute bottom-3 left-3 rounded-full bg-emerald-950/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+                      Official product photo
+                    </span>
+                  )}
                 </div>
 
                 <h2 className="text-2xl font-extrabold tracking-tight text-emerald-950">
