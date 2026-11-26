@@ -97,6 +97,11 @@ function App() {
   const [project, setProject] = useState("");
   const [county, setCounty] = useState("");
   const [phone, setPhone] = useState("");
+  const [deliveryPlace, setDeliveryPlace] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliveryLandmark, setDeliveryLandmark] = useState("");
+  const [deliveryContact, setDeliveryContact] = useState("");
+  const [deliveryPhone, setDeliveryPhone] = useState("");
   const [notes, setNotes] = useState("");
 
   const quote = useMemo(() => {
@@ -205,7 +210,7 @@ function App() {
     doc.text(`Quote No: ${quoteNumber}`, right, 23, { align: "right" });
     doc.text(`Date of issue: ${dateLabel(quoteDate)}`, right, 29, { align: "right" });
     doc.text(`Date of expiry: ${dateLabel(expiryDate)}`, right, 35, { align: "right" });
-    doc.text("Place of delivery: To be confirmed", right, 41, { align: "right" });
+    doc.text(`Place of delivery: ${deliveryPlace.trim() || "To be confirmed"}`, right, 41, { align: "right" });
 
     y = 56;
     doc.setTextColor(...green);
@@ -221,10 +226,18 @@ function App() {
     doc.setFont("helvetica","normal");
     doc.setFontSize(8);
     doc.text(`Customer: ${customer.trim() || "Not provided"}`, left, y);
-    doc.text(`Project: ${project.trim() || "Not provided"}`, 112, y);
-    y += 6;
+    doc.text(`Place: ${deliveryPlace.trim() || "To be confirmed"}`, 112, y);
+    y += 5;
     doc.text(`Phone: ${phone.trim() || "Not provided"}`, left, y);
-    doc.text(`Location: ${county.trim() || "Not provided"}`, 112, y);
+    doc.text(`County: ${county.trim() || "Not provided"}`, 112, y);
+    y += 5;
+    doc.text(`Project: ${project.trim() || "Not provided"}`, left, y);
+    doc.text(`Site address: ${deliveryAddress.trim() || "To be confirmed"}`, 112, y);
+    y += 5;
+    doc.text(`Delivery contact: ${deliveryContact.trim() || "Not provided"}`, left, y);
+    doc.text(`Delivery phone: ${deliveryPhone.trim() || "Not provided"}`, 112, y);
+    y += 5;
+    doc.text(`Landmark / directions: ${deliveryLandmark.trim() || "Not provided"}`, 112, y);
     y += 7;
 
     // Official payment reference from the supplied OBOR quotation. Customers are warned to verify before paying.
@@ -246,13 +259,14 @@ function App() {
 
     // Item table: product attributes and length-based pricing remain explicit.
     const columns = [
-      { title: "No.", x: left + 2, w: 8 },
-      { title: "TYPE / DESCRIPTION", x: left + 12, w: 48 },
-      { title: "COLOUR / GAUGE", x: left + 62, w: 31 },
-      { title: "LENGTH (M)", x: left + 95, w: 16 },
-      { title: "QTY (PCS)", x: left + 113, w: 10 },
-      { title: "UNIT RATE (KSh)", x: left + 125, w: 21 },
-      { title: "LINE TOTAL (KSh)", x: right - 2, w: 27 },
+      { title: "No.", x: left + 2, w: 6 },
+      { title: "TYPE", x: left + 10, w: 34 },
+      { title: "COLOUR", x: left + 46, w: 25 },
+      { title: "GAUGE", x: left + 73, w: 14 },
+      { title: "LENGTH (M)", x: left + 89, w: 17 },
+      { title: "PCS", x: left + 108, w: 9 },
+      { title: "PRICE (KSh)", x: left + 119, w: 28 },
+      { title: "AMOUNT (KSh)", x: right - 2, w: 30 },
     ];
     const drawTableHeader = () => {
       doc.setFillColor(...green);
@@ -260,7 +274,7 @@ function App() {
       doc.setTextColor(255,255,255);
       doc.setFont("helvetica","bold");
       doc.setFontSize(6.5);
-      columns.forEach((col,index) => doc.text(col.title, index===6 ? col.x : col.x, y+5.8, { align: index>=4 ? "right" : "left" }));
+      columns.forEach((col,index) => doc.text(col.title, col.x, y+5.8, { align: index>=5 ? "right" : "left" }));
       y += 9;
     };
     drawTableHeader();
@@ -280,18 +294,21 @@ function App() {
       const rate = variant ? variant.ratePerM : hasRate ? enteredRate : null;
       const length = line.priceUnit === "metre" ? line.sheetLengthM : null;
       const amount = rate === null ? null : qty * (length ?? 1) * rate;
-      const details = variant ? [variant.colour,variant.gauge].filter(Boolean).join(" / ") : (line.variantLabel || "To be confirmed");
+      const optionParts = (line.variantLabel ?? "").split("·").map((part) => part.trim()).filter(Boolean);
+      const colourValue = variant?.colour ?? optionParts[0] ?? "To confirm";
+      const gaugeValue = variant?.gauge ?? optionParts.find((part) => /^(?:G\\s?\\d+|\\d{2}G)$/i.test(part)) ?? "To confirm";
       const rowHeight = 12;
       if (y + rowHeight > pageHeight - 48) { doc.addPage(); y=18; drawTableHeader(); }
       if(index%2===0){doc.setFillColor(246,248,244);doc.rect(left,y,contentWidth,rowHeight,"F");}
       doc.setTextColor(40,48,43);
       doc.text(String(index+1),columns[0].x,y+7);
       doc.text(doc.splitTextToSize(product?.name ?? "Roofing product",columns[1].w)[0],columns[1].x,y+7);
-      doc.text(doc.splitTextToSize(details,columns[2].w)[0],columns[2].x,y+7);
-      doc.text(length===null ? "—" : `${length}m`,columns[3].x+columns[3].w,y+7,{align:"right"});
-      doc.text(String(qty),columns[4].x+columns[4].w,y+7,{align:"right"});
-      doc.text(rate===null ? "Confirm" : `${money(rate)}${line.priceUnit==="metre" ? " / m" : line.priceUnit==="packet" ? " / packet" : line.priceUnit==="piece" ? " / pc" : ""}`,columns[5].x+columns[5].w,y+7,{align:"right"});
-      doc.text(amount===null ? "Confirm" : money(amount).replace("Ksh","").trim(),columns[6].x,y+7,{align:"right"});
+      doc.text(doc.splitTextToSize(colourValue,columns[2].w)[0],columns[2].x,y+7);
+      doc.text(gaugeValue,columns[3].x,y+7);
+      doc.text(length===null ? "—" : `${length}m`,columns[4].x+columns[4].w,y+7,{align:"right"});
+      doc.text(String(qty),columns[5].x+columns[5].w,y+7,{align:"right"});
+      doc.text(rate===null ? "Confirm" : `${money(rate)}${line.priceUnit==="metre" ? " / m" : line.priceUnit==="packet" ? " / packet" : line.priceUnit==="piece" ? " / pc" : ""}`,columns[6].x+columns[6].w,y+7,{align:"right"});
+      doc.text(amount===null ? "Confirm" : money(amount).replace("Ksh","").trim(),columns[7].x,y+7,{align:"right"});
       doc.setDrawColor(220,226,219);
       doc.line(left,y+rowHeight,right,y+rowHeight);
       y += rowHeight;
@@ -370,7 +387,12 @@ function App() {
     "Hello Panda Mabati, I would like to proceed with an order request.",
     customer.trim() ? `Customer: ${customer.trim()}` : "",
     project.trim() ? `Project: ${project.trim()}` : "",
-    county.trim() ? `Delivery / project location: ${county.trim()}` : "",
+    county.trim() ? `County: ${county.trim()}` : "",
+    deliveryPlace.trim() ? `Place of delivery: ${deliveryPlace.trim()}` : "",
+    deliveryAddress.trim() ? `Delivery address: ${deliveryAddress.trim()}` : "",
+    deliveryLandmark.trim() ? `Landmark / directions: ${deliveryLandmark.trim()}` : "",
+    deliveryContact.trim() ? `Delivery contact: ${deliveryContact.trim()}` : "",
+    deliveryPhone.trim() ? `Delivery phone: ${deliveryPhone.trim()}` : "",
     phone.trim() ? `Customer phone: ${phone.trim()}` : "",
     "Selected products:",
     ...lines.map((line,index)=>{
@@ -610,9 +632,14 @@ function App() {
 
               <div className="quote-fields">
                 <label>Customer name<input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="Your name or business" /></label>
+                <label>Customer phone<input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+254 ..." inputMode="tel" /></label>
                 <label>Project name<input value={project} onChange={(e) => setProject(e.target.value)} placeholder="e.g. Family home" /></label>
-                <label>County / location<input value={county} onChange={(e) => setCounty(e.target.value)} placeholder="e.g. Kiambu County" /></label>
-                <label>Phone number<input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+254 ..." inputMode="tel" /></label>
+                <label>County<input value={county} onChange={(e) => setCounty(e.target.value)} placeholder="e.g. Mombasa County" /></label>
+                <label>Place of delivery<input value={deliveryPlace} onChange={(e) => setDeliveryPlace(e.target.value)} placeholder="e.g. Nyali, Mombasa" /></label>
+                <label className="field-wide">Site / delivery address<input value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Building, estate, road or plot number" /></label>
+                <label className="field-wide">Landmark / directions<input value={deliveryLandmark} onChange={(e) => setDeliveryLandmark(e.target.value)} placeholder="Nearby landmark or directions for the driver" /></label>
+                <label>Delivery contact person<input value={deliveryContact} onChange={(e) => setDeliveryContact(e.target.value)} placeholder="Name of person receiving materials" /></label>
+                <label>Delivery contact phone<input value={deliveryPhone} onChange={(e) => setDeliveryPhone(e.target.value)} placeholder="+254 ..." inputMode="tel" /></label>
               </div>
 
               <div className="line-list">
