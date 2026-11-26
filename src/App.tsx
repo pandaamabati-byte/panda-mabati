@@ -251,7 +251,24 @@ function App() {
     y += 6;
     doc.text(`Phone: ${phone.trim() || "Not provided"}`, left, y);
     doc.text(`Location: ${county.trim() || "Not provided"}`, 112, y);
-    y += 10;
+    y += 7;
+
+    // Official payment reference from the supplied OBOR quotation. Customers are warned to verify before paying.
+    doc.setFillColor(246,248,244);
+    doc.roundedRect(left,y,contentWidth,19,1.5,1.5,"F");
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(7);
+    doc.setTextColor(...green);
+    doc.text("BANK DETAILS",left+3,y+5);
+    doc.text("M-PESA DETAILS",112,y+5);
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(6.5);
+    doc.setTextColor(55,65,58);
+    doc.text("OBOR TECHNOLOGY KENYA LTD  |  Stanbic Bank",left+3,y+10);
+    doc.text("SWIFT: SBICKENX  |  A/C: 002000701556478 (KSh)",left+3,y+14.5);
+    doc.text("OBOR TECHNOLOGY  |  Paybill / Till: 4042469",112,y+10);
+    doc.text("Reference location: Nairobi",112,y+14.5);
+    y += 25;
 
     // Item table: product attributes and length-based pricing remain explicit.
     const columns = [
@@ -317,7 +334,7 @@ function App() {
     doc.setFont("helvetica","normal");
     doc.setFontSize(8);
     doc.setTextColor(65,75,68);
-    doc.text("VAT / taxes: Not included — confirm applicable treatment with Panda Mabati.",right-95,y);
+    doc.text("VAT / taxes: To be confirmed by OBOR Technology Kenya Ltd.",right-95,y);
     y += 8;
     doc.setFillColor(239,244,232);
     doc.roundedRect(right-75,y-5,75,13,2,2,"F");
@@ -331,7 +348,7 @@ function App() {
     doc.setFont("helvetica","bold");
     doc.setFontSize(8);
     doc.setTextColor(...green);
-    doc.text("TERMS & CUSTOMER DECLARATION",left,y);
+    doc.text("SOLEMN DECLARATION & TERMS",left,y);
     y += 5;
     doc.setFont("helvetica","normal");
     doc.setFontSize(7.2);
