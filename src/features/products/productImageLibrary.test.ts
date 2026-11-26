@@ -24,7 +24,7 @@ describe("product image library", () => {
       expect(asset.sourceUrl.trim()).not.toBe("");
       expect(asset.sourceName.trim()).not.toBe("");
       expect(asset.alt.trim()).not.toBe("");
-      expect(asset.verifiedAt).toMatch(/^\\d{4}-\\d{2}-\\d{2}$/);
+      expect(asset.verifiedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(asset.kind).toBe("product-photo");
       expect(asset.variantId).toBeUndefined();
     }
