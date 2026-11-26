@@ -274,7 +274,7 @@ function App() {
       doc.setTextColor(255,255,255);
       doc.setFont("helvetica","bold");
       doc.setFontSize(6.5);
-      columns.forEach((col,index) => doc.text(col.title, col.x, y+5.8, { align: index>=5 ? "right" : "left" }));
+      columns.forEach((col,index) => doc.text(col.title, col.x, y+5.8, { align: index>=4 ? "right" : "left" }));
       y += 9;
     };
     drawTableHeader();
@@ -296,7 +296,7 @@ function App() {
       const amount = rate === null ? null : qty * (length ?? 1) * rate;
       const optionParts = (line.variantLabel ?? "").split("·").map((part) => part.trim()).filter(Boolean);
       const colourValue = variant?.colour ?? optionParts[0] ?? "To confirm";
-      const gaugeValue = variant?.gauge ?? optionParts.find((part) => /^(?:G\\s?\\d+|\\d{2}G)$/i.test(part)) ?? "To confirm";
+      const gaugeValue = variant?.gauge ?? optionParts.find((part) => /^(?:G\s?\d+|\d{2}G)$/i.test(part)) ?? "To confirm";
       const rowHeight = 12;
       if (y + rowHeight > pageHeight - 48) { doc.addPage(); y=18; drawTableHeader(); }
       if(index%2===0){doc.setFillColor(246,248,244);doc.rect(left,y,contentWidth,rowHeight,"F");}
