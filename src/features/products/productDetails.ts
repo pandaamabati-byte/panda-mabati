@@ -22,6 +22,8 @@ versatile:{overview:"A decorative roofing profile for traditional and contempora
 "ridge-caps":{overview:"Ridge and roll-top accessories finish the roof apex and protect the ridge junction.",benefits:["Completes roof ridge detailing","Options listed for roof systems"],notes:["Confirm ridge type, dimensions, gauge, length and profile compatibility"]},
 flashings:{overview:"Formed components used to finish roof edges, junctions and transitions.",benefits:["Helps finish roof junctions","Can be specified to suit the project"],notes:["Confirm type, drawing, material, dimensions and unit"]},
 gutters:{overview:"Rainwater gutters collect and direct runoff from the roof edge.",benefits:["Supports controlled rainwater drainage","Coordinate with downpipes and fittings"],notes:["Confirm material, profile, lengths, brackets and outlets"]},
+"roll-tops":{overview:"Roll-top ridge accessories are listed in 28G and 30G options.",benefits:["Finishes roof ridge lines","Factory catalogue lists 28G and 30G options"],notes:["Confirm dimensions, gauge, material and compatibility"]},
+"valley-trays":{overview:"A Decra valley tray is listed in the factory accessories range.",benefits:["Roof valley junction accessory","Designed for compatible Decra roofing systems"],notes:["Confirm exact profile, dimensions and compatibility"]},
 "roofing-fasteners":{overview:"Roofing nails and fasteners secure roofing sheets and compatible accessories.",benefits:["Fixings for roofing installation","Washer compatibility matters"],notes:["Confirm type, length, coating, pack size and sheet compatibility"]}
 };
 export const getProductVariants=(id:string)=>variants[id]??[];
