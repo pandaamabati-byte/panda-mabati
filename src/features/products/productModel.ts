@@ -20,6 +20,18 @@ export type Product = {
 
 export const FALLBACK_PRODUCTS: Product[] = [
   {
+    id: "eurotile",
+    name: "Eurotile",
+    short: "A distinctive tile-profile roofing sheet",
+    description:
+      "Eurotile is a tile-profile metal roofing sheet with a repeating raised tile pattern. Choose your required sheet length and request a quotation; colour, gauge, coverage and current pricing are confirmed by Panda Mabati sales.",
+    use: "Residential homes",
+    tone: "star",
+    published: true,
+    category: "Tile-effect roofing",
+    sourceName: "Panda Mabati · owner-approved catalogue addition",
+  },
+  {
     id: "d-tile",
     name: "D-Tile",
     short: "Timeless roof character",
