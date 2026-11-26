@@ -106,19 +106,19 @@ export const PRODUCT_IMAGE_LIBRARY: ProductImageAsset[] = [
   },
   ...[
     ["d-tile", "D-Tile", "https://pandamabatifactory.co.ke/wp/"],
-    ["versatile", "Versatile", "https://pandamabati.com/"],
+    ["versatile", "Versatile", "https://take.app/pandamabatiltd/c/cm7cwmwkb000ww4xpqnpb8of1"],
     ["box-profile", "Box Profile", "https://pandamabatifactory.co.ke/wp/product-category/box-profile-30g/"],
     ["corrugated", "Corrugated Roofing", "https://pandamabatifactory.co.ke/wp/"],
     ["startile", "StarTile", "https://pandamabatifactory.co.ke/wp/"],
-    ["glazed-tile", "Glazed Tile", "https://pandamabatifactory.co.ke/wp/"],
+    ["glazed-tile", "Glazed Tile", "https://pandamabatifactory.co.ke/wp/product/glazed-tile-c-grey-30g-matt/"],
     ["elegantile", "Elegantile", "https://pandamabatifactory.co.ke/wp/"],
     ["decra", "Decra Roofing", "https://pandamabatifactory.co.ke/wp/"],
-    ["ridge-caps", "Ridge Caps and Roll Tops", "https://pandamabatifactory.co.ke/wp/"],
+    ["ridge-caps", "Ridge Caps", "https://pandamabatifactory.co.ke/wp/"],
     ["flashings", "Roof Flashings", "https://pandamabati.com/"],
     ["gutters", "Rainwater Gutters", "https://pandamabati.com/"],
     ["roll-tops", "Roll Tops", "https://pandamabatifactory.co.ke/wp/"],
     ["valley-trays", "Valley Trays", "https://pandamabatifactory.co.ke/wp/"],
-    ["roofing-fasteners", "Roofing Nails and Fasteners", "https://pandamabati.com/"],
+    ["roofing-fasteners", "Roofing Nails and Fasteners", "https://pandamabatifactory.co.ke/wp/"],
   ].filter(([productId]) => !["box-profile", "corrugated", "startile"].includes(productId)).map(([productId, name, sourceUrl]) => ({
     id: productId + "-primary-pending",
     productId,
@@ -130,7 +130,7 @@ export const PRODUCT_IMAGE_LIBRARY: ProductImageAsset[] = [
     status: "awaiting-verification" as const,
     kind: "product-photo" as const,
     alt: name + " product photograph",
-    notes: "Manufacturer source identified; a genuine image has not yet been verified and approved for this product.",
+    notes: "Product family is listed by the manufacturer or Panda sales catalogue, but no usable, rights-cleared product photograph has been verified for this storefront. Keep the product-specific profile visual until Panda supplies or approves an image.",
   })),
 ];
 
