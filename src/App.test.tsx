@@ -92,9 +92,14 @@ describe('Panda Mabati storefront', () => {
     const { container } = render(<App />);
     const dTile = container.querySelector('[data-product-id="d-tile"]');
     const versatile = container.querySelector('[data-product-id="versatile"]');
-    expect(dTile?.getAttribute('data-image-status')).toBe('verified-photo');
+    expect(dTile?.getAttribute('data-image-status')).toBe('verified-photo')
+    for (const id of ['eurotile', 'roman-tile']) {
+      const card = container.querySelector(`[data-product-id="${id}"]`)
+      expect(card?.getAttribute('data-image-status')).toBe('verified-photo')
+      expect(card?.querySelector('img.product-card__photo')?.getAttribute('src')).toMatch(/^data:image\/webp;base64,/)
+    };
     expect(versatile?.getAttribute('data-image-status')).toBe('profile-visual');
-    expect(screen.getAllByText(/Genuine Panda photos: 4 of 15 product families/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Genuine Panda photos: 6 of 16 product families/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/PROFILE VISUAL · PHOTO PENDING/i).length).toBeGreaterThan(0);
   });
 
