@@ -32,9 +32,9 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const [gauge, setGauge] = useState(variants[0]?.gauge ?? "G30");
   const [finish, setFinish] = useState(variants[0]?.finish ?? "");
   const [specialGauge, setSpecialGauge] = useState("G30");
-  const [specialLength, setSpecialLength] = useState(product.id === "d-tile" ? 2 : 1);
+  const [specialLength, setSpecialLength] = useState(product.id === "d-tile" ? 2 : 1);\n  const [variantLength, setVariantLength] = useState(variants[0]?.sheetLengthM ?? 0);
 
-  const colours = [...new Set(variants.map((v) => v.colour))];
+  const colours = [...new Set(variants.map((v) => v.colour))];\n  const variantLengths = [...new Set(variants.filter((v) => v.colour === colour && v.sheetLengthM).map((v) => v.sheetLengthM as number))].sort((a,b)=>a-b);
   const gauges = [...new Set(variants.map((v) => v.gauge))];
   const finishes = [...new Set(variants.map((v) => v.finish))];
   const specialGauges = [...new Set(priceOptions.map((option) => option.gauge).filter(Boolean))] as string[];
@@ -53,11 +53,11 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
     [priceOptions, specialGauge, specialLength],
   );
 
-  const label = selected ? [selected.colour, selected.finish, selected.gauge].join(" · ") : undefined;
+  const label = selected ? [selected.colour, selected.finish, selected.gauge, selected.sheetLengthM ? `${selected.sheetLengthM}m` : ""].filter(Boolean).join(" · ") : undefined;
   const optionLabel = variants.length ? label : selectedPriceOption?.label ?? priceInfo?.cartLabel;
   const selectedPrice = selected?.unitPriceKes ?? selectedPriceOption?.unitPriceKes ?? priceInfo?.unitPriceKes;
   const selectedPriceUnit = selected?.priceUnit ?? selectedPriceOption?.priceUnit ?? priceInfo?.priceUnit;
-  const selectedLength = selectedPriceOption?.sheetLengthM;
+  const selectedLength = selected?.sheetLengthM ?? selectedPriceOption?.sheetLengthM;
   const priceDisplay = selectedPriceOption?.display ?? priceInfo?.display;
   const priceNote = selectedPriceOption?.minimumOrder
     ? `Marketplace minimum order: ${selectedPriceOption.minimumOrder}. No colour variants are offered in this selection.`
@@ -98,7 +98,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
         <section className="product-detail-hero">
           <div className="product-detail-visual">
             {previewImage ? (
-              <img src={previewImage} alt={verifiedImage?.alt ?? product.name} key={previewImage} />
+              <div className="product-detail-photo-stage"><img src={previewImage} alt={verifiedImage?.alt ?? "Real tile-profile roofing sheet reference photograph"} key={previewImage} />{isDTileReference && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} />}</div>
             ) : (
               <div className="product-detail-placeholder">
                 <Layers3 size={58} />
@@ -109,7 +109,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
               </div>
             )}
             <span className="product-detail-photo-note">
-              {verifiedImage?.kind === "variant-photo" ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage ? "VERIFIED PRODUCT PHOTOGRAPH" : "ILLUSTRATIVE · NOT A PRODUCT PHOTO"}
+              {isDTileReference ? "REAL TILE-PROFILE REFERENCE · NOT A PANDA D-TILE PHOTO" : verifiedImage?.kind === "variant-photo" ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage ? "VERIFIED PRODUCT PHOTOGRAPH" : "ILLUSTRATIVE · NOT A PRODUCT PHOTO"}
             </span>
           </div>
 
@@ -162,7 +162,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
                 <label>Colour
                   <select value={colour} onChange={(e) => {
                     const v = variants.find((item) => item.colour === e.target.value);
-                    if (v) { setColour(v.colour); setGauge(v.gauge); setFinish(v.finish); }
+                    if (v) { setColour(v.colour); setGauge(v.gauge); setFinish(v.finish); if (v.sheetLengthM) setVariantLength(v.sheetLengthM); if (v.sheetLengthM) setVariantLength(v.sheetLengthM); }
                   }}>
                     {colours.map((v) => <option key={v}>{v}</option>)}
                   </select>
@@ -191,7 +191,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
                 <div>
                   <span className="eyebrow">Selected option</span>
                   <h3>{label}</h3>
-                  <p>Colour swatch is a visual guide. The displayed price is the published Panda Mabati catalogue rate for this option.</p>
+                  <p>{isDTileReference ? "The photograph is a real tile-profile reference from an independent retailer, not a Panda D-Tile product photo. The colour overlay is a visual preview only; compare a physical colour sample before ordering." : "Colour swatch is a visual guide. The displayed price is the published catalogue rate for this option."}</p>
                 </div>
                 <span className="variant-pending">{selected ? getVariantPriceLabel(selected) : "Catalogue price"}</span>
               </div>
