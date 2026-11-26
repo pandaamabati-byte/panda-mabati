@@ -663,7 +663,7 @@ function App() {
             <p>Need help choosing roofing sheets for your project? Contact our sales team.</p>
             <a className="site-footer__contact-link" href={`mailto:${BUSINESS_CONTACT.salesEmail}`}>{BUSINESS_CONTACT.salesEmail}</a>
             <a className="site-footer__contact-link" href={`tel:${BUSINESS_CONTACT.phoneDial}`}>{BUSINESS_CONTACT.contactName} · {BUSINESS_CONTACT.phoneDisplay}</a>
-            <a className="site-footer__contact-button" href="https://wa.me/254713207844" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
+            <a className="site-footer__contact-button" href="https://wa.me/254705141152" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
           </section>
           <section className="site-footer__social">
             <h2>Stay connected</h2>
