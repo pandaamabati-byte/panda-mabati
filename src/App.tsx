@@ -421,8 +421,8 @@ function App() {
               ) : (
                 <img
                   className="hero__photo"
-                  src="/images/hero/modern-roof-house.jpg"
-                  alt="Contemporary home with a prominent metal roof and landscaped garden"
+                  src="https://pandamabati.com/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-06-at-7.53.20-PM-1-1024x768.jpeg"
+                  alt="Panda Mabati residential roofing project showing a completed multi-section tile-profile roof on a modern family home"
                   fetchPriority="high"
                   decoding="async"
                   onError={() => setHeroImageUnavailable(true)}
