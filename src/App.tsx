@@ -410,7 +410,7 @@ function App() {
           </div>
           <p className="catalogue-note">
             {catalogueSource === "firestore"
-              ? "Live published catalogue loaded. "
+              ? "Live catalogue connected; published products are shown alongside additional catalogue entries awaiting verification. "
               : "Showing the local catalogue until the live catalogue is available. "}
             Some cards use illustrative artwork until verified manufacturer photographs are attached. Product variants, prices, selling units, coverage and technical specifications must be confirmed before ordering.
           </p>
@@ -431,30 +431,14 @@ function App() {
               </a>
             </div>
             <div className="product-feature__grid">
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><ShieldCheck size={22} /></span>
-                <strong>D-Tile</strong>
-                <small>Tile-inspired character</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><Layers3 size={22} /></span>
-                <strong>Versatile</strong>
-                <small>A distinctive profile</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><Sparkles size={22} /></span>
-                <strong>StarTile</strong>
-                <small>Tile-effect styling</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><Truck size={22} /></span>
-                <strong>Box Profile</strong>
-                <small>Modern ribbed lines</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
+              {products.map((product) => (
+                <a href="#roofing" className="product-feature__item" key={product.id}>
+                  <span className="product-feature__icon"><Layers3 size={22} /></span>
+                  <strong>{product.name}</strong>
+                  <small>{product.short}</small>
+                  <ArrowUpRight className="product-feature__arrow" size={17} />
+                </a>
+              ))}
             </div>
           </div>
         </section>
