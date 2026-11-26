@@ -94,7 +94,7 @@ export const getProductStartingPrice=(id:string):number|undefined=>{
  return undefined;
 };
 
-export const getProductStartingPriceUnit=(id:string):"metre"|"piece"|undefined=>getProductVariants(id)[0]?.priceUnit;
+export const getProductStartingPriceUnit=(id:string):"metre"|"piece"|"packet"|undefined=>getProductVariants(id)[0]?.priceUnit;
 
 export type ProductPriceOption={id:string;label:string;display:string;unitPriceKes:number;priceUnit:"metre"|"packet";sheetLengthM:number;minimumOrder?:string;gauge?:string;sourceUrl:string};
 const specialPriceOptions:Record<string,ProductPriceOption[]> = {
