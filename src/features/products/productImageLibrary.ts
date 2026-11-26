@@ -57,6 +57,18 @@ export const PRODUCT_IMAGE_LIBRARY: ProductImageAsset[] = [
     notes: "Local file exists; original manufacturer provenance and exact variant match have not yet been verified.",
   },
   {
+    id: "d-tile-panda-confirmed-primary",
+    productId: "d-tile",
+    src: "https://storage.googleapis.com/takeapp/media/clvebadzw00020fl9dehabkv3.jpg",
+    sourceUrl: "https://pandamabatifactory.co.ke/wp/",
+    sourceName: "Panda Mabati (owner-confirmed original image)",
+    status: "verified",
+    kind: "product-photo",
+    alt: "Panda Mabati D-Tile roofing profile",
+    verifiedAt: "2026-11-26",
+    notes: "The site owner confirmed this is the original D-Tile product image; approved for product cards and product detail pages.",
+  },
+  {
     id: "box-profile-official-primary",
     productId: "box-profile",
     src: "https://pandamabati.com/wp-content/uploads/2026/06/download.jpg",
