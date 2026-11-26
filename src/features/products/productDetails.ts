@@ -15,7 +15,7 @@ const make = (id: string, rows: Row[], priceUnit: "metre" | "piece" = "metre"): 
   id:id+"-"+i,colour,finish,gauge,unitPriceKes,priceUnit,sourceUrl:source
 }));
 
-// Exact colour/gauge/finish/price combinations transcribed from Panda Mabati Factory listings.
+// Colour/gauge/finish names come from the factory catalogue. Rates use the Panda Mabati Ltd retail list where it publishes a comparable unit, and the factory listing otherwise.
 const variants: Record<string, ProductVariant[]> = {
   "box-profile": make("box",[
     ["Brick Red","Gloss","30G",520],["Tile Red","Gloss","30G",520],["Tile Red","Matt","30G",600],
@@ -39,8 +39,8 @@ const variants: Record<string, ProductVariant[]> = {
     ["Wine Red","Matt","28G",720],["C/Gray","Matt","28G",720],["Green","Matt","30G",620]
   ]),
   decra:make("decra",[
-    ["Shingle Tile Black","Stone-coated","26G",730],["Shingle Tile Brick Red","Stone-coated","26G",730],
-    ["Classic Tile Coffee Brown","Stone-coated","26G",730],["Classic Tile Black","Stone-coated","26G",720]
+    ["Shingle Tile Black","Stone-coated","26G",720],["Shingle Tile Brick Red","Stone-coated","26G",720],
+    ["Classic Tile Coffee Brown","Stone-coated","26G",720],["Classic Tile Black","Stone-coated","26G",720]
   ],"piece"),
   "roll-tops":make("roll-top",[["Standard","Standard","28G",800],["Standard","Standard","30G",700]],"piece"),
   "ridge-caps":make("ridge",[["Normal Ridge / Kofia","Standard","—",600]],"piece"),
