@@ -535,3 +535,7 @@
 .catalogue-image-coverage{margin:7px 0 0;color:#718078;font-size:11px;line-height:1.55;max-width:760px}
 .product-card__image-note--photo{left:10px;right:auto;background:#173e32;color:#fff}
 .product-card__image-note{z-index:2}
+
+/* Clearly identify generated product concept artwork without confusing it with manufacturer photography. */
+.product-card__image-note--ai{left:10px;right:auto;background:#f0e6d6;color:#5c4022;border:1px solid rgba(92,64,34,.18)}
+.product-card__photo--visualisation{width:100%;height:100%;object-fit:cover;display:block}
