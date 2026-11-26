@@ -184,14 +184,14 @@ export function RootLayout() {
               </h2>
 
               <p className="mt-5 text-xl font-bold tracking-tight">
-                John Mwasi
+                Handerson Mwakamba
               </p>
               <p className="mt-1 text-sm text-emerald-100/65">
                 Customer enquiries
               </p>
 
               <a
-                href="tel:+254713207844"
+                href="tel:+254705141152"
                 className="mt-5 flex w-fit items-center gap-3 rounded-xl transition hover:text-[#D9F078] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D9F078]"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06]">
@@ -208,7 +208,7 @@ export function RootLayout() {
               </a>
 
               <a
-                href="https://wa.me/254713207844"
+                href="https://wa.me/254705141152"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-3 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-emerald-50 transition hover:border-[#D9F078] hover:bg-[#D9F078]/10 hover:text-[#D9F078] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D9F078]"

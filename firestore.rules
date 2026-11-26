@@ -2,14 +2,41 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Public visitors may read only products explicitly published by staff.
-    // Product creation and editing must happen through a trusted admin workflow.
-    match /products/{productId} {
-      allow get, list: if resource.data.published == true;
-      allow create, update, delete: if false;
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
     }
 
-    // All other collections remain inaccessible from the client.
+    // Published products are public; unpublished drafts are admin-only.
+    match /products/{productId} {
+      allow get, list: if isAdmin() || resource.data.published == true;
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasAll(['name', 'short', 'description', 'use', 'tone', 'published', 'priceStatus'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.published is bool
+        && request.resource.data.priceStatus in ['pending', 'confirmed']
+        && (request.resource.data.priceStatus == 'pending'
+          || (request.resource.data.unitPriceKes is number
+            && request.resource.data.unitPriceKes > 0
+            && request.resource.data.priceUnit is string
+            && request.resource.data.priceUnit.size() > 0
+            && request.resource.data.priceUnit != 'To confirm'));
+      allow update: if isAdmin()
+        && request.resource.data.keys().hasAll(['name', 'short', 'description', 'use', 'tone', 'published', 'priceStatus'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.published is bool
+        && request.resource.data.priceStatus in ['pending', 'confirmed']
+        && (request.resource.data.priceStatus == 'pending'
+          || (request.resource.data.unitPriceKes is number
+            && request.resource.data.unitPriceKes > 0
+            && request.resource.data.priceUnit is string
+            && request.resource.data.priceUnit.size() > 0
+            && request.resource.data.priceUnit != 'To confirm'));
+      allow delete: if isAdmin();
+    }
+
+    // No other collection is readable or writable from a client.
     match /{document=**} {
       allow read, write: if false;
     }

@@ -1,13 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight, Check, ChevronDown, Download, Menu, ShieldCheck,
-  Sparkles, X, Calculator, Layers3, Truck, BadgeCheck, Plus, Minus,
+  Sparkles, X, Calculator, Layers3, Truck, BadgeCheck, Plus, Minus, Search,
 } from "lucide-react";
 import { jsPDF } from "jspdf";
+import pandaMabatiLogo from "./assets/panda-mabati-logo.jpg";
 import { BUSINESS_CONTACT } from "./config/business";
 import { BOX_PROFILE_VARIANTS } from "./features/products/boxProfileVariants";
 import { FALLBACK_PRODUCTS, type Product } from "./features/products/productModel";
 import { loadProducts } from "./services/products/catalogue";
+import ProductDetailPage from "./features/products/ProductDetailPage";
+import ProductProfileVisual from "./features/products/ProductProfileVisual";
+import { getProductImageStatus, getVerifiedProductImage, PRODUCT_IMAGE_TARGETS } from "./features/products/productImageLibrary";
+import { getProductStartingPrice, getProductStartingPriceUnit } from "./features/products/productDetails";
 import "./App.css";
 
 type QuoteLine = {
@@ -17,6 +22,8 @@ type QuoteLine = {
   quantity: number;
   sheetLengthM: number;
   unitPrice: string;
+  variantLabel?: string;
+  priceUnit?: "metre" | "piece" | "packet";
 };
 
 const money = (amount: number) =>
@@ -30,33 +37,47 @@ const makeLine = (productId = "box-profile"): QuoteLine => ({
   id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   productId,
   variantId: productId === "box-profile" ? BOX_PROFILE_VARIANTS[0]?.id : undefined,
+  priceUnit: productId === "box-profile" ? "metre" : undefined,
   quantity: 1,
   sheetLengthM: 2.5,
   unitPrice: "",
 });
 
-function RoofArtwork({ tone }: { tone: string }) {
+function ProductCardVisual({ product, index }: { product: Product; index: number }) {
+  const [imageUnavailable, setImageUnavailable] = useState(false);
+  const image = getVerifiedProductImage(product.id);
+  const imageStatus = getProductImageStatus(product.id);
+  const showPhoto = Boolean(image && !imageUnavailable);
+
   return (
-    <div className={`roof-art roof-art--${tone}`} aria-hidden="true">
-      <div className="roof-art__sun" />
-      <div className="roof-art__house">
-        <div className="roof-art__roof" />
-        <div className="roof-art__wall">
-          <span />
-          <span />
-          <i />
-        </div>
-      </div>
-      <div className="roof-art__ground" />
-      <span className="roof-art__label">PANDA / ROOFING</span>
+    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : "profile-visual"} data-photo-coverage={imageStatus.hasGenuinePhoto ? "verified" : "pending"}>
+      {showPhoto && image ? (
+        <img
+          src={image.src}
+          alt={image.alt}
+          className="product-card__photo"
+          loading="lazy"
+          onError={() => setImageUnavailable(true)}
+        />
+      ) : (
+        <>
+          <ProductProfileVisual productId={product.id} productName={product.name} tone={product.tone} />
+          <span className="product-card__image-note">PROFILE VISUAL · PHOTO PENDING</span>
+        </>
+      )}
+      {showPhoto && <span className="product-card__image-note product-card__image-note--photo">PANDA PRODUCT PHOTO</span>}
+      <span className="product-card__number">0{index + 1}</span>
     </div>
   );
 }
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [heroImageUnavailable, setHeroImageUnavailable] = useState(false);
+  const [activeProductId, setActiveProductId] = useState(() => window.location.hash.startsWith("#product/") ? decodeURIComponent(window.location.hash.slice(9)) : "");
   const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
-  const [catalogueSource, setCatalogueSource] = useState<"fallback" | "firestore">("fallback");
+  const [productSearch, setProductSearch] = useState("");
+  const [productFilter, setProductFilter] = useState<"all" | "sheets" | "tiles" | "accessories">("all");
 
   useEffect(() => {
     let active = true;
@@ -64,40 +85,50 @@ function App() {
     void loadProducts().then((result) => {
       if (!active) return;
       setProducts(result.products);
-      setCatalogueSource(result.source);
     });
 
     return () => {
       active = false;
     };
   }, []);
-  const [lines, setLines] = useState<QuoteLine[]>([makeLine()]);
+  useEffect(() => { const syncRoute=()=>setActiveProductId(window.location.hash.startsWith("#product/")?decodeURIComponent(window.location.hash.slice(9)):""); window.addEventListener("hashchange",syncRoute); return ()=>window.removeEventListener("hashchange",syncRoute); }, []);
+  const [lines, setLines] = useState<QuoteLine[]>([]);
   const [customer, setCustomer] = useState("");
+  const [customerId, setCustomerId] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [project, setProject] = useState("");
   const [county, setCounty] = useState("");
   const [phone, setPhone] = useState("");
+  const [deliveryPlace, setDeliveryPlace] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliveryLandmark, setDeliveryLandmark] = useState("");
+  const [deliveryContact, setDeliveryContact] = useState("");
+  const [deliveryPhone, setDeliveryPhone] = useState("");
   const [notes, setNotes] = useState("");
 
   const quote = useMemo(() => {
     const totalQuantity = lines.reduce((sum, line) => {
       const quantity = Math.max(0, Number(line.quantity) || 0);
-      if (line.productId !== "box-profile") return sum;
+      if (line.priceUnit !== "metre") return sum;
       const length = Math.max(0, Number(line.sheetLengthM) || 0);
       return sum + quantity * length;
     }, 0);
 
     const hasMissingPrice = lines.some((line) => {
       if (line.quantity <= 0) return false;
-      if (line.productId === "box-profile") {
-        return true;
+      if (line.productId === "box-profile" && line.variantId) {
+        return !BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId);
       }
       const rate = Number(line.unitPrice);
       return line.unitPrice.trim() === "" || !Number.isFinite(rate) || rate < 0;
     });
 
     const pricedTotal = lines.reduce((sum, line) => {
-      // Preliminary Box Profile rates must never enter the subtotal.
-      if (line.productId === "box-profile") return sum;
+      // Published factory rates are applied to selected Box Profile lengths.
+      if (line.productId === "box-profile" && line.variantId) {
+        const variant = BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId);
+        return sum + (variant ? Math.max(0, Number(line.quantity) || 0) * Math.max(0, Number(line.sheetLengthM) || 0) * variant.ratePerM : 0);
+      }
 
       const rate = Number(line.unitPrice);
       if (
@@ -107,7 +138,7 @@ function App() {
       ) return sum;
 
       const quantity = Math.max(0, Number(line.quantity) || 0);
-      return sum + quantity * rate;
+      return sum + quantity * (line.priceUnit === "metre" ? Math.max(0, Number(line.sheetLengthM) || 0) : 1) * rate;
     }, 0);
 
     return { totalQuantity, hasMissingPrice, pricedTotal };
@@ -119,141 +150,273 @@ function App() {
     );
   };
 
-  const addLine = () => setLines((current) => [...current, makeLine()]);
+  const addLine = () => setLines((current) => [...current, makeLine("box-profile")]);
   const removeLine = (id: string) =>
     setLines((current) =>
-      current.length > 1 ? current.filter((line) => line.id !== id) : current,
+      current.filter((line) => line.id !== id),
     );
 
-  const downloadQuote = () => {
-    const doc = new jsPDF();
+  const downloadQuote = async () => {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
-    const left = 18;
-    const right = pageWidth - 18;
-    let y = 20;
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const left = 14;
+    const right = pageWidth - 14;
+    const contentWidth = right - left;
+    const quoteDate = new Date();
+    const expiryDate = new Date(quoteDate);
+    expiryDate.setDate(expiryDate.getDate() + 14);
+    const dateLabel = (date: Date) => date.toLocaleDateString("en-KE", { day: "2-digit", month: "short", year: "numeric" });
+    const quoteNumber = `PM-${quoteDate.getFullYear()}${String(quoteDate.getMonth()+1).padStart(2,"0")}-${String(quoteDate.getDate()).padStart(2,"0")}-${String(quoteDate.getTime()).slice(-5)}`;
+    const green: [number, number, number] = [18, 53, 43];
+    const lime: [number, number, number] = [194, 220, 77];
+    let y = 12;
+    const logoImage = new Image();
+    logoImage.src = pandaMabatiLogo;
+    await logoImage.decode();
 
-    doc.setFillColor(18, 53, 43);
-    doc.rect(0, 0, pageWidth, 43, "F");
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    doc.text("PANDA MABATI", left, y + 3);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text("ROOFING SOLUTIONS  /  KENYA", left, y + 11);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("QUOTATION", right, y + 3, { align: "right" });
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text(`Date: ${new Date().toLocaleDateString("en-KE")}`, right, y + 11, {
-      align: "right",
-    });
+    // Official OBOR Technology Kenya Ltd quotation identity, upgraded with the current Panda Mabati logo.
+    doc.setFillColor(255,255,255);
+    doc.rect(0, 0, pageWidth, 47, "F");
+    doc.setFillColor(...green);
+    doc.rect(0, 0, pageWidth, 3, "F");
+    doc.setFillColor(...lime);
+    doc.rect(0, 47, pageWidth, 2, "F");
+    doc.addImage(logoImage, "JPEG", left, 7, 30, 20);
+    const companyLeft = left + 34;
+    doc.setTextColor(...green);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(13);
+    doc.text("OBOR TECHNOLOGY KENYA LTD", companyLeft, 13);
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7.4);
+    doc.setTextColor(65,75,68);
+    doc.text("Plaza Business Park, Mombasa Road, Nairobi", companyLeft, 19);
+    doc.text("P.O. Box 37838-00100, Nairobi, Kenya  |  PTN: P051909470Y", companyLeft, 24);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...green);
+    doc.text("PANDA MABATI", companyLeft, 34);
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7);
+    doc.setTextColor(65,75,68);
+    doc.text("Roofing Solutions  |  We Represent Quality", companyLeft, 39);
+    doc.text(`Tel: ${BUSINESS_CONTACT.phoneDisplay}  |  ${BUSINESS_CONTACT.salesEmail}`, companyLeft, 44);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(17);
+    doc.setTextColor(...green);
+    doc.text("QUOTATION", right, 15, { align: "right" });
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(65,75,68);
+    doc.text(`Quote No: ${quoteNumber}`, right, 23, { align: "right" });
+    doc.text(`Date of issue: ${dateLabel(quoteDate)}`, right, 29, { align: "right" });
+    doc.text(`Date of expiry: ${dateLabel(expiryDate)}`, right, 35, { align: "right" });
+    doc.text(doc.splitTextToSize(`Place of delivery: ${deliveryPlace.trim() || "To be confirmed"}`, 68).slice(0, 2), right, 41, { align: "right" });
 
     y = 56;
-    doc.setTextColor(30, 41, 38);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("CUSTOMER & PROJECT", left, y);
-    y += 8;
-    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...green);
+    doc.setFont("helvetica","bold");
     doc.setFontSize(9);
+    doc.text("CUSTOMER DETAILS", left, y);
+    doc.text("PROJECT / DELIVERY DETAILS", 112, y);
+    y += 3;
+    doc.setDrawColor(205,215,207);
+    doc.line(left,y,right,y);
+    y += 7;
+    doc.setTextColor(45,55,50);
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(8);
     doc.text(`Customer: ${customer.trim() || "Not provided"}`, left, y);
-    y += 6;
+    doc.text(`Place: ${deliveryPlace.trim() || "To be confirmed"}`, 112, y);
+    y += 5;
+    doc.text(`ID / PIN: ${customerId.trim() || "Not provided"}`, left, y);
+    doc.text(`County: ${county.trim() || "Not provided"}`, 112, y);
+    y += 5;
+    doc.text(`Telephone: ${phone.trim() || "Not provided"}`, left, y);
+    doc.text(`Delivery contact: ${deliveryContact.trim() || "Not provided"}`, 112, y);
+    y += 5;
+    doc.text(`Email: ${customerEmail.trim() || "Not provided"}`, left, y);
+    doc.text(`Delivery phone: ${deliveryPhone.trim() || "Not provided"}`, 112, y);
+    y += 5;
     doc.text(`Project: ${project.trim() || "Not provided"}`, left, y);
-    y += 6;
-    doc.text(`County / location: ${county.trim() || "Not provided"}`, left, y);
-    y += 6;
-    doc.text(`Phone: ${phone.trim() || "Not provided"}`, left, y);
+    const siteAddressLines = doc.splitTextToSize(`Site address: ${deliveryAddress.trim() || "To be confirmed"}`, 82).slice(0, 2);
+    doc.text(siteAddressLines, 112, y);
+    y += Math.max(5, siteAddressLines.length * 4);
+    if (deliveryLandmark.trim()) {
+      const landmarkLines = doc.splitTextToSize(`Landmark / directions: ${deliveryLandmark.trim()}`, 82).slice(0, 2);
+      doc.text(landmarkLines, 112, y);
+      y += Math.max(5, landmarkLines.length * 4);
+    }
+    y += 3;
 
-    y += 13;
-    doc.setFillColor(240, 242, 235);
-    doc.rect(left, y - 5, right - left, 10, "F");
-    doc.setFont("helvetica", "bold");
-    doc.text("ROOFING PRODUCT", left + 2, y + 1);
-    doc.text("QTY / LENGTH", 112, y + 1, { align: "right" });
-    doc.text("UNIT RATE", 151, y + 1, { align: "right" });
-    doc.text("AMOUNT", right - 2, y + 1, { align: "right" });
-    y += 10;
+    // Official payment reference from the supplied OBOR quotation. Customers are warned to verify before paying.
+    doc.setFillColor(246,248,244);
+    doc.roundedRect(left,y,contentWidth,19,1.5,1.5,"F");
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(7);
+    doc.setTextColor(...green);
+    doc.text("BANK DETAILS",left+3,y+5);
+    doc.text("M-PESA DETAILS",112,y+5);
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(6.5);
+    doc.setTextColor(55,65,58);
+    doc.text("OBOR TECHNOLOGY KENYA LTD  |  Stanbic Bank",left+3,y+10);
+    doc.text("SWIFT: SBICKENX  |  A/C: 002000701556478 (KSh)",left+3,y+14.5);
+    doc.text("OBOR TECHNOLOGY  |  Paybill / Till: 4042469",112,y+10);
+    doc.text("Reference location: Nairobi",112,y+14.5);
+    y += 25;
 
-    doc.setFont("helvetica", "normal");
-    lines.forEach((line) => {
+    // Item table: product attributes and length-based pricing remain explicit.
+    const columns = [
+      { title: "No.", x: left + 2, w: 6 },
+      { title: "TYPE", x: left + 10, w: 34 },
+      { title: "COLOUR", x: left + 46, w: 25 },
+      { title: "GAUGE", x: left + 73, w: 14 },
+      { title: "LENGTH (M)", x: left + 89, w: 17 },
+      { title: "PCS", x: left + 108, w: 9 },
+      { title: "PRICE (KSh)", x: left + 119, w: 28 },
+      { title: "AMOUNT (KSh)", x: right - 2, w: 30 },
+    ];
+    const drawTableHeader = () => {
+      doc.setFillColor(...green);
+      doc.rect(left,y,contentWidth,9,"F");
+      doc.setTextColor(255,255,255);
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(6.5);
+      columns.forEach((col,index) => doc.text(col.title, col.x, y+5.8, { align: index>=4 ? "right" : "left" }));
+      y += 9;
+    };
+    drawTableHeader();
+    doc.setFont("helvetica","italic");
+    doc.setFontSize(6.5);
+    doc.setTextColor(82,94,85);
+    doc.text("For metre-priced sheets: unit rate per metre × sheet length × quantity (pieces) = line total.", left + 1, y + 4.5);
+    y += 8;
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7.2);
+    lines.forEach((line,index) => {
       const product = products.find((item) => item.id === line.productId);
-      const quantity = Math.max(0, Number(line.quantity) || 0);
-      const variant = line.productId === "box-profile"
-        ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
-        : undefined;
-      const manualRate = Number(line.unitPrice);
-      const hasRate = line.productId !== "box-profile" &&
-        line.unitPrice.trim() !== "" &&
-        Number.isFinite(manualRate) &&
-        manualRate >= 0;
-      const rate = hasRate ? manualRate : null;
-      const amount = rate === null ? null : quantity * rate;
-      const productLabel = variant
-        ? `${product?.name ?? "Box Profile"} — ${variant.colour} ${variant.finish} ${variant.gauge}`
-        : product?.name ?? "Roofing product";
-      const nameLines = doc.splitTextToSize(productLabel, 68);
-      doc.text(nameLines, left + 2, y);
-      doc.text(variant ? `${quantity} x ${line.sheetLengthM}m` : String(quantity), 112, y, { align: "right" });
-      doc.text(
-        rate === null ? "To confirm" : `${money(rate)}${variant ? " / m" : ""}`,
-        151,
-        y,
-        {
-        align: "right",
-      });
-      doc.text(amount === null ? "To confirm" : money(amount), right - 2, y, {
-        align: "right",
-      });
-      y += Math.max(9, nameLines.length * 5 + 3);
-      doc.setDrawColor(225, 229, 222);
-      doc.line(left, y - 3, right, y - 3);
-      if (y > 255) {
-        doc.addPage();
-        y = 22;
-      }
+      const qty = Math.max(0, Number(line.quantity)||0);
+      const variant = line.productId === "box-profile" ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId) : undefined;
+      const enteredRate = Number(line.unitPrice);
+      const hasRate = Boolean(variant) || (line.unitPrice.trim() !== "" && Number.isFinite(enteredRate) && enteredRate >= 0);
+      const rate = variant ? variant.ratePerM : hasRate ? enteredRate : null;
+      const length = line.priceUnit === "metre" ? line.sheetLengthM : null;
+      const amount = rate === null ? null : qty * (length ?? 1) * rate;
+      const optionParts = (line.variantLabel ?? "").split("·").map((part) => part.trim()).filter(Boolean);
+      const colourValue = variant?.colour ?? optionParts[0] ?? "To confirm";
+      const gaugeValue = variant?.gauge ?? optionParts.find((part) => /^(?:G\s?\d+|\d{2}G)$/i.test(part)) ?? "To confirm";
+      const rowHeight = 12;
+      if (y + rowHeight > pageHeight - 48) { doc.addPage(); y=18; drawTableHeader(); }
+      if(index%2===0){doc.setFillColor(246,248,244);doc.rect(left,y,contentWidth,rowHeight,"F");}
+      doc.setTextColor(40,48,43);
+      doc.text(String(index+1),columns[0].x,y+7);
+      doc.text(doc.splitTextToSize(product?.name ?? "Roofing product",columns[1].w)[0],columns[1].x,y+7);
+      doc.text(doc.splitTextToSize(colourValue,columns[2].w)[0],columns[2].x,y+7);
+      doc.text(gaugeValue,columns[3].x,y+7);
+      doc.text(length===null ? "—" : `${length}m`,columns[4].x+columns[4].w,y+7,{align:"right"});
+      doc.text(String(qty),columns[5].x+columns[5].w,y+7,{align:"right"});
+      doc.text(rate===null ? "Confirm" : `${money(rate)}${line.priceUnit==="metre" ? " / m" : line.priceUnit==="packet" ? " / packet" : line.priceUnit==="piece" ? " / pc" : ""}`,columns[6].x+columns[6].w,y+7,{align:"right"});
+      doc.text(amount===null ? "Confirm" : money(amount).replace("Ksh","").trim(),columns[7].x,y+7,{align:"right"});
+      doc.setDrawColor(220,226,219);
+      doc.line(left,y+rowHeight,right,y+rowHeight);
+      y += rowHeight;
     });
 
-    y += 5;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text(
-      quote.hasMissingPrice
-        ? "Priced items subtotal (excludes unpriced items):"
-        : "Items subtotal:",
-      left,
-      y,
-    );
-    doc.text(money(quote.pricedTotal), right, y, { align: "right" });
-    y += 9;
-
-    doc.setFont("helvetica", "normal");
+    y += 8;
+    const totalLabel = quote.hasMissingPrice ? "PRICED ITEMS SUBTOTAL" : "SUBTOTAL";
+    doc.setTextColor(...green);
+    doc.setFont("helvetica","bold");
     doc.setFontSize(9);
-    const disclaimer = quote.hasMissingPrice
-      ? "IMPORTANT: This is a preliminary product and quantity quotation. Some unit prices have not been provided, so the displayed subtotal is not the full project total. Delivery, accessories, installation, taxes and final specifications are not included unless separately confirmed."
-      : "IMPORTANT: This document reflects the quantities and unit rates entered by the user. Delivery, accessories, installation, taxes and final specifications are not included unless separately confirmed.";
-    const wrappedDisclaimer = doc.splitTextToSize(disclaimer, right - left);
-    doc.text(wrappedDisclaimer, left, y);
-    y += wrappedDisclaimer.length * 5 + 7;
-
-    if (notes.trim()) {
-      doc.setFont("helvetica", "bold");
-      doc.text("Additional notes", left, y);
-      y += 6;
-      doc.setFont("helvetica", "normal");
-      doc.text(doc.splitTextToSize(notes.trim(), right - left), left, y);
-    }
-
+    doc.text(totalLabel,right-55,y);
+    doc.text(money(quote.pricedTotal),right,y,{align:"right"});
+    y += 7;
+    doc.setFont("helvetica","normal");
     doc.setFontSize(8);
-    doc.setTextColor(95, 105, 98);
-    doc.text(
-      "Panda Mabati | Roofing solutions made clearer.",
-      left,
-      285,
-    );
-    doc.save(`Panda-Mabati-Quotation-${new Date().toISOString().slice(0, 10)}.pdf`);
+    doc.setTextColor(65,75,68);
+    doc.text("VAT / taxes: To be confirmed by OBOR Technology Kenya Ltd.",right-95,y);
+    y += 8;
+    doc.setFillColor(239,244,232);
+    doc.roundedRect(right-75,y-5,75,13,2,2,"F");
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...green);
+    doc.text("TOTAL (BEFORE TAX)",right-71,y+3);
+    doc.text(money(quote.pricedTotal),right-3,y+3,{align:"right"});
+    y += 18;
+
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(8);
+    doc.setTextColor(...green);
+    doc.text("SOLEMN DECLARATION & TERMS",left,y);
+    y += 5;
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7.2);
+    doc.setTextColor(65,75,68);
+    const terms = quote.hasMissingPrice
+      ? "This is a preliminary quotation: some selected products do not yet have a confirmed unit rate. Final pricing, stock, colour, gauge, delivery, taxes and specifications must be confirmed by Panda Mabati before an order is accepted."
+      : "This quotation is based on the selected products, options, quantities and entered rates. Stock, final specifications, delivery charges, applicable taxes and the final order total are subject to confirmation by Panda Mabati.";
+    const termLines = doc.splitTextToSize(terms,contentWidth);
+    doc.text(termLines,left,y);
+    y += termLines.length*4+7;
+    if(notes.trim()){
+      doc.setFont("helvetica","bold");doc.setTextColor(...green);doc.text("ADDITIONAL NOTES",left,y);y+=5;
+      doc.setFont("helvetica","normal");doc.setTextColor(65,75,68);
+      const noteLines=doc.splitTextToSize(notes.trim(),contentWidth);doc.text(noteLines,left,y);y+=noteLines.length*4+7;
+    }
+    doc.setDrawColor(190,202,192);
+    doc.line(left,y,right,y);
+    y+=7;
+    doc.setFont("helvetica","bold");doc.setTextColor(...green);doc.setFontSize(7.5);
+    doc.text("CUSTOMER ACCEPTANCE",left,y);
+    doc.text("FOR OBOR TECHNOLOGY KENYA LTD",112,y);
+    y+=13;
+    doc.setDrawColor(130,145,135);
+    doc.line(left,y,right-88,y);
+    doc.line(112,y,right,y);
+    y+=4;
+    doc.setFont("helvetica","normal");doc.setTextColor(90,100,93);doc.setFontSize(6.5);
+    doc.text("Name / Signature / Date",left,y);
+    doc.text("Authorised signature / Date",112,y);
+
+    // Repeated footer on every page; no unverified bank or M-Pesa details are invented.
+    const pageCount=doc.getNumberOfPages();
+    for(let page=1;page<=pageCount;page++){
+      doc.setPage(page);
+      doc.setDrawColor(190,202,192);
+      doc.line(left,pageHeight-14,right,pageHeight-14);
+      doc.setFont("helvetica","normal");doc.setFontSize(6.5);doc.setTextColor(105,115,108);
+      doc.text(`OBOR TECHNOLOGY KENYA LTD  |  Panda Mabati  |  ${BUSINESS_CONTACT.salesEmail}  |  ${BUSINESS_CONTACT.phoneDisplay}`,left,pageHeight-9);
+      doc.text(`Page ${page} of ${pageCount}`,right,pageHeight-9,{align:"right"});
+    }
+    doc.save(`Panda-Mabati-Quotation-${quoteDate.toISOString().slice(0,10)}.pdf`);
   };
+
+  const orderMessage = [
+    "Hello Panda Mabati, I would like to proceed with an order request.",
+    customer.trim() ? `Customer: ${customer.trim()}` : "",
+    customerId.trim() ? `ID / PIN: ${customerId.trim()}` : "",
+    customerEmail.trim() ? `Email: ${customerEmail.trim()}` : "",
+    project.trim() ? `Project: ${project.trim()}` : "",
+    county.trim() ? `County: ${county.trim()}` : "",
+    deliveryPlace.trim() ? `Place of delivery: ${deliveryPlace.trim()}` : "",
+    deliveryAddress.trim() ? `Delivery address: ${deliveryAddress.trim()}` : "",
+    deliveryLandmark.trim() ? `Landmark / directions: ${deliveryLandmark.trim()}` : "",
+    deliveryContact.trim() ? `Delivery contact: ${deliveryContact.trim()}` : "",
+    deliveryPhone.trim() ? `Delivery phone: ${deliveryPhone.trim()}` : "",
+    phone.trim() ? `Customer phone: ${phone.trim()}` : "",
+    "Selected products:",
+    ...lines.map((line,index)=>{
+      const product=products.find(item=>item.id===line.productId);
+      const variant=line.productId==="box-profile"?BOX_PROFILE_VARIANTS.find(item=>item.id===line.variantId):undefined;
+      const option=variant?[variant.colour,variant.finish,variant.gauge].join(" · "):line.variantLabel;
+      return `${index+1}. ${product?.name??"Roofing product"}${option?` — ${option}`:""} | Quantity: ${line.quantity}${line.priceUnit==="metre"?` ${Number(line.quantity)===1?"sheet":"sheets"} × ${line.sheetLengthM}m`:""}`;
+    }),
+    notes.trim() ? `Project notes: ${notes.trim()}` : "",
+    "Please confirm stock, final specifications, delivery cost and the official order total before payment."
+  ].filter(Boolean).join("\n");
+  const orderWhatsAppUrl=`https://wa.me/${BUSINESS_CONTACT.phoneDial.replace(/\D/g, "")}?text=${encodeURIComponent(orderMessage)}`;
 
   const navLinks = [
     ["Home", "#home"],
@@ -261,6 +424,19 @@ function App() {
     ["Products", "#roofing"],
     ["Calculator", "#calculator"],
   ];
+
+  const visibleProducts = useMemo(() => {
+    const query = productSearch.trim().toLocaleLowerCase();
+    return products.map((product, index) => ({ product, index })).filter(({ product }) => {
+      const isAccessory = product.category === "Roofing accessories" || ["ridge-caps", "flashings", "gutters", "roll-tops", "valley-trays", "roofing-fasteners"].includes(product.id);
+      const isTile = ["d-tile", "versatile", "startile", "glazed-tile", "elegantile", "decra"].includes(product.id);
+      const categoryMatch = productFilter === "all" || (productFilter === "accessories" && isAccessory) || (productFilter === "tiles" && isTile && !isAccessory) || (productFilter === "sheets" && !isTile && !isAccessory);
+      const searchMatch = !query || [product.name, product.short, product.description, product.use, product.category].filter(Boolean).join(" ").toLocaleLowerCase().includes(query);
+      return categoryMatch && searchMatch;
+    });
+  }, [products, productSearch, productFilter]);
+  const activeProduct = products.find((product) => product.id === activeProductId);
+  if (activeProduct) return <ProductDetailPage key={activeProduct.id} product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel, price, priceUnit, sheetLengthM) => { const baseLine = makeLine(productId); const boxVariant = productId === "box-profile" ? BOX_PROFILE_VARIANTS.find((item) => `${item.colour} · ${item.finish} · ${item.gauge}` === variantLabel) : undefined; setLines((current) => [...current, { ...baseLine, variantId: boxVariant?.id, priceUnit: priceUnit ?? (boxVariant ? "metre" : undefined), sheetLengthM: sheetLengthM ?? baseLine.sheetLengthM, variantLabel, unitPrice: price === undefined ? "" : String(price) }]); window.location.hash = "#calculator"; }} />;
 
   return (
     <div className="site-shell">
@@ -271,13 +447,7 @@ function App() {
       </div>
 
       <header className="site-header">
-        <a href="#home" className="brand" aria-label="Panda Mabati home">
-          <span className="brand__mark"><Layers3 size={23} strokeWidth={2.2} /></span>
-          <span className="brand__words">
-            <strong>PANDA <em>MABATI</em></strong>
-            <small>ROOFING SOLUTIONS</small>
-          </span>
-        </a>
+        <a href="#home" className="brand" aria-label="Panda Mabati home"><img className="brand__logo" src={pandaMabatiLogo} alt="Panda Mabati — We Represent Quality" /></a>
 
         <nav aria-label="Main navigation" className={`desktop-nav ${mobileOpen ? "desktop-nav--open" : ""}`}>
           {navLinks.map(([label, href]) => (
@@ -328,12 +498,20 @@ function App() {
           </div>
           <div className="hero__visual">
             <div className="hero__image-frame">
-              <img
-                className="hero__photo"
-                src="/images/hero/modern-roof-house.jpg"
-                alt="Contemporary home with a prominent metal roof and landscaped garden"
-                fetchPriority="high"
-              />
+              {heroImageUnavailable ? (
+                <div className="hero__photo-fallback" role="img" aria-label="Panda Mabati residential roofing project photograph temporarily unavailable">
+                  <span>PROJECT PHOTOGRAPH TEMPORARILY UNAVAILABLE</span>
+                </div>
+              ) : (
+                <img
+                  className="hero__photo"
+                  src="https://pandamabati.com/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-06-at-7.53.20-PM-2-1024x768.jpeg"
+                  alt="Panda Mabati residential roofing project showing a completed multi-section tile-profile roof on a modern family home"
+                  fetchPriority="high"
+                  decoding="async"
+                  onError={() => setHeroImageUnavailable(true)}
+                />
+              )}
               <div className="hero__photo-shade" />
               <div className="hero__image-note"><span /> ROOFS WITH PURPOSE</div>
             </div>
@@ -363,49 +541,58 @@ function App() {
               <div className="eyebrow">Find your finish</div>
               <h2>Roofing for your kind of home.</h2>
             </div>
-            <p>Start with the look you love. Select a profile to add it to your quotation.</p>
+            <p>Start with the look you love. Select a profile to add it to your cart and quotation.</p>
+          </div>
+          <div className="catalogue-tools" aria-label="Find products">
+            <label className="catalogue-search">
+              <Search size={18} aria-hidden="true" />
+              <span className="sr-only">Search roofing products</span>
+              <input type="search" value={productSearch} onChange={(event) => setProductSearch(event.target.value)} placeholder="Search profiles, tiles and accessories" />
+              {productSearch && <button type="button" onClick={() => setProductSearch("")} aria-label="Clear product search"><X size={16} /></button>}
+            </label>
+            <div className="catalogue-filters" role="group" aria-label="Filter product category">
+              {[{id:"all",label:"All products"},{id:"sheets",label:"Roofing sheets"},{id:"tiles",label:"Tile profiles"},{id:"accessories",label:"Accessories"}].map((filter) => (
+                <button type="button" key={filter.id} className={productFilter === filter.id ? "catalogue-filter catalogue-filter--active" : "catalogue-filter"} aria-pressed={productFilter === filter.id} onClick={() => setProductFilter(filter.id as "all" | "sheets" | "tiles" | "accessories")}>{filter.label}</button>
+              ))}
+            </div>
+            <p className="catalogue-results" aria-live="polite">Showing {visibleProducts.length} of {products.length} products</p>
+            <p className="catalogue-image-coverage">Genuine Panda photos: {PRODUCT_IMAGE_TARGETS.filter((id) => getProductImageStatus(id).hasGenuinePhoto).length} of {PRODUCT_IMAGE_TARGETS.length} product families. Other cards show product-specific profile visuals until approved photographs are available.</p>
           </div>
           <div className="product-grid">
-            {products.map((product, index) => (
+            {visibleProducts.map(({ product, index }) => (
               <article className="product-card" key={product.id}>
-                <div className="product-card__image">
-                  {product.id === "box-profile" ? (
-                    <img
-                      src={BOX_PROFILE_VARIANTS[2].image}
-                      alt="Box Profile Tile Red Gloss 30G roofing sheet"
-                      className="product-card__photo"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <RoofArtwork tone={product.tone} />
-                  )}
-                  <span className="product-card__number">0{index + 1}</span>
-                </div>
+                <ProductCardVisual product={product} index={index} />
                 <div className="product-card__body">
                   <div className="product-card__topline"><span>{product.use}</span><BadgeCheck size={16} /></div>
-                  <h3>{product.name}</h3>
+                  <h3><button className="product-card__title-button" onClick={() => { window.location.hash = `#product/${product.id}`; }}>{product.name}</button></h3>
                   <p className="product-card__short">{product.short}</p>
+                  {getProductStartingPrice(product.id)!==undefined&&<p className="product-card__price">From KSh {getProductStartingPrice(product.id)!.toLocaleString("en-KE")} / {getProductStartingPriceUnit(product.id)==="metre"?"m":"piece"} · published catalogue</p>}
+                  {product.id==="d-tile"&&<p className="product-card__price">From KSh 1,130 · 2m packet</p>}
+                  {product.id==="versatile"&&<p className="product-card__price">From KSh 630 / m · G30</p>}
+                  {product.id==="gutters"&&<p className="product-card__price">KSh 400 · 4m PVC gutter</p>}
+                  {product.id==="flashings"&&<p className="product-card__price">From KSh 500 / piece · market guide</p>}
                   <p className="product-card__description">{product.description}</p>
+                  <button className="product-card__details" onClick={() => { window.location.hash = `#product/${product.id}`; }}>View product details <ArrowUpRight size={15} /></button>
                   <button
                     className="product-card__link"
-                    onClick={() => {
-                      setLines((current) => [...current, makeLine(product.id)]);
-                      document.querySelector("#calculator")?.scrollIntoView({ behavior: "smooth" });
-                    }}
+                    onClick={() => { window.location.hash = `#product/${product.id}`; }}
                   >
-                    Add to quotation <ArrowUpRight size={16} />
+                    Configure quotation <ArrowUpRight size={16} />
                   </button>
                 </div>
               </article>
             ))}
           </div>
+          {visibleProducts.length === 0 && (
+            <div className="catalogue-empty" role="status">
+              <strong>No matching products found.</strong>
+              <p>Try another search term or view all products.</p>
+              <button type="button" onClick={() => { setProductSearch(""); setProductFilter("all"); }}>Clear filters</button>
+            </div>
+          )}
           <p className="catalogue-note">
-            {catalogueSource === "firestore"
-              ? "Live published catalogue loaded. "
-              : "Showing the local catalogue until the live catalogue is available. "}
-            Product illustrations are temporary design placeholders. Actual product photographs,
-            colours, gauges, coverage and technical specifications will be confirmed against Panda
-            Mabati's product catalogue.
+            "Showing the Panda Mabati catalogue. "
+            Products without verified photography use a dedicated product visual until an approved product photograph is added. Published catalogue prices are displayed on product pages; project totals include selected quantities and exclude delivery unless stated.
           </p>
         </section>
 
@@ -424,30 +611,14 @@ function App() {
               </a>
             </div>
             <div className="product-feature__grid">
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><ShieldCheck size={22} /></span>
-                <strong>D-Tile</strong>
-                <small>Tile-inspired character</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><Layers3 size={22} /></span>
-                <strong>Versatile</strong>
-                <small>A distinctive profile</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><Sparkles size={22} /></span>
-                <strong>StarTile</strong>
-                <small>Tile-effect styling</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><Truck size={22} /></span>
-                <strong>Box Profile</strong>
-                <small>Modern ribbed lines</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
+              {products.map((product) => (
+                <a href={`#product/${product.id}`} className="product-feature__item" key={product.id}>
+                  <span className="product-feature__icon"><Layers3 size={22} /></span>
+                  <strong>{product.name}</strong>
+                  <small>{product.short}</small>
+                  <ArrowUpRight className="product-feature__arrow" size={17} />
+                </a>
+              ))}
             </div>
           </div>
         </section>
@@ -467,15 +638,22 @@ function App() {
           <div className="quote-builder">
             <div className="quote-builder__main">
               <div className="builder-title">
-                <div><span className="builder-step">01</span><div><h3>Your roofing list</h3><p>Add each profile and required quantity.</p></div></div>
+                <div><span className="builder-step">01</span><div><h3>Your cart & quotation</h3><p>Add products, select options and set your required quantities.</p></div></div>
                 <span className="item-count">{lines.length} {lines.length === 1 ? "item" : "items"}</span>
               </div>
 
               <div className="quote-fields">
                 <label>Customer name<input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="Your name or business" /></label>
+                <label>ID / KRA PIN (optional)<input value={customerId} onChange={(e) => setCustomerId(e.target.value)} placeholder="Customer ID or business PIN" /></label>
+                <label>Customer phone<input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+254 ..." inputMode="tel" /></label>
+                <label>Email address (optional)<input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} placeholder="name@example.com" /></label>
                 <label>Project name<input value={project} onChange={(e) => setProject(e.target.value)} placeholder="e.g. Family home" /></label>
-                <label>County / location<input value={county} onChange={(e) => setCounty(e.target.value)} placeholder="e.g. Kiambu County" /></label>
-                <label>Phone number<input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+254 ..." inputMode="tel" /></label>
+                <label>County<input value={county} onChange={(e) => setCounty(e.target.value)} placeholder="e.g. Mombasa County" /></label>
+                <label>Place of delivery<input value={deliveryPlace} onChange={(e) => setDeliveryPlace(e.target.value)} placeholder="e.g. Nyali, Mombasa" /></label>
+                <label className="field-wide">Site / delivery address<input value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} placeholder="Building, estate, road or plot number" /></label>
+                <label className="field-wide">Landmark / directions<input value={deliveryLandmark} onChange={(e) => setDeliveryLandmark(e.target.value)} placeholder="Nearby landmark or directions for the driver" /></label>
+                <label>Delivery contact person<input value={deliveryContact} onChange={(e) => setDeliveryContact(e.target.value)} placeholder="Name of person receiving materials" /></label>
+                <label>Delivery contact phone<input value={deliveryPhone} onChange={(e) => setDeliveryPhone(e.target.value)} placeholder="+254 ..." inputMode="tel" /></label>
               </div>
 
               <div className="line-list">
@@ -485,16 +663,17 @@ function App() {
                     ? BOX_PROFILE_VARIANTS.find((item) => item.id === line.variantId)
                     : undefined;
                   const manualRate = Number(line.unitPrice);
-                  const hasRate = line.productId !== "box-profile" &&
-                    line.unitPrice.trim() !== "" &&
+                  const hasRate = Boolean(variant) || (line.unitPrice.trim() !== "" &&
                     Number.isFinite(manualRate) &&
-                    manualRate >= 0;
+                    manualRate >= 0);
                   const rate = manualRate;
+                  const effectiveRate = variant ? variant.ratePerM : rate;
                   const lineTotal = hasRate
-                    ? Math.max(0, Number(line.quantity) || 0) * rate
+                    ? Math.max(0, Number(line.quantity) || 0) * (line.priceUnit === "metre" ? line.sheetLengthM : 1) * effectiveRate
                     : null;
                   return (
                     <div className="quote-line" key={line.id}>
+                      {(product?.imageUrl || variant?.image) && <img className="quote-line__thumbnail" src={variant?.image ?? product?.imageUrl} alt={product?.name ?? "Selected roofing product"} loading="lazy" />}
                       <div className="quote-line__index">{String(index + 1).padStart(2, "0")}</div>
                       <div className="quote-line__fields">
                         <label className="field-wide">Roofing profile
@@ -508,6 +687,7 @@ function App() {
                                   variantId: productId === "box-profile"
                                     ? BOX_PROFILE_VARIANTS[0]?.id
                                     : undefined,
+                                  priceUnit: productId === "box-profile" ? "metre" : undefined,
                                   unitPrice: "",
                                 });
                               }}
@@ -534,7 +714,7 @@ function App() {
                             </span>
                           </label>
                         )}
-                        <label>{variant ? "Number of sheets" : "Quantity"}
+                        <label>{line.priceUnit === "metre" ? "Number of sheets" : "Quantity"}
                           <div className="quantity-control">
                             <button aria-label="Decrease quantity" onClick={() => updateLine(line.id, { quantity: Math.max(0, line.quantity - 1) })}><Minus size={14} /></button>
                             <input
@@ -549,7 +729,7 @@ function App() {
                             <button aria-label="Increase quantity" onClick={() => updateLine(line.id, { quantity: line.quantity + 1 })}><Plus size={14} /></button>
                           </div>
                         </label>
-                        {variant && (
+                        {line.priceUnit === "metre" && (
                           <label>Length per sheet (metres)
                             <input
                               type="number"
@@ -558,19 +738,24 @@ function App() {
                               step="0.1"
                               value={line.sheetLengthM}
                               onChange={(e) => updateLine(line.id, {
-                                sheetLengthM: Math.max(0.5, Number(e.target.value) || 0.5),
+                                sheetLengthM: Math.min(12, Math.max(0.5, Number(e.target.value) || 0.5)),
                               })}
                             />
+                            <div className="length-presets" aria-label="Common sheet lengths">
+                              {[2, 2.5, 3].map((length) => (
+                                <button key={length} type="button" className={line.sheetLengthM === length ? "length-preset length-preset--active" : "length-preset"} aria-pressed={line.sheetLengthM === length} onClick={() => updateLine(line.id, { sheetLengthM: length })}>{length}m</button>
+                              ))}
+                            </div>
                           </label>
                         )}
-                        <label>{variant ? "Rate (KES / metre)" : "Unit rate (KES)"}
+                        <label>{line.priceUnit === "metre" ? "Rate (KES / metre)" : "Unit rate (KES)"}
                           <input
                             type="number"
                             min="0"
                             step="0.01"
-                            value={variant ? "" : line.unitPrice}
+                            value={variant ? String(variant.ratePerM) : line.unitPrice}
                             onChange={(e) => updateLine(line.id, { unitPrice: e.target.value })}
-                            placeholder={variant ? "Price to confirm" : "Enter unit rate"}
+                            placeholder={line.priceUnit === "metre" ? "Catalogue rate per metre" : "Enter unit rate"}
                             disabled={Boolean(variant)}
                           />
                         </label>
@@ -579,10 +764,11 @@ function App() {
                         <span>
                           {variant
                             ? `${variant.colour} · ${variant.finish} · ${variant.gauge}`
-                            : product?.short}
+                            : line.variantLabel || product?.short}
                         </span>
                         <strong>{lineTotal === null ? "Price to be confirmed" : money(lineTotal)}</strong>
-                        <button className="remove-line" onClick={() => removeLine(line.id)} disabled={lines.length === 1} aria-label={`Remove ${product?.name ?? "product"}`}><X size={15} /></button>
+                        {line.priceUnit === "metre" && hasRate && <small className="quote-line__calculation">{money(effectiveRate)} / m × {line.sheetLengthM} m × {line.quantity} {line.quantity === 1 ? "sheet" : "sheets"}</small>}
+                        <button className="remove-line" onClick={() => removeLine(line.id)} aria-label={`Remove ${product?.name ?? "product"}`}><X size={15} /></button>
                       </div>
                     </div>
                   );
@@ -599,7 +785,7 @@ function App() {
               <div className="summary-kicker"><span className="summary-pulse" /> LIVE SUMMARY</div>
               <h3>Your project<br />at a glance.</h3>
               <p>Quantities and totals update automatically.</p>
-              <div className="summary-metric"><span>Box Profile length</span><strong>{quote.totalQuantity.toLocaleString("en-KE")} m</strong><small>Other profiles are counted separately in the chart</small></div>
+              <div className="summary-metric"><span>Total roofing sheet length</span><strong>{quote.totalQuantity.toLocaleString("en-KE")} m</strong><small>Across all selected per-metre roofing products</small></div>
               <div className="summary-total"><span>Priced items subtotal</span><strong>{money(quote.pricedTotal)}</strong><small>{quote.hasMissingPrice ? "Excludes products without a confirmed rate" : "Based on the unit rates entered"}</small></div>
               <div className="chart-card">
                 <div className="chart-card__heading"><span>Quantity by profile</span><Layers3 size={16} /></div>
@@ -618,6 +804,8 @@ function App() {
               </div>
               {quote.hasMissingPrice && <div className="price-notice"><ShieldCheck size={16} /><span>Some prices are missing. Your PDF will flag these lines and will not present the subtotal as a final project price.</span></div>}
               <button className="button button--lime button--full" onClick={downloadQuote}><Download size={17} /> Download quotation PDF</button>
+              <a className="button button--dark button--full order-request-button" href={orderWhatsAppUrl} target="_blank" rel="noreferrer" aria-label="Proceed with an order request on WhatsApp"><ArrowUpRight size={17} /> Proceed to order request</a>
+              <p className="order-request-note">This sends your selected cart to Panda Mabati on WhatsApp. Your order is confirmed only after our team verifies stock, specifications, delivery and final pricing.</p>
               <p className="summary-privacy">Your PDF is generated on this device. This prototype does not submit your personal details to a server.</p>
             </aside>
           </div>
@@ -637,10 +825,7 @@ function App() {
       <footer className="site-footer">
         <div className="site-footer__main">
           <section className="site-footer__brand">
-            <a href="#home" className="brand brand--footer" aria-label="Panda Mabati home">
-              <span className="brand__mark"><Layers3 size={22} /></span>
-              <span className="brand__words"><strong>PANDA <em>MABATI</em></strong><small>ROOFING SOLUTIONS</small></span>
-            </a>
+            <a href="#home" className="brand brand--footer" aria-label="Panda Mabati home"><img className="brand__logo brand__logo--footer" src={pandaMabatiLogo} alt="Panda Mabati — We Represent Quality" /></a>
             <p>Thoughtful roofing. Clearer decisions.</p>
             <p className="site-footer__description">Explore roofing options, compare finishes, and plan your project with confidence.</p>
           </section>
@@ -656,7 +841,7 @@ function App() {
             <p>Need help choosing roofing sheets for your project? Contact our sales team.</p>
             <a className="site-footer__contact-link" href={`mailto:${BUSINESS_CONTACT.salesEmail}`}>{BUSINESS_CONTACT.salesEmail}</a>
             <a className="site-footer__contact-link" href={`tel:${BUSINESS_CONTACT.phoneDial}`}>{BUSINESS_CONTACT.contactName} · {BUSINESS_CONTACT.phoneDisplay}</a>
-            <a className="site-footer__contact-button" href="https://wa.me/254713207844" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
+            <a className="site-footer__contact-button" href={`https://wa.me/${BUSINESS_CONTACT.phoneDial.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">Chat on WhatsApp</a>
           </section>
           <section className="site-footer__social">
             <h2>Stay connected</h2>
