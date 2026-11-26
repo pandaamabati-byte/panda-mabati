@@ -65,7 +65,9 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const priceNote = selected?.minimumOrder ? `Viwanda listing minimum order: ${selected.minimumOrder}.` : selectedPriceOption?.minimumOrder ? `Marketplace minimum order: ${selectedPriceOption.minimumOrder}.` : priceInfo?.note;
 
   const verifiedImage = getVerifiedProductImage(product.id, selected?.id) ?? getVerifiedProductImage(product.id);
-  const previewImage = verifiedImage?.src;
+  const dTileReferenceImage = "https://storage.googleapis.com/takeapp/media/clvebadzw00020fl9dehabkv3.jpg";
+  const isDTileReference = product.id === "d-tile" && !verifiedImage;
+  const previewImage = verifiedImage?.src ?? (isDTileReference ? dTileReferenceImage : undefined);
   const swatchColour = colour.toLowerCase().includes("red") ? "#a83228"
     : colour.toLowerCase().includes("blue") ? "#2778b9"
     : colour.toLowerCase().includes("green") ? "#39734a"
