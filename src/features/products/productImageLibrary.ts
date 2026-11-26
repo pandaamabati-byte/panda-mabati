@@ -95,6 +95,9 @@ export function getVerifiedProductImage(
   return PRODUCT_IMAGE_LIBRARY.find(
     (asset) =>
       asset.status === "verified" &&
+      asset.src.trim().length > 0 &&
+      asset.sourceUrl.trim().length > 0 &&
+      asset.alt.trim().length > 0 &&
       asset.productId === productId &&
       (variantId ? asset.variantId === variantId : !asset.variantId),
   );
