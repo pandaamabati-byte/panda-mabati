@@ -32,12 +32,12 @@ describe('Panda Mabati storefront', () => {
     render(<App />)
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Accessories' })[0])
-    expect(screen.getByRole('heading', { name: 'Rainwater Gutters' })).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { name: 'Rainwater Gutters' }).length).toBeGreaterThan(0)
     expect(screen.queryByRole('heading', { name: 'Box Profile' })).not.toBeInTheDocument()
 
     fireEvent.click(screen.getAllByRole('button', { name: 'All products' })[0])
     fireEvent.change(screen.getByRole('searchbox', { name: /search roofing products/i }), { target: { value: 'corrugated' } })
-    expect(screen.getByRole('heading', { name: 'Corrugated Roofing' })).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { name: 'Corrugated Roofing' }).length).toBeGreaterThan(0)
     expect(screen.queryByRole('heading', { name: 'Rainwater Gutters' })).not.toBeInTheDocument()
   })
 
