@@ -149,10 +149,15 @@ export function getVerifiedProductImage(
   );
 }
 
+export const PRODUCT_IMAGE_TARGETS = [
+  "d-tile", "versatile", "box-profile", "corrugated", "startile", "glazed-tile",
+  "elegantile", "decra", "ridge-caps", "flashings", "gutters", "roll-tops",
+  "valley-trays", "roofing-fasteners",
+] as const;
+
 export function getProductImageStatus(productId: string) {
   const assets = PRODUCT_IMAGE_LIBRARY.filter((asset) => asset.productId === productId);
-  return {
-    verifiedCount: assets.filter((asset) => asset.status === "verified").length,
-    pendingCount: assets.filter((asset) => asset.status === "awaiting-verification").length,
-  };
+  const verifiedCount = assets.filter((asset) => asset.status === "verified").length;
+  const pendingCount = assets.filter((asset) => asset.status === "awaiting-verification").length;
+  return { verifiedCount, pendingCount, hasGenuinePhoto: verifiedCount > 0, needsGenuinePhoto: verifiedCount === 0 };
 }
