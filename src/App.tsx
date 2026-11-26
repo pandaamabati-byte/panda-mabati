@@ -10,6 +10,7 @@ import { FALLBACK_PRODUCTS, type Product } from "./features/products/productMode
 import { loadProducts } from "./services/products/catalogue";
 import ProductDetailPage from "./features/products/ProductDetailPage";
 import { getVerifiedProductImage } from "./features/products/productImageLibrary";
+import { getProductStartingPrice } from "./features/products/productDetails";
 import "./App.css";
 
 type QuoteLine = {
@@ -414,6 +415,9 @@ function App() {
                   <div className="product-card__topline"><span>{product.use}</span><BadgeCheck size={16} /></div>
                   <h3><button className="product-card__title-button" onClick={() => { window.location.hash = `#product/${product.id}`; }}>{product.name}</button></h3>
                   <p className="product-card__short">{product.short}</p>
+                  {getProductStartingPrice(product.id)!==undefined&&<p className="product-card__price">From KSh {getProductStartingPrice(product.id)!.toLocaleString("en-KE")} · factory catalogue</p>}
+                  {product.id==="d-tile"&&<p className="product-card__price">From KSh 1,130 · 2m packet</p>}
+                  {product.id==="versatile"&&<p className="product-card__price">From KSh 630 / m · G30</p>}
                   <p className="product-card__description">{product.description}</p>
                   <button className="product-card__details" onClick={() => { window.location.hash = `#product/${product.id}`; }}>View product details <ArrowUpRight size={15} /></button>
                   <button
@@ -433,7 +437,7 @@ function App() {
             {catalogueSource === "firestore"
               ? "Live catalogue connected; published products are shown alongside additional catalogue entries awaiting verification. "
               : "Showing the local catalogue until the live catalogue is available. "}
-            Some cards use illustrative artwork until verified manufacturer photographs are attached. Product variants, prices, selling units, coverage and technical specifications must be confirmed before ordering.
+            Some cards use illustrative artwork until verified manufacturer photographs are attached. Published catalogue prices are displayed on product pages; project totals include selected quantities and exclude delivery unless stated.
           </p>
         </section>
 
