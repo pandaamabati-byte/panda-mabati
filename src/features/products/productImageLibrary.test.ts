@@ -6,9 +6,12 @@ import {
 } from "./productImageLibrary";
 
 describe("product image library", () => {
-  it("does not expose unverified assets as product photographs", () => {
+  it("exposes only sourced generic product photos and keeps unverified variants hidden", () => {
     expect(PRODUCT_IMAGE_LIBRARY.length).toBeGreaterThan(0);
-    expect(getVerifiedProductImage("box-profile")).toBeUndefined();
+    expect(getVerifiedProductImage("box-profile")?.src).toContain("pandamabati.com/wp-content/uploads");
+    expect(getVerifiedProductImage("corrugated")?.src).toContain("Corrugated-Roofing-Sheets.jpg");
+    expect(getVerifiedProductImage("startile")?.src).toContain("download-1.jpg");
+    expect(getVerifiedProductImage("box-profile", "box-5")).toBeUndefined();
     expect(getVerifiedProductImage("d-tile")).toBeUndefined();
   });
 
