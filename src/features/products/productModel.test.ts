@@ -5,12 +5,11 @@ import {
 } from "./productModel";
 
 describe("product catalogue model", () => {
-  it("provides the four supported fallback roofing profiles", () => {
+  it("provides the complete local Panda Mabati product groups", () => {
     expect(FALLBACK_PRODUCTS.map((product) => product.id)).toEqual([
-      "d-tile",
-      "versatile",
-      "box-profile",
-      "startile",
+      "d-tile", "versatile", "box-profile", "startile", "corrugated",
+      "glazed-tile", "elegantile", "decra", "ridge-caps", "flashings",
+      "gutters", "roll-tops", "valley-trays", "roofing-fasteners",
     ]);
   });
 
