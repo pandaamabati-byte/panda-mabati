@@ -10,7 +10,7 @@ import { FALLBACK_PRODUCTS, type Product } from "./features/products/productMode
 import { loadProducts } from "./services/products/catalogue";
 import ProductDetailPage from "./features/products/ProductDetailPage";
 import { getVerifiedProductImage } from "./features/products/productImageLibrary";
-import { getProductStartingPrice } from "./features/products/productDetails";
+import { getProductStartingPrice, getProductStartingPriceUnit } from "./features/products/productDetails";
 import "./App.css";
 
 type QuoteLine = {
@@ -419,7 +419,7 @@ function App() {
                   <div className="product-card__topline"><span>{product.use}</span><BadgeCheck size={16} /></div>
                   <h3><button className="product-card__title-button" onClick={() => { window.location.hash = `#product/${product.id}`; }}>{product.name}</button></h3>
                   <p className="product-card__short">{product.short}</p>
-                  {getProductStartingPrice(product.id)!==undefined&&<p className="product-card__price">From KSh {getProductStartingPrice(product.id)!.toLocaleString("en-KE")} · factory catalogue</p>}
+                  {getProductStartingPrice(product.id)!==undefined&&<p className="product-card__price">From KSh {getProductStartingPrice(product.id)!.toLocaleString("en-KE")} / {getProductStartingPriceUnit(product.id)==="metre"?"m":"piece"} · published catalogue</p>}
                   {product.id==="d-tile"&&<p className="product-card__price">From KSh 1,130 · 2m packet</p>}
                   {product.id==="versatile"&&<p className="product-card__price">From KSh 630 / m · G30</p>}
                   {product.id==="gutters"&&<p className="product-card__price">KSh 400 · 4m PVC gutter</p>}
