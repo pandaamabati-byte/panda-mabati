@@ -12,7 +12,7 @@ describe("product image library", () => {
     expect(getVerifiedProductImage("corrugated")?.src).toContain("Corrugated-Roofing-Sheets.jpg");
     expect(getVerifiedProductImage("startile")?.src).toContain("download-1.jpg");
     expect(getVerifiedProductImage("box-profile", "box-5")).toBeUndefined();
-    expect(getVerifiedProductImage("d-tile")).toBeUndefined();
+    expect(getVerifiedProductImage("d-tile")?.src).toContain("storage.googleapis.com/takeapp/media/");
   });
 
   it("requires complete provenance for every image exposed as verified", () => {
@@ -38,7 +38,6 @@ describe("product image library", () => {
 
   it("tracks pending image coverage for roofing and accessory products", () => {
     for (const id of [
-      "d-tile",
       "versatile",
       "gutters",
       "ridge-caps",
