@@ -7,7 +7,7 @@ import {
 describe("product catalogue model", () => {
   it("provides the complete local Panda Mabati product groups", () => {
     expect(FALLBACK_PRODUCTS.map((product) => product.id)).toEqual([
-      "eurotile", "roman-tile", "d-tile", "versatile", "box-profile", "startile", "corrugated",
+      "eurotile", "romantile", "d-tile", "versatile", "box-profile", "startile", "corrugated",
       "glazed-tile", "elegantile", "decra", "ridge-caps", "flashings",
       "gutters", "roll-tops", "valley-trays", "roofing-fasteners",
     ]);
