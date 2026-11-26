@@ -524,3 +524,9 @@
 .length-preset--active{border-color:#244d39;background:#eaf0e7;color:#173d2e}
 .quote-line__calculation{flex-basis:100%;color:#738174;font-size:10px;font-weight:600;text-align:right}
 @media(max-width:640px){.length-presets{gap:5px}.length-preset{flex:1;padding:8px 5px}.quote-line__calculation{text-align:left}}
+
+
+/* Selected finish previews on generic manufacturer photography */
+.product-detail-photo-stage{isolation:isolate}
+.product-detail-colour-overlay{position:absolute;inset:0;mix-blend-mode:color;opacity:.62;pointer-events:none;z-index:1}
+.product-detail-photo-stage img{position:relative;z-index:0}
