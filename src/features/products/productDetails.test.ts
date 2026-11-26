@@ -2,17 +2,18 @@ import { describe, expect, it } from "vitest";
 import { getProductPriceOptions, getProductVariants } from "./productDetails";
 
 describe("Panda Mabati published product options", () => {
-  it("keeps D-Tile and Versatile free of colour variants", () => {
-    expect(getProductVariants("d-tile")).toHaveLength(0);
+  it("offers D-Tile colours but keeps Versatile free of colour variants", () => {
+    expect([...new Set(getProductVariants("d-tile").map((option) => option.colour))]).toEqual(["Blue", "Charcoal Grey", "Dark Grey"]);
     expect(getProductVariants("versatile")).toHaveLength(0);
   });
 
-  it("offers D-Tile by published sheet length and packet price only", () => {
-    const options = getProductPriceOptions("d-tile");
-    expect(options.map((option) => option.sheetLengthM)).toEqual([2, 2.5, 3]);
-    expect(options.map((option) => option.unitPriceKes)).toEqual([1130, 1420, 1700]);
-    expect(options.every((option) => option.priceUnit === "packet")).toBe(true);
-    expect(options.every((option) => !option.gauge)).toBe(true);
+  it("offers D-Tile colour/length packet prices from the Panda listing", () => {
+    const options = getProductVariants("d-tile");
+    expect(options.find((option) => option.id === "dtile-blue-2m")?.unitPriceKes).toBe(1165);
+    expect(options.find((option) => option.id === "dtile-blue-25m")?.unitPriceKes).toBe(1456);
+    expect(options.find((option) => option.id === "dtile-blue-3m")?.unitPriceKes).toBe(1747);
+    expect(options.find((option) => option.id === "dtile-darkgrey-2m")?.unitPriceKes).toBe(1130);
+    expect(options.every((option) => option.priceUnit === "packet" && option.gauge === "30G")).toBe(true);
   });
 
   it("offers Versatile by gauge and sheet length, never by colour", () => {
