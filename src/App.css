@@ -429,3 +429,7 @@
     transform: none;
   }
 }
+
+.product-card__source { margin: 10px 0 0; color: #7a857b; font-size: 9px; line-height: 1.5; }
+.product-card__source-link { display: inline-flex; align-items: center; gap: 5px; margin: 6px 0 12px; color: #55745a; font-size: 9px; font-weight: 700; }
+.product-card__source-link:hover { color: #19382b; text-decoration: underline; }
