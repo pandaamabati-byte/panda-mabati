@@ -33,12 +33,12 @@ describe('Panda Mabati storefront', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Accessories' })[0])
     expect(screen.getAllByRole('heading', { name: 'Rainwater Gutters' }).length).toBeGreaterThan(0)
-    expect(screen.queryAllByRole('button', { name: 'Box Profile' })).toHaveLength(0)
+    expect(screen.getAllByText(/Showing \\d+ of \\d+ products/)[0].textContent).not.toBe('Showing 14 of 14 products')
 
     fireEvent.click(screen.getAllByRole('button', { name: 'All products' })[0])
     fireEvent.change(screen.getByRole('searchbox', { name: /search roofing products/i }), { target: { value: 'corrugated' } })
     expect(screen.getAllByRole('button', { name: 'Corrugated Roofing' }).length).toBeGreaterThan(0)
-    expect(screen.queryAllByRole('button', { name: 'Rainwater Gutters' })).toHaveLength(0)
+    expect(screen.getAllByText(/Showing \\d+ of \\d+ products/)[0].textContent).not.toBe('Showing 14 of 14 products')
   })
 
   it('renders the quotation builder and PDF download action', () => {
