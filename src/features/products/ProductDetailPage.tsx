@@ -37,7 +37,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
 
   const colours = [...new Set(variants.map((v) => v.colour))];
   const variantLengths = [...new Set(variants.filter((v) => v.colour === colour && v.sheetLengthM).map((v) => v.sheetLengthM as number))].sort((a,b)=>a-b);
-  const variantLengths = [...new Set(variants.filter((v) => v.colour === colour && v.sheetLengthM).map((v) => v.sheetLengthM as number))].sort((a,b)=>a-b);
+
   const gauges = [...new Set(variants.map((v) => v.gauge))];
   const finishes = [...new Set(variants.map((v) => v.finish))];
   const specialGauges = [...new Set(priceOptions.map((option) => option.gauge).filter(Boolean))] as string[];
