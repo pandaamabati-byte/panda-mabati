@@ -88,6 +88,7 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [heroImageUnavailable, setHeroImageUnavailable] = useState(false);
   const [activeProductId, setActiveProductId] = useState(() => window.location.hash.startsWith("#product/") ? decodeURIComponent(window.location.hash.slice(9)) : "");
   const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
   const [catalogueSource, setCatalogueSource] = useState<"fallback" | "firestore">("fallback");
@@ -386,12 +387,21 @@ function App() {
           </div>
           <div className="hero__visual">
             <div className="hero__image-frame">
-              <img
-                className="hero__photo"
-                src="/images/hero/modern-roof-house.jpg"
-                alt="Contemporary home with a prominent metal roof and landscaped garden"
-                fetchPriority="high"
-              />
+              {heroImageUnavailable ? (
+                <div className="hero__photo-fallback" role="img" aria-label="Illustrated contemporary home with a metal roof">
+                  <RoofArtwork tone="versatile" />
+                  <span>ROOFING INSPIRATION</span>
+                </div>
+              ) : (
+                <img
+                  className="hero__photo"
+                  src="/images/hero/modern-roof-house.jpg"
+                  alt="Contemporary home with a prominent metal roof and landscaped garden"
+                  fetchPriority="high"
+                  decoding="async"
+                  onError={() => setHeroImageUnavailable(true)}
+                />
+              )}
               <div className="hero__photo-shade" />
               <div className="hero__image-note"><span /> ROOFS WITH PURPOSE</div>
             </div>
