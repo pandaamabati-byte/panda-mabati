@@ -19,7 +19,7 @@ The official Panda Mabati homepage currently presents Box Profile, Corrugated an
 
 ## Coverage status
 
-The 14-product image register is now complete as an inventory. Four product families have an accepted genuine Panda photograph: D-Tile, Box Profile, Corrugated and StarTile. The other ten families remain explicitly marked as awaiting genuine, rights-cleared photography: Versatile, Glazed Tile, Elegantile, Decra, Ridge Caps, Flashings, Gutters, Roll Tops, Valley Trays and Roofing Fasteners. They continue to use product-specific designed visuals until approved photography is supplied or located with documented permission.
+The 14-product image register is now complete as an inventory. Four product families have an accepted genuine Panda photograph: D-Tile, Box Profile, Corrugated and StarTile. The other ten families remain explicitly marked as awaiting genuine, rights-cleared photography: Versatile, Glazed Tile, Elegantile, Decra, Ridge Caps, Flashings, Gutters, Roll Tops, Valley Trays and Roofing Fasteners. The current Panda Factory catalogue confirms these product families, but its indexed Glazed Tile C/Brown 30G Matt listing explicitly says “Image: Awaiting product image”. Do not fill these slots with competitor photos or unrelated profile imagery. Keep the product-specific designed profile visual on the homepage search results and detail pages until Panda supplies or approves a genuine image. See [Panda Factory catalogue](https://pandamabatifactory.co.ke/wp/) and [Glazed Tile listing](https://pandamabatifactory.co.ke/wp/product/glazed-tile-c-brown-30g-matt/).
 
 Where a generic manufacturer photograph is displayed with a selected colour overlay, the image is still a family photograph; the colour treatment is only a customer-facing preview, not proof of a colour-specific photo. Exact variant photographs take priority whenever verified assets are added.
 
@@ -36,7 +36,7 @@ Catalogue listings are useful for product-name and variant research. They are **
 3. Use competitor websites for market and product research only. Do not copy their product photographs or present competitor products as Panda products without written permission.
 4. AI-generated architectural imagery may be used for mood, lifestyle and campaign visuals, but must not be labelled as a real Panda installation or as a photograph of a specific product variant.
 5. Do not mark a variant photograph verified unless its exact colour, finish, gauge and profile are confirmed.
-6. Keep the designed product visual visible whenever a real image is unavailable or fails to load.
+6. Keep the designed product visual visible whenever a real image is unavailable or fails to load. On the homepage catalogue, label this “PROFILE VISUAL · PHOTO PENDING”; never label it as a real product photograph.
 
 ## Verification checklist for each new asset
 
