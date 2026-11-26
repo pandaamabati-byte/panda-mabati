@@ -20,7 +20,7 @@ const slug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g
 export default function AdminApp() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [checking, setChecking] = useState(true);
+  const [checking, setChecking] = useState(Boolean(auth));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [products, setProducts] = useState<ProductRecord[]>([]);
@@ -30,7 +30,7 @@ export default function AdminApp() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!auth) { setChecking(false); return; }
+    if (!auth) return;
     return onAuthStateChanged(auth, async (nextUser) => {
       setUser(nextUser);
       if (!nextUser) { setIsAdmin(false); setProducts([]); setChecking(false); return; }
