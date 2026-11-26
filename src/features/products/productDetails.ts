@@ -7,11 +7,12 @@ export type ProductVariant = {
   finish: string;
   sourceUrl: string;
   unitPriceKes: number;
+  priceUnit: "metre" | "piece";
 };
 const source = "https://pandamabatifactory.co.ke/wp/";
 type Row = [colour: string, finish: string, gauge: string, price: number];
-const make = (id: string, rows: Row[]): ProductVariant[] => rows.map(([colour,finish,gauge,unitPriceKes],i)=>({
-  id:id+"-"+i,colour,finish,gauge,unitPriceKes,sourceUrl:source
+const make = (id: string, rows: Row[], priceUnit: "metre" | "piece" = "metre"): ProductVariant[] => rows.map(([colour,finish,gauge,unitPriceKes],i)=>({
+  id:id+"-"+i,colour,finish,gauge,unitPriceKes,priceUnit,sourceUrl:source
 }));
 
 // Exact colour/gauge/finish/price combinations transcribed from Panda Mabati Factory listings.
@@ -39,12 +40,12 @@ const variants: Record<string, ProductVariant[]> = {
   ]),
   decra:make("decra",[
     ["Shingle Tile Black","Stone-coated","26G",730],["Shingle Tile Brick Red","Stone-coated","26G",730],
-    ["Classic Tile Coffee Brown","Stone-coated","26G",730],["Classic Tile Black","Stone-coated","26G",730]
-  ]),
-  "roll-tops":make("roll-top",[["Standard","Standard","28G",800],["Standard","Standard","30G",700]]),
-  "ridge-caps":make("ridge",[["Normal Ridge / Kofia","Standard","—",600]]),
-  "valley-trays":make("valley",[["Decra Valley Tray","Standard","—",750]]),
-  "roofing-fasteners":make("fastener",[["Decra Touch-up Kit","Standard","—",800],["Decra Serrated Nails","Standard","—",800],["Decra Badge Board","Standard","—",750]])
+    ["Classic Tile Coffee Brown","Stone-coated","26G",730],["Classic Tile Black","Stone-coated","26G",720]
+  ],"piece"),
+  "roll-tops":make("roll-top",[["Standard","Standard","28G",800],["Standard","Standard","30G",700]],"piece"),
+  "ridge-caps":make("ridge",[["Normal Ridge / Kofia","Standard","—",600]],"piece"),
+  "valley-trays":make("valley",[["Decra Valley Tray","Standard","—",750]],"piece"),
+  "roofing-fasteners":make("fastener",[["Decra Touch-up Kit","Standard","—",800],["Decra Serrated Nails","Standard","—",800],["Decra Badge Board","Standard","—",750]],"piece")
 };
 const copy:Record<string,{overview:string;benefits:string[];notes:string[]}> = {
   "box-profile":{overview:"A geometric ribbed steel roofing profile for residential, commercial and industrial buildings. The factory lists 28G and 30G colour/finish combinations.",benefits:["Clean linear roof appearance","Published 28G and 30G options","The factory describes a 38mm rib depth and 914mm cover width once overlapped"],notes:["Catalogue prices are shown alongside each published product option","Specify required sheet length for the quotation","Anti-condensation backing and crimp-curving are listed factory options"]},
@@ -64,12 +65,12 @@ const copy:Record<string,{overview:string;benefits:string[];notes:string[]}> = {
 };
 export const getProductVariants=(id:string)=>variants[id]??[];
 export const getProductDetails=(product:Product)=>copy[product.id]??{overview:product.description,benefits:["Roofing product in the Panda Mabati range"],notes:["Select the product and required quantity for your quotation"]};
-export const getVariantPriceLabel=(variant:ProductVariant)=>`KSh ${variant.unitPriceKes.toLocaleString("en-KE")} (catalogue price)`;
-export type ProductPriceInfo={display:string;note:string;unitPriceKes:number;cartLabel:string};
+export const getVariantPriceLabel=(variant:ProductVariant)=>`KSh ${variant.unitPriceKes.toLocaleString("en-KE")} / ${variant.priceUnit==="metre"?"m":"piece"}`;
+export type ProductPriceInfo={display:string;note:string;unitPriceKes:number;cartLabel:string;priceUnit:"metre"|"piece"|"packet"};
 export const getProductPriceInfo=(id:string):ProductPriceInfo|undefined=>{
-  if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile retail listing; length and seller price vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark"};
-  if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 at KSh 630/m and G28 at KSh 730/m. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre"};
-  if(id==="gutters") return {display:"KSh 400 per 4m PVC gutter",note:"Panda Mabati Ltd product listing; fittings and delivery are separate.",unitPriceKes:400,cartLabel:"PVC gutter · 4m"};
+  if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile retail listing; length and seller price vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark",priceUnit:"packet"};
+  if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 at KSh 630/m and G28 at KSh 730/m. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre",priceUnit:"metre"};
+  if(id==="gutters") return {display:"KSh 400 per 4m PVC gutter",note:"Panda Mabati Ltd product listing; fittings and delivery are separate.",unitPriceKes:400,cartLabel:"PVC gutter · 4m",priceUnit:"piece"};
   return undefined;
 };
 
