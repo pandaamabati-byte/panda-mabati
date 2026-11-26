@@ -44,7 +44,18 @@ export function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="rounded-3xl border border-white/15 bg-white/5 p-8 sm:p-10">
+          <div className="rounded-3xl border border-white/15 bg-white/5 p-5 sm:p-7">
+            <div className="mb-7 overflow-hidden rounded-2xl bg-emerald-900/70">
+              <img
+                src="/images/hero/modern-roof-house.jpg"
+                alt="Modern home with a pitched roofing design"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                onError={(event) => { event.currentTarget.style.display = 'none' }}
+                className="aspect-[16/10] w-full object-cover"
+              />
+            </div>
             <p className="text-sm font-semibold uppercase tracking-widest text-amber-300">Your project, your plan</p>
             <div className="mt-7 space-y-5">
               {benefits.map(({ icon: Icon, title, description }, index) => (
