@@ -1,5 +1,5 @@
-type Props = { productId: string; productName: string; tone?: string };
-export default function ProductProfileVisual({ productId, productName, tone = "box" }: Props) {
+type Props = { productId: string; productName: string; tone?: string; colour?: string };
+export default function ProductProfileVisual({ productId, productName, tone = "box", colour = "" }: Props) {
   const id = productId.replace(/[^a-z0-9]/gi, "");
   const isTile = ["d-tile", "versatile", "startile", "glazed-tile", "elegantile", "decra"].includes(productId);
   const isWave = productId === "corrugated";
@@ -11,7 +11,9 @@ export default function ProductProfileVisual({ productId, productName, tone = "b
     if (isTile) d = "M" + x + " 285 L" + (x + 16) + " 275 L" + (x + 16) + " 198 Q" + (x + 22) + " 180 " + (x + 32) + " 198 L" + (x + 32) + " 265";
     return <path key={index} d={d} fill="none" stroke="#e9eee9" strokeOpacity=".88" strokeWidth={isWave ? 5 : 3.5} />;
   });
-  const panelFill = isAccessory ? "#82958b" : tone === "tile" ? "#9c7770" : tone === "star" ? "#7e8984" : tone === "versatile" ? "#8a9185" : "#899b91";
+  const colourKey = colour.toLowerCase();
+  const colourFill = colourKey.includes("red") ? "#a83228" : colourKey.includes("maroon") || colourKey.includes("wine") ? "#632b3c" : colourKey.includes("blue") ? "#2778b9" : colourKey.includes("green") ? "#39734a" : colourKey.includes("brown") || colourKey.includes("chocolate") || colourKey.includes("coffee") ? "#65432d" : colourKey.includes("black") ? "#252525" : colourKey.includes("grey") || colourKey.includes("gray") || colourKey.includes("charcoal") || colourKey.includes("silver") ? "#59615f" : colourKey.includes("standard") || !colour ? "" : "#9a8e7c";
+  const panelFill = colourFill || (isAccessory ? "#82958b" : tone === "tile" ? "#9c7770" : tone === "star" ? "#7e8984" : tone === "versatile" ? "#8a9185" : "#899b91");
   const bgId = "bg-" + id, sheetId = "sheet-" + id, shadowId = "shadow-" + id;
   return (
     <svg className="product-profile-visual" viewBox="0 0 640 420" role="img" aria-label={productName + " product visual"} xmlns="http://www.w3.org/2000/svg">
