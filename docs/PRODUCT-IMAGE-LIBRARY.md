@@ -77,3 +77,18 @@ The catalogue, pricing and image-library changes are on `feat/product-image-libr
 - The selected colour is applied as an on-screen colour overlay. This is a visual guide, not an exact paint-chip or factory colour proof.
 - D-Tile's published Blue, Charcoal Grey and Dark Grey 30G packet prices and minimum order quantities are transcribed from the Viwanda Panda brand listing: https://viwanda.ke/brands/panda/.
 - A matching Panda Mabati D-Tile photograph is still required to replace the reference image before the page can claim a verified Panda product photograph.
+
+
+## External roofing websites reviewed — 26 November 2026
+
+The following public manufacturer websites were reviewed to understand Kenyan roofing profiles, product naming and presentation. They are research references, not an image-licence grant:
+
+- Panda Mabati official site: https://pandamabati.com/
+- Panda Mabati Factory product catalogue: https://pandamabatifactory.co.ke/wp/
+- Royal Mabati: https://www.royalmabati.com/
+- Maisha Mabati: https://www.maishamabati.org/
+- Nyumba Mabati / Corrugated Sheets Ltd: https://www.steelitems.com/
+
+**Copyright and brand-integrity rule:** Royal Mabati, Nyumba Mabati, Maisha Mabati and other third-party product photographs must not be copied into Panda Mabati's storefront unless the rights holder grants written permission or the specific asset carries a licence that permits commercial reuse. A public product page is not permission to republish its photographs. Competitor images may inform product research, but must never be presented as Panda Mabati stock or projects.
+
+The first implementation pass therefore uses the three verified Panda Mabati product-family photographs already registered above, retains the existing locally stored homepage project photograph, and keeps unsupported product imagery clearly illustrative. New assets should be added only after source, commercial-use rights and product/variant match have been checked.
