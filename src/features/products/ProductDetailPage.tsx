@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowUpRight, Check, Layers3, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Check, MessageCircle, ShieldCheck } from "lucide-react";
+import pandaMabatiLogo from "../../assets/panda-mabati-logo.jpg";
 import type { Product } from "./productModel";
 import {
   getProductDetails,
@@ -91,8 +92,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
       <div className="announcement"><span className="announcement__dot" /> Panda Mabati · Product guide</div>
       <header className="site-header product-detail-header">
         <a href="#home" className="brand" onClick={onBack}>
-          <span className="brand__mark"><Layers3 size={23} /></span>
-          <span className="brand__words"><strong>PANDA <em>MABATI</em></strong><small>ROOFING SOLUTIONS</small></span>
+          <img className="brand__logo" src={pandaMabatiLogo} alt="Panda Mabati — We Represent Quality" />
         </a>
         <button className="button button--dark button--small" onClick={onBack}><ArrowLeft size={15} /> Back to products</button>
       </header>
