@@ -3,6 +3,7 @@ import {
   getProductImageStatus,
   getVerifiedProductImage,
   PRODUCT_IMAGE_LIBRARY,
+  PRODUCT_IMAGE_TARGETS,
 } from "./productImageLibrary";
 
 describe("product image library", () => {
@@ -34,6 +35,15 @@ describe("product image library", () => {
     for (const asset of PRODUCT_IMAGE_LIBRARY.filter((item) => item.status === "awaiting-verification")) {
       expect(getVerifiedProductImage(asset.productId, asset.variantId)).not.toBe(asset);
     }
+  });
+
+  it("tracks image-library coverage for every live catalogue product", () => {
+    expect(PRODUCT_IMAGE_TARGETS).toHaveLength(14);
+    for (const id of PRODUCT_IMAGE_TARGETS) {
+      const status = getProductImageStatus(id);
+      expect(status.verifiedCount + status.pendingCount).toBeGreaterThan(0);
+    }
+    expect(PRODUCT_IMAGE_TARGETS.filter((id) => getProductImageStatus(id).hasGenuinePhoto).sort()).toEqual(["box-profile", "corrugated", "d-tile", "startile"]);
   });
 
   it("tracks pending image coverage for roofing and accessory products", () => {
