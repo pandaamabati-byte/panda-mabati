@@ -9,6 +9,7 @@ import {
   getVariantPriceLabel,
 } from "./productDetails";
 import { getVerifiedProductImage } from "./productImageLibrary";
+import ProductProfileVisual from "./ProductProfileVisual";
 
 type Props = {
   product: Product;
@@ -103,8 +104,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
               <div className="product-detail-photo-stage"><img src={previewImage} alt={verifiedImage?.alt ?? `${product.name} product visual`} key={previewImage} onError={() => setImageUnavailable(true)} /></div>
             ) : (
               <div className="product-detail-placeholder">
-                <Layers3 size={58} />
-                <span>{product.name} product visual</span>
+                <ProductProfileVisual productId={product.id} productName={product.name} tone={product.tone} />
                 <small className="product-detail-colour-label">
                   {selected ? `Selected colour: ${colour}` : selectedPriceOption?.label ?? (variants.length ? "Select a product option" : "No colour variants")}
                 </small>
