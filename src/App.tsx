@@ -94,6 +94,8 @@ function App() {
   useEffect(() => { const syncRoute=()=>setActiveProductId(window.location.hash.startsWith("#product/")?decodeURIComponent(window.location.hash.slice(9)):""); window.addEventListener("hashchange",syncRoute); return ()=>window.removeEventListener("hashchange",syncRoute); }, []);
   const [lines, setLines] = useState<QuoteLine[]>([]);
   const [customer, setCustomer] = useState("");
+  const [customerId, setCustomerId] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [project, setProject] = useState("");
   const [county, setCounty] = useState("");
   const [phone, setPhone] = useState("");
@@ -210,7 +212,7 @@ function App() {
     doc.text(`Quote No: ${quoteNumber}`, right, 23, { align: "right" });
     doc.text(`Date of issue: ${dateLabel(quoteDate)}`, right, 29, { align: "right" });
     doc.text(`Date of expiry: ${dateLabel(expiryDate)}`, right, 35, { align: "right" });
-    doc.text(`Place of delivery: ${deliveryPlace.trim() || "To be confirmed"}`, right, 41, { align: "right" });
+    doc.text(doc.splitTextToSize(`Place of delivery: ${deliveryPlace.trim() || "To be confirmed"}`, 68).slice(0, 2), right, 41, { align: "right" });
 
     y = 56;
     doc.setTextColor(...green);
@@ -228,17 +230,25 @@ function App() {
     doc.text(`Customer: ${customer.trim() || "Not provided"}`, left, y);
     doc.text(`Place: ${deliveryPlace.trim() || "To be confirmed"}`, 112, y);
     y += 5;
-    doc.text(`Phone: ${phone.trim() || "Not provided"}`, left, y);
+    doc.text(`ID / PIN: ${customerId.trim() || "Not provided"}`, left, y);
     doc.text(`County: ${county.trim() || "Not provided"}`, 112, y);
     y += 5;
-    doc.text(`Project: ${project.trim() || "Not provided"}`, left, y);
-    doc.text(`Site address: ${deliveryAddress.trim() || "To be confirmed"}`, 112, y);
+    doc.text(`Telephone: ${phone.trim() || "Not provided"}`, left, y);
+    doc.text(`Delivery contact: ${deliveryContact.trim() || "Not provided"}`, 112, y);
     y += 5;
-    doc.text(`Delivery contact: ${deliveryContact.trim() || "Not provided"}`, left, y);
+    doc.text(`Email: ${customerEmail.trim() || "Not provided"}`, left, y);
     doc.text(`Delivery phone: ${deliveryPhone.trim() || "Not provided"}`, 112, y);
     y += 5;
-    doc.text(`Landmark / directions: ${deliveryLandmark.trim() || "Not provided"}`, 112, y);
-    y += 7;
+    doc.text(`Project: ${project.trim() || "Not provided"}`, left, y);
+    const siteAddressLines = doc.splitTextToSize(`Site address: ${deliveryAddress.trim() || "To be confirmed"}`, 82).slice(0, 2);
+    doc.text(siteAddressLines, 112, y);
+    y += Math.max(5, siteAddressLines.length * 4);
+    if (deliveryLandmark.trim()) {
+      const landmarkLines = doc.splitTextToSize(`Landmark / directions: ${deliveryLandmark.trim()}`, 82).slice(0, 2);
+      doc.text(landmarkLines, 112, y);
+      y += Math.max(5, landmarkLines.length * 4);
+    }
+    y += 3;
 
     // Official payment reference from the supplied OBOR quotation. Customers are warned to verify before paying.
     doc.setFillColor(246,248,244);
@@ -386,6 +396,8 @@ function App() {
   const orderMessage = [
     "Hello Panda Mabati, I would like to proceed with an order request.",
     customer.trim() ? `Customer: ${customer.trim()}` : "",
+    customerId.trim() ? `ID / PIN: ${customerId.trim()}` : "",
+    customerEmail.trim() ? `Email: ${customerEmail.trim()}` : "",
     project.trim() ? `Project: ${project.trim()}` : "",
     county.trim() ? `County: ${county.trim()}` : "",
     deliveryPlace.trim() ? `Place of delivery: ${deliveryPlace.trim()}` : "",
@@ -632,7 +644,9 @@ function App() {
 
               <div className="quote-fields">
                 <label>Customer name<input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="Your name or business" /></label>
+                <label>ID / KRA PIN (optional)<input value={customerId} onChange={(e) => setCustomerId(e.target.value)} placeholder="Customer ID or business PIN" /></label>
                 <label>Customer phone<input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+254 ..." inputMode="tel" /></label>
+                <label>Email address (optional)<input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} placeholder="name@example.com" /></label>
                 <label>Project name<input value={project} onChange={(e) => setProject(e.target.value)} placeholder="e.g. Family home" /></label>
                 <label>County<input value={county} onChange={(e) => setCounty(e.target.value)} placeholder="e.g. Mombasa County" /></label>
                 <label>Place of delivery<input value={deliveryPlace} onChange={(e) => setDeliveryPlace(e.target.value)} placeholder="e.g. Nyali, Mombasa" /></label>
