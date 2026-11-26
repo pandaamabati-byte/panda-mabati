@@ -65,8 +65,13 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
   const [imageUnavailable, setImageUnavailable] = useState(false);
   const image = getVerifiedProductImage(product.id);
   const imageStatus = getProductImageStatus(product.id);
-  const aiVisualIds = ["versatile", "glazed-tile", "elegantile", "decra", "ridge-caps", "flashings", "gutters", "roll-tops", "valley-trays", "roofing-fasteners"];
-  const aiVisualSrc = aiVisualIds.includes(product.id) ? `/images/ai-product-visuals/${product.id}.svg` : "";
+  const productPhotoSources: Record<string, string> = {
+    eurotile: "https://roofmasters.co.ke/wp-content/uploads/2025/06/Elegant-Tile-Tile-Red-Matt-1-1.jpg",
+    "d-tile": "https://static.wixstatic.com/media/e26807_1022c82c8c2e476e8a6580ea8580d766~mv2.webp/v1/fill/w_788%2Ch_788%2Cal_c%2Cq_85%2Cenc_avif%2Cquality_auto/e26807_1022c82c8c2e476e8a6580ea8580d766~mv2.webp",
+    versatile: "https://i0.wp.com/smartbuilders.africa/wp-content/uploads/2023/02/bricky-soily-red-tile.webp?fit=500%2C500&ssl=1",
+    "box-profile": "https://pandamabati.com/wp-content/uploads/2026/06/download.jpg",
+  };
+  const aiVisualSrc = productPhotoSources[product.id] ?? "";
   const showPhoto = Boolean(image && !imageUnavailable);
   const showAiVisual = Boolean(aiVisualSrc && !imageUnavailable);
 
@@ -83,7 +88,7 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
       ) : showAiVisual ? (
         <img
           src={aiVisualSrc}
-          alt={`Product visualisation of ${product.name}; confirm exact manufacturer profile and finish`}
+          alt={`Single-sheet ${product.name} product reference photograph; confirm exact manufacturer profile and finish`}
           className="product-card__photo product-card__photo--visualisation"
           loading="lazy"
           onError={() => setImageUnavailable(true)}
@@ -95,7 +100,7 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
         </>
       )}
       {showPhoto && <span className="product-card__image-note product-card__image-note--photo">PANDA PRODUCT PHOTO</span>}
-      {showAiVisual && <span className="product-card__image-note product-card__image-note--ai">PRODUCT VISUALISATION · CONFIRM SPEC</span>}
+      {showAiVisual && <span className="product-card__image-note product-card__image-note--ai">REFERENCE PRODUCT PHOTO · VERIFY FINISH</span>}
       <span className="product-card__number">0{index + 1}</span>
     </div>
   );
@@ -497,14 +502,13 @@ function App() {
           <div className="hero__visual">
             <div className="hero__image-frame">
               {heroImageUnavailable ? (
-                <div className="hero__photo-fallback" role="img" aria-label="Illustrated contemporary home with a metal roof">
-                  <RoofArtwork tone="versatile" />
-                  <span>ROOFING INSPIRATION</span>
+                <div className="hero__photo-fallback" role="img" aria-label="Panda Mabati residential roofing project photograph temporarily unavailable">
+                  <span>PROJECT PHOTOGRAPH TEMPORARILY UNAVAILABLE</span>
                 </div>
               ) : (
                 <img
                   className="hero__photo"
-                  src="https://pandamabati.com/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-06-at-7.53.20-PM-1-1024x768.jpeg"
+                  src="https://pandamabati.com/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-06-at-7.53.20-PM-2-1024x768.jpeg"
                   alt="Panda Mabati residential roofing project showing a completed multi-section tile-profile roof on a modern family home"
                   fetchPriority="high"
                   decoding="async"
