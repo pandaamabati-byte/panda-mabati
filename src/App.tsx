@@ -4,6 +4,7 @@ import {
   Sparkles, X, Calculator, Layers3, Truck, BadgeCheck, Plus, Minus, Search,
 } from "lucide-react";
 import { jsPDF } from "jspdf";
+import pandaMabatiLogo from "./assets/panda-mabati-logo.jpg";
 import { BUSINESS_CONTACT } from "./config/business";
 import { BOX_PROFILE_VARIANTS } from "./features/products/boxProfileVariants";
 import { FALLBACK_PRODUCTS, type Product } from "./features/products/productModel";
@@ -180,7 +181,7 @@ function App() {
       current.filter((line) => line.id !== id),
     );
 
-  const downloadQuote = () => {
+  const downloadQuote = async () => {
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -195,32 +196,37 @@ function App() {
     const green: [number, number, number] = [18, 53, 43];
     const lime: [number, number, number] = [194, 220, 77];
     let y = 12;
+    const logoImage = new Image();
+    logoImage.src = pandaMabatiLogo;
+    await logoImage.decode();
 
-    // Official OBOR Technology Kenya Ltd quotation identity, upgraded with Panda Mabati trading brand.
+    // Official OBOR Technology Kenya Ltd quotation identity, upgraded with the current Panda Mabati logo.
     doc.setFillColor(255,255,255);
     doc.rect(0, 0, pageWidth, 47, "F");
     doc.setFillColor(...green);
     doc.rect(0, 0, pageWidth, 3, "F");
     doc.setFillColor(...lime);
     doc.rect(0, 47, pageWidth, 2, "F");
+    doc.addImage(logoImage, "JPEG", left, 7, 30, 20);
+    const companyLeft = left + 34;
     doc.setTextColor(...green);
     doc.setFont("helvetica","bold");
-    doc.setFontSize(15);
-    doc.text("OBOR TECHNOLOGY KENYA LTD", left, 13);
+    doc.setFontSize(13);
+    doc.text("OBOR TECHNOLOGY KENYA LTD", companyLeft, 13);
     doc.setFont("helvetica","normal");
     doc.setFontSize(7.4);
     doc.setTextColor(65,75,68);
-    doc.text("Plaza Business Park, Mombasa Road, Nairobi", left, 19);
-    doc.text("P.O. Box 37838-00100, Nairobi, Kenya  |  PTN: P051909470Y", left, 24);
+    doc.text("Plaza Business Park, Mombasa Road, Nairobi", companyLeft, 19);
+    doc.text("P.O. Box 37838-00100, Nairobi, Kenya  |  PTN: P051909470Y", companyLeft, 24);
     doc.setFont("helvetica","bold");
     doc.setFontSize(10);
     doc.setTextColor(...green);
-    doc.text("PANDA MABATI", left, 34);
+    doc.text("PANDA MABATI", companyLeft, 34);
     doc.setFont("helvetica","normal");
     doc.setFontSize(7);
     doc.setTextColor(65,75,68);
-    doc.text("Roofing Solutions  |  We Represent Quality", left, 39);
-    doc.text(`Tel: ${BUSINESS_CONTACT.phoneDisplay}  |  ${BUSINESS_CONTACT.salesEmail}`, left, 44);
+    doc.text("Roofing Solutions  |  We Represent Quality", companyLeft, 39);
+    doc.text(`Tel: ${BUSINESS_CONTACT.phoneDisplay}  |  ${BUSINESS_CONTACT.salesEmail}`, companyLeft, 44);
     doc.setFont("helvetica","bold");
     doc.setFontSize(17);
     doc.setTextColor(...green);
@@ -439,13 +445,7 @@ function App() {
       </div>
 
       <header className="site-header">
-        <a href="#home" className="brand" aria-label="Panda Mabati home">
-          <span className="brand__mark"><Layers3 size={23} strokeWidth={2.2} /></span>
-          <span className="brand__words">
-            <strong>PANDA <em>MABATI</em></strong>
-            <small>ROOFING SOLUTIONS</small>
-          </span>
-        </a>
+        <a href="#home" className="brand" aria-label="Panda Mabati home"><img className="brand__logo" src={pandaMabatiLogo} alt="Panda Mabati — We Represent Quality" /></a>
 
         <nav aria-label="Main navigation" className={`desktop-nav ${mobileOpen ? "desktop-nav--open" : ""}`}>
           {navLinks.map(([label, href]) => (
@@ -819,10 +819,7 @@ function App() {
       <footer className="site-footer">
         <div className="site-footer__main">
           <section className="site-footer__brand">
-            <a href="#home" className="brand brand--footer" aria-label="Panda Mabati home">
-              <span className="brand__mark"><Layers3 size={22} /></span>
-              <span className="brand__words"><strong>PANDA <em>MABATI</em></strong><small>ROOFING SOLUTIONS</small></span>
-            </a>
+            <a href="#home" className="brand brand--footer" aria-label="Panda Mabati home"><img className="brand__logo brand__logo--footer" src={pandaMabatiLogo} alt="Panda Mabati — We Represent Quality" /></a>
             <p>Thoughtful roofing. Clearer decisions.</p>
             <p className="site-footer__description">Explore roofing options, compare finishes, and plan your project with confidence.</p>
           </section>
