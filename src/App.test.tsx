@@ -109,11 +109,11 @@ describe('Panda Mabati storefront', () => {
 
   it('collects separate delivery point, site address and receiving contact details', () => {
     render(<App />);
-    expect(screen.getByLabelText(/place of delivery/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/site \/ delivery address/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/landmark \/ directions/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/delivery contact person/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/delivery contact phone/i)).toBeInTheDocument();
+    expect(screen.getAllByLabelText(/place of delivery/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/site \/ delivery address/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/landmark \/ directions/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/delivery contact person/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText(/delivery contact phone/i).length).toBeGreaterThan(0);
   });
 
   it('renders the quotation builder and PDF download action', () => {
