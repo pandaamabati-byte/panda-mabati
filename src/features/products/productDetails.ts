@@ -8,11 +8,13 @@ export type ProductVariant = {
   sourceUrl: string;
   unitPriceKes: number;
   priceUnit: "metre" | "piece";
+  priceSourceUrl?: string;
 };
 const source = "https://pandamabatifactory.co.ke/wp/";
 type Row = [colour: string, finish: string, gauge: string, price: number];
-const make = (id: string, rows: Row[], priceUnit: "metre" | "piece" = "metre"): ProductVariant[] => rows.map(([colour,finish,gauge,unitPriceKes],i)=>({
-  id:id+"-"+i,colour,finish,gauge,unitPriceKes,priceUnit,sourceUrl:source
+const retailSource = "https://take.app/pandamabatiltd/c/cm7cwmwkb000ww4xpqnpb8of1";
+const make = (id: string, rows: Row[], priceUnit: "metre" | "piece" = "metre", priceSourceUrl = source): ProductVariant[] => rows.map(([colour,finish,gauge,unitPriceKes],i)=>({
+  id:id+"-"+i,colour,finish,gauge,unitPriceKes,priceUnit,sourceUrl:source,priceSourceUrl
 }));
 
 // Colour/gauge/finish names come from the factory catalogue. Rates use the Panda Mabati Ltd retail list where it publishes a comparable unit, and the factory listing otherwise.
@@ -22,11 +24,11 @@ const variants: Record<string, ProductVariant[]> = {
     ["Dark Green","Gloss","30G",520],["Grey","Gloss","30G",520],["Grey","Matt","30G",600],
     ["Maroon","Gloss","30G",520],["Maroon","Matt","30G",600],["Sky Blue","Gloss","30G",520],
     ["Tile Red","Matt","28G",680],["Tile Red","Gloss","28G",680],["Sky Blue","Gloss","28G",680],["Maroon","Matt","28G",680]
-  ]),
+  ],"metre",retailSource),
   corrugated:make("corrugated",[
     ["Red","Matt","30G",600],["Grey","Gloss","30G",520],["Green","Matt","30G",600],["Brick Red","Gloss","30G",520],
     ["Red","Gloss","28G",680],["Grey","Gloss","28G",680],["Green","Gloss","28G",680],["Brick Red","Gloss","28G",680]
-  ]),
+  ],"metre",retailSource),
   startile:make("startile",[
     ["Tile Red","Matt","28G",720],["Sky Blue","Gloss","28G",720],["Maroon","Gloss","28G",720],["Dark Green","Matt","28G",720],
     ["Tile Red","Matt","30G",620],["Sky Blue","Gloss","30G",620]
@@ -41,8 +43,8 @@ const variants: Record<string, ProductVariant[]> = {
   decra:make("decra",[
     ["Shingle Tile Black","Stone-coated","26G",720],["Shingle Tile Brick Red","Stone-coated","26G",720],
     ["Classic Tile Coffee Brown","Stone-coated","26G",720],["Classic Tile Black","Stone-coated","26G",720]
-  ],"piece"),
-  "roll-tops":make("roll-top",[["Standard","Standard","28G",800],["Standard","Standard","30G",700]],"piece"),
+  ],"piece",retailSource),
+  "roll-tops":make("roll-top",[["Standard","Standard","28G",800],["Standard","Standard","30G",700]],"piece",retailSource),
   "ridge-caps":make("ridge",[["Normal Ridge / Kofia","Standard","—",600]],"piece"),
   "valley-trays":make("valley",[["Decra Valley Tray","Standard","—",750]],"piece"),
   "roofing-fasteners":make("fastener",[["Decra Touch-up Kit","Standard","—",800],["Decra Serrated Nails","Standard","—",800],["Decra Badge Board","Standard","—",750]],"piece")
@@ -66,12 +68,12 @@ const copy:Record<string,{overview:string;benefits:string[];notes:string[]}> = {
 export const getProductVariants=(id:string)=>variants[id]??[];
 export const getProductDetails=(product:Product)=>copy[product.id]??{overview:product.description,benefits:["Roofing product in the Panda Mabati range"],notes:["Select the product and required quantity for your quotation"]};
 export const getVariantPriceLabel=(variant:ProductVariant)=>`KSh ${variant.unitPriceKes.toLocaleString("en-KE")} / ${variant.priceUnit==="metre"?"m":"piece"}`;
-export type ProductPriceInfo={display:string;note:string;unitPriceKes:number;cartLabel:string;priceUnit:"metre"|"piece"|"packet"};
+export type ProductPriceInfo={display:string;note:string;unitPriceKes:number;cartLabel:string;priceUnit:"metre"|"piece"|"packet";sourceUrl:string};
 export const getProductPriceInfo=(id:string):ProductPriceInfo|undefined=>{
-  if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile marketplace listing; its 2m offer shows a 10-packet minimum and seller prices vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark",priceUnit:"packet"};
-  if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 at KSh 630/m and G28 at KSh 730/m. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre",priceUnit:"metre"};
-  if(id==="gutters") return {display:"KSh 400 per 4m PVC gutter",note:"Panda Mabati Ltd product listing; fittings and delivery are separate.",unitPriceKes:400,cartLabel:"PVC gutter · 4m",priceUnit:"piece"};
-  if(id==="flashings") return {display:"From KSh 500 per piece",note:"Kenya market benchmark range is KSh 500–1,200 per piece depending on flashing type and dimensions.",unitPriceKes:500,cartLabel:"Roof flashing · market estimate",priceUnit:"piece"};
+  if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile marketplace listing; its 2m offer shows a 10-packet minimum and seller prices vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark",priceUnit:"packet",sourceUrl:"https://viwanda.ke/brands/panda/"};
+  if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 at KSh 630/m and G28 at KSh 730/m. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre",priceUnit:"metre",sourceUrl:retailSource};
+  if(id==="gutters") return {display:"KSh 400 per 4m PVC gutter",note:"Panda Mabati Ltd product listing; fittings and delivery are separate.",unitPriceKes:400,cartLabel:"PVC gutter · 4m",priceUnit:"piece",sourceUrl:retailSource};
+  if(id==="flashings") return {display:"From KSh 500 per piece",note:"Kenya market benchmark range is KSh 500–1,200 per piece depending on flashing type and dimensions.",unitPriceKes:500,cartLabel:"Roof flashing · market estimate",priceUnit:"piece",sourceUrl:"https://spacemabatiandsteel.co.ke/wp-content/uploads/2026/03/Product-list-Prices.pdf"};
   return undefined;
 };
 
@@ -83,16 +85,16 @@ export const getProductStartingPrice=(id:string):number|undefined=>{
 
 export const getProductStartingPriceUnit=(id:string):"metre"|"piece"|undefined=>getProductVariants(id)[0]?.priceUnit;
 
-export type ProductPriceOption={id:string;label:string;display:string;unitPriceKes:number;priceUnit:"metre"|"packet";sheetLengthM:number;minimumOrder?:string;gauge?:string};
+export type ProductPriceOption={id:string;label:string;display:string;unitPriceKes:number;priceUnit:"metre"|"packet";sheetLengthM:number;minimumOrder?:string;gauge?:string;sourceUrl:string};
 const specialPriceOptions:Record<string,ProductPriceOption[]> = {
   "d-tile":[
-    {id:"dtile-2m",label:"2m packet",display:"KSh 1,130 / 2m packet",unitPriceKes:1130,priceUnit:"packet",sheetLengthM:2,minimumOrder:"10 packets"},
-    {id:"dtile-25m",label:"2.5m packet",display:"KSh 1,420 / 2.5m packet",unitPriceKes:1420,priceUnit:"packet",sheetLengthM:2.5,minimumOrder:"8 packets"},
-    {id:"dtile-3m",label:"3m packet",display:"KSh 1,700 / 3m packet",unitPriceKes:1700,priceUnit:"packet",sheetLengthM:3,minimumOrder:"6 packets"}
+    {id:"dtile-2m",label:"2m packet",display:"KSh 1,130 / 2m packet",unitPriceKes:1130,priceUnit:"packet",sheetLengthM:2,minimumOrder:"10 packets",sourceUrl:"https://viwanda.ke/brands/panda/"},
+    {id:"dtile-25m",label:"2.5m packet",display:"KSh 1,420 / 2.5m packet",unitPriceKes:1420,priceUnit:"packet",sheetLengthM:2.5,minimumOrder:"8 packets",sourceUrl:"https://viwanda.ke/brands/panda/"},
+    {id:"dtile-3m",label:"3m packet",display:"KSh 1,700 / 3m packet",unitPriceKes:1700,priceUnit:"packet",sheetLengthM:3,minimumOrder:"6 packets",sourceUrl:"https://viwanda.ke/brands/panda/"}
   ],
   versatile:[
-    ...[1,2,2.5,3].map((length)=>({id:`versatile-g30-${length}`,label:`G30 · ${length}m`,display:`KSh ${(630*length).toLocaleString("en-KE")} / ${length}m sheet (KSh 630/m)`,unitPriceKes:630,priceUnit:"metre" as const,sheetLengthM:length,gauge:"G30"})),
-    ...[1,2,2.5,3].map((length)=>({id:`versatile-g28-${length}`,label:`G28 · ${length}m`,display:`KSh ${(730*length).toLocaleString("en-KE")} / ${length}m sheet (KSh 730/m)`,unitPriceKes:730,priceUnit:"metre" as const,sheetLengthM:length,gauge:"G28"}))
+    ...[1,2,2.5,3].map((length)=>({id:`versatile-g30-${length}`,label:`G30 · ${length}m`,display:`KSh ${(630*length).toLocaleString("en-KE")} / ${length}m sheet (KSh 630/m)`,unitPriceKes:630,priceUnit:"metre" as const,sheetLengthM:length,gauge:"G30",sourceUrl:retailSource})),
+    ...[1,2,2.5,3].map((length)=>({id:`versatile-g28-${length}`,label:`G28 · ${length}m`,display:`KSh ${(730*length).toLocaleString("en-KE")} / ${length}m sheet (KSh 730/m)`,unitPriceKes:730,priceUnit:"metre" as const,sheetLengthM:length,gauge:"G28",sourceUrl:retailSource}))
   ]
 };
 export const getProductPriceOptions=(id:string):ProductPriceOption[]=>specialPriceOptions[id]??[];
