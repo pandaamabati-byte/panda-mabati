@@ -289,7 +289,7 @@ function App() {
   ];
 
   const activeProduct = products.find((product) => product.id === activeProductId);
-  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel, price) => { setLines((current) => [...current, { ...makeLine(productId), variantId: undefined, variantLabel, unitPrice: price === undefined ? "" : String(price) }]); window.location.hash = "#calculator"; }} />;
+  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel, price) => { const boxVariant = productId === "box-profile" ? BOX_PROFILE_VARIANTS.find((item) => `${item.colour} · ${item.finish} · ${item.gauge}` === variantLabel) : undefined; setLines((current) => [...current, { ...makeLine(productId), variantId: boxVariant?.id, variantLabel, unitPrice: price === undefined ? "" : String(price) }]); window.location.hash = "#calculator"; }} />;
 
   return (
     <div className="site-shell">
@@ -509,7 +509,7 @@ function App() {
                     : null;
                   return (
                     <div className="quote-line" key={line.id}>
-                      {(product?.imageUrl || variant) && <img className="quote-line__thumbnail" src={variant?.image ?? product?.imageUrl} alt={product?.name ?? "Selected roofing product"} loading="lazy" />}
+                      {(product?.imageUrl || variant?.image) && <img className="quote-line__thumbnail" src={variant?.image ?? product?.imageUrl} alt={product?.name ?? "Selected roofing product"} loading="lazy" />}
                       <div className="quote-line__index">{String(index + 1).padStart(2, "0")}</div>
                       <div className="quote-line__fields">
                         <label className="field-wide">Roofing profile
