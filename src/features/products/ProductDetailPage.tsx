@@ -38,10 +38,10 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const [imageUnavailable, setImageUnavailable] = useState(false);
 
   const colours = [...new Set(variants.map((v) => v.colour))];
-  const variantLengths = [...new Set(variants.filter((v) => v.colour === colour && v.sheetLengthM).map((v) => v.sheetLengthM as number))].sort((a,b)=>a-b);
+  const variantLengths = [...new Set(variants.filter((v) => v.colour === colour && v.gauge === gauge && v.finish === finish && v.sheetLengthM).map((v) => v.sheetLengthM as number))].sort((a,b)=>a-b);
 
-  const gauges = [...new Set(variants.map((v) => v.gauge))];
-  const finishes = [...new Set(variants.map((v) => v.finish))];
+  const gauges = [...new Set(variants.filter((v) => v.colour === colour).map((v) => v.gauge))];
+  const finishes = [...new Set(variants.filter((v) => v.colour === colour && v.gauge === gauge).map((v) => v.finish))];
   const specialGauges = [...new Set(priceOptions.map((option) => option.gauge).filter(Boolean))] as string[];
   const specialLengths = [...new Set(
     priceOptions
@@ -69,6 +69,8 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const variantImage = getVerifiedProductImage(product.id, selected?.id);
   const verifiedImage = variantImage ?? getVerifiedProductImage(product.id);
   const previewImage = verifiedImage?.src;
+  const aiVisualIds = ["versatile", "glazed-tile", "elegantile", "decra", "ridge-caps", "flashings", "gutters", "roll-tops", "valley-trays", "roofing-fasteners"];
+  const aiVisualSrc = aiVisualIds.includes(product.id) ? "/images/ai-product-visuals/" + product.id + ".svg" : undefined;
   const needsColourPreview = Boolean(colour && !variantImage);
   const swatchColour = colour.toLowerCase().includes("red") ? "#a83228"
     : colour.toLowerCase().includes("blue") ? "#2778b9"
@@ -103,17 +105,25 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
         <section className="product-detail-hero">
           <div className="product-detail-visual">
             {previewImage && !imageUnavailable ? (
-              <div className="product-detail-photo-stage"><img src={previewImage} alt={verifiedImage?.alt ?? `${product.name} product visual`} key={previewImage} onError={() => setImageUnavailable(true)} />{needsColourPreview && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} aria-hidden="true" />}</div>
+              <div className="product-detail-photo-stage">
+                <img src={previewImage} alt={verifiedImage?.alt ?? (product.name + " product photograph")} key={previewImage} onError={() => setImageUnavailable(true)} />
+                {needsColourPreview && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} aria-hidden="true" />}
+              </div>
+            ) : aiVisualSrc && !imageUnavailable ? (
+              <div className="product-detail-photo-stage product-detail-photo-stage--visualisation">
+                <img src={aiVisualSrc} alt={"Product visualisation of " + product.name + "; exact manufacturer profile and finish to be confirmed"} onError={() => setImageUnavailable(true)} />
+                {needsColourPreview && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} aria-hidden="true" />}
+              </div>
             ) : (
               <div className="product-detail-placeholder">
                 <ProductProfileVisual productId={product.id} productName={product.name} tone={product.tone} colour={colour} />
                 <small className="product-detail-colour-label">
-                  {selected ? `Selected colour: ${colour}` : selectedPriceOption?.label ?? (variants.length ? "Select a product option" : "No colour variants")}
+                  {selected ? "Selected colour: " + colour : selectedPriceOption?.label ?? (variants.length ? "Select a product option" : "No colour variants")}
                 </small>
               </div>
             )}
             <span className="product-detail-photo-note">
-              {variantImage ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage && !imageUnavailable ? (needsColourPreview ? "PANDA PRODUCT PHOTO · COLOUR PREVIEW" : "PANDA MABATI PRODUCT PHOTOGRAPH") : "PRODUCT VISUAL"}
+              {variantImage ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage && !imageUnavailable ? (needsColourPreview ? "PANDA PRODUCT PHOTO · COLOUR PREVIEW" : "PANDA MABATI PRODUCT PHOTOGRAPH") : aiVisualSrc && !imageUnavailable ? "PRODUCT VISUALISATION · CONFIRM SPEC" : "PRODUCT PROFILE VISUAL"}
             </span>
           </div>
 
@@ -173,16 +183,16 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
                 </label>
                 <label>Gauge
                   <select value={gauge} onChange={(e) => {
-                    const v = variants.find((item) => item.gauge === e.target.value);
-                    if (v) { setColour(v.colour); setGauge(v.gauge); setFinish(v.finish); if (v.sheetLengthM) setVariantLength(v.sheetLengthM); }
+                    const v = variants.find((item) => item.colour === colour && item.gauge === e.target.value);
+                    if (v) { setGauge(v.gauge); setFinish(v.finish); if (v.sheetLengthM) setVariantLength(v.sheetLengthM); }
                   }}>
                     {gauges.map((v) => <option key={v}>{v}</option>)}
                   </select>
                 </label>
                 <label>Finish
                   <select value={finish} onChange={(e) => {
-                    const v = variants.find((item) => item.finish === e.target.value);
-                    if (v) { setColour(v.colour); setGauge(v.gauge); setFinish(v.finish); }
+                    const v = variants.find((item) => item.colour === colour && item.gauge === gauge && item.finish === e.target.value);
+                    if (v) { setFinish(v.finish); if (v.sheetLengthM) setVariantLength(v.sheetLengthM); }
                   }}>
                     {finishes.map((v) => <option key={v}>{v}</option>)}
                   </select>
