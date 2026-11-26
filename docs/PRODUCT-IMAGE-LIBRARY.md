@@ -37,7 +37,7 @@ The register tracks:
 - Ridge caps / normal ridge (Kofia), roll tops and valley trays
 - Roofing nails and fasteners
 
-D-Tile and Versatile remain product pages without colour selectors, as instructed. D-Tile offers published sheet-length/packet price choices; Versatile offers only its published G28/G30 gauge and sheet-length choices. Neither product exposes colour variants.
+D-Tile now exposes the Viwanda-listed Glossy 30G Blue, Charcoal Grey and Dark Grey options, with the published sheet-length packet prices and minimum order quantities. Versatile remains without a colour selector and offers only its published G28/G30 gauge and sheet-length choices.
 
 ## Price and catalogue source policy
 
@@ -70,3 +70,10 @@ Before adding a variant photo:
 ## Deployment gate
 
 The catalogue, pricing and image-library changes are on `feat/product-image-library` / PR #2. They must pass a fresh Cloudflare preview build and browser review before merge. Production `main` remains unchanged.
+
+
+### D-Tile visual reference and colour preview
+- The live preview uses a real tile-profile photograph from a Take App roofing-supplier listing as a shape reference; it is explicitly labelled as not a Panda Mabati D-Tile photograph.
+- The selected colour is applied as an on-screen colour overlay. This is a visual guide, not an exact paint-chip or factory colour proof.
+- D-Tile's published Blue, Charcoal Grey and Dark Grey 30G packet prices and minimum order quantities are transcribed from the Viwanda Panda brand listing: https://viwanda.ke/brands/panda/.
+- A matching Panda Mabati D-Tile photograph is still required to replace the reference image before the page can claim a verified Panda product photograph.
