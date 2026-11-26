@@ -1,5 +1,3 @@
-import type { Product } from "./productModel";
-
 export type ProductImageAsset = {
   id: string;
   productId: string;
