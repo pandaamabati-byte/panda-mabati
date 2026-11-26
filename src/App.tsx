@@ -243,10 +243,10 @@ function App() {
       { title: "No.", x: left + 2, w: 8 },
       { title: "TYPE / DESCRIPTION", x: left + 12, w: 48 },
       { title: "COLOUR / GAUGE", x: left + 62, w: 31 },
-      { title: "LENGTH", x: left + 95, w: 16 },
-      { title: "PCS", x: left + 113, w: 10 },
-      { title: "PRICE", x: left + 125, w: 21 },
-      { title: "AMOUNT (KSh)", x: right - 2, w: 27 },
+      { title: "LENGTH (M)", x: left + 95, w: 16 },
+      { title: "QTY (PCS)", x: left + 113, w: 10 },
+      { title: "UNIT RATE (KSh)", x: left + 125, w: 21 },
+      { title: "LINE TOTAL (KSh)", x: right - 2, w: 27 },
     ];
     const drawTableHeader = () => {
       doc.setFillColor(...green);
@@ -258,6 +258,11 @@ function App() {
       y += 9;
     };
     drawTableHeader();
+    doc.setFont("helvetica","italic");
+    doc.setFontSize(6.5);
+    doc.setTextColor(82,94,85);
+    doc.text("For metre-priced sheets: unit rate per metre × sheet length × quantity (pieces) = line total.", left + 1, y + 4.5);
+    y += 8;
     doc.setFont("helvetica","normal");
     doc.setFontSize(7.2);
     lines.forEach((line,index) => {
@@ -279,7 +284,7 @@ function App() {
       doc.text(doc.splitTextToSize(details,columns[2].w)[0],columns[2].x,y+7);
       doc.text(length===null ? "—" : `${length}m`,columns[3].x+columns[3].w,y+7,{align:"right"});
       doc.text(String(qty),columns[4].x+columns[4].w,y+7,{align:"right"});
-      doc.text(rate===null ? "Confirm" : `${money(rate)}${line.priceUnit==="metre" ? "/m" : ""}`,columns[5].x+columns[5].w,y+7,{align:"right"});
+      doc.text(rate===null ? "Confirm" : `${money(rate)}${line.priceUnit==="metre" ? " / m" : line.priceUnit==="packet" ? " / packet" : line.priceUnit==="piece" ? " / pc" : ""}`,columns[5].x+columns[5].w,y+7,{align:"right"});
       doc.text(amount===null ? "Confirm" : money(amount).replace("Ksh","").trim(),columns[6].x,y+7,{align:"right"});
       doc.setDrawColor(220,226,219);
       doc.line(left,y+rowHeight,right,y+rowHeight);
