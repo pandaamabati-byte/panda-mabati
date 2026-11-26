@@ -259,6 +259,24 @@ function App() {
     doc.save(`Panda-Mabati-Quotation-${new Date().toISOString().slice(0, 10)}.pdf`);
   };
 
+  const orderMessage = [
+    "Hello Panda Mabati, I would like to proceed with an order request.",
+    customer.trim() ? `Customer: ${customer.trim()}` : "",
+    project.trim() ? `Project: ${project.trim()}` : "",
+    county.trim() ? `Delivery / project location: ${county.trim()}` : "",
+    phone.trim() ? `Customer phone: ${phone.trim()}` : "",
+    "Selected products:",
+    ...lines.map((line,index)=>{
+      const product=products.find(item=>item.id===line.productId);
+      const variant=line.productId==="box-profile"?BOX_PROFILE_VARIANTS.find(item=>item.id===line.variantId):undefined;
+      const option=variant?[variant.colour,variant.finish,variant.gauge].join(" · "):line.variantLabel;
+      return `${index+1}. ${product?.name??"Roofing product"}${option?` — ${option}`:""} | Quantity: ${line.quantity}${variant?` sheets × ${line.sheetLengthM}m`:""}`;
+    }),
+    notes.trim() ? `Project notes: ${notes.trim()}` : "",
+    "Please confirm stock, final specifications, delivery cost and the official order total before payment."
+  ].filter(Boolean).join("\n");
+  const orderWhatsAppUrl=`https://wa.me/254705141152?text=${encodeURIComponent(orderMessage)}`;
+
   const navLinks = [
     ["Home", "#home"],
     ["Roofing", "#roofing"],
@@ -370,7 +388,7 @@ function App() {
               <div className="eyebrow">Find your finish</div>
               <h2>Roofing for your kind of home.</h2>
             </div>
-            <p>Start with the look you love. Select a profile to add it to your quotation.</p>
+            <p>Start with the look you love. Select a profile to add it to your cart and quotation.</p>
           </div>
           <div className="product-grid">
             {products.map((product, index) => (
@@ -466,7 +484,7 @@ function App() {
           <div className="quote-builder">
             <div className="quote-builder__main">
               <div className="builder-title">
-                <div><span className="builder-step">01</span><div><h3>Your roofing list</h3><p>Add each profile and required quantity.</p></div></div>
+                <div><span className="builder-step">01</span><div><h3>Your cart & quotation</h3><p>Add products, select options and set your required quantities.</p></div></div>
                 <span className="item-count">{lines.length} {lines.length === 1 ? "item" : "items"}</span>
               </div>
 
@@ -494,6 +512,7 @@ function App() {
                     : null;
                   return (
                     <div className="quote-line" key={line.id}>
+                      {(product?.imageUrl || variant) && <img className="quote-line__thumbnail" src={variant?.image ?? product?.imageUrl} alt={product?.name ?? "Selected roofing product"} loading="lazy" />}
                       <div className="quote-line__index">{String(index + 1).padStart(2, "0")}</div>
                       <div className="quote-line__fields">
                         <label className="field-wide">Roofing profile
@@ -617,6 +636,8 @@ function App() {
               </div>
               {quote.hasMissingPrice && <div className="price-notice"><ShieldCheck size={16} /><span>Some prices are missing. Your PDF will flag these lines and will not present the subtotal as a final project price.</span></div>}
               <button className="button button--lime button--full" onClick={downloadQuote}><Download size={17} /> Download quotation PDF</button>
+              <a className="button button--dark button--full order-request-button" href={orderWhatsAppUrl} target="_blank" rel="noreferrer" aria-label="Proceed with an order request on WhatsApp"><ArrowUpRight size={17} /> Proceed to order request</a>
+              <p className="order-request-note">This sends your selected cart to Panda Mabati on WhatsApp. Your order is confirmed only after our team verifies stock, specifications, delivery and final pricing.</p>
               <p className="summary-privacy">Your PDF is generated on this device. This prototype does not submit your personal details to a server.</p>
             </aside>
           </div>
