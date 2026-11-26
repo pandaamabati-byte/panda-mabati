@@ -10,7 +10,7 @@ import { FALLBACK_PRODUCTS, type Product } from "./features/products/productMode
 import { loadProducts } from "./services/products/catalogue";
 import ProductDetailPage from "./features/products/ProductDetailPage";
 import ProductProfileVisual from "./features/products/ProductProfileVisual";
-import { getVerifiedProductImage } from "./features/products/productImageLibrary";
+import { getProductImageStatus, getVerifiedProductImage, PRODUCT_IMAGE_TARGETS } from "./features/products/productImageLibrary";
 import { getProductStartingPrice, getProductStartingPriceUnit } from "./features/products/productDetails";
 import "./App.css";
 
@@ -63,10 +63,12 @@ function RoofArtwork({ tone }: { tone: string }) {
 function ProductCardVisual({ product, index }: { product: Product; index: number }) {
   const [imageUnavailable, setImageUnavailable] = useState(false);
   const image = getVerifiedProductImage(product.id);
+  const imageStatus = getProductImageStatus(product.id);
+  const showPhoto = Boolean(image && !imageUnavailable);
 
   return (
-    <div className="product-card__image">
-      {image && !imageUnavailable ? (
+    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : "profile-visual"}>
+      {showPhoto && image ? (
         <img
           src={image.src}
           alt={image.alt}
@@ -77,9 +79,10 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
       ) : (
         <>
           <ProductProfileVisual productId={product.id} productName={product.name} tone={product.tone} />
-          <span className="product-card__image-note">PRODUCT VISUAL</span>
+          <span className="product-card__image-note">PROFILE VISUAL · PHOTO PENDING</span>
         </>
       )}
+      {showPhoto && <span className="product-card__image-note product-card__image-note--photo">PANDA PRODUCT PHOTO</span>}
       <span className="product-card__number">0{index + 1}</span>
     </div>
   );
@@ -457,6 +460,7 @@ function App() {
               ))}
             </div>
             <p className="catalogue-results" aria-live="polite">Showing {visibleProducts.length} of {products.length} products</p>
+            <p className="catalogue-image-coverage">Genuine Panda photos: {PRODUCT_IMAGE_TARGETS.filter((id) => getProductImageStatus(id).hasGenuinePhoto).length} of {PRODUCT_IMAGE_TARGETS.length} product families. Other cards show product-specific profile visuals until approved photographs are available.</p>
           </div>
           <div className="product-grid">
             {visibleProducts.map(({ product, index }) => (
