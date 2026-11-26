@@ -65,26 +65,27 @@ describe('Panda Mabati storefront', () => {
     window.location.hash = '';
   });
 
-  it('shows the dedicated Versatile detail visual and updates the colour preference', () => {
+  it('shows an honest profile visual for Versatile and updates the colour preference', () => {
     window.location.hash = '#product/versatile';
     const { container } = render(<App />);
-    const visual = container.querySelector('.product-detail-photo-stage img');
-    expect(visual).toHaveAttribute('src', '/images/ai-product-visuals/versatile.svg');
+    expect(container.querySelector('.product-detail-placeholder .product-profile-visual')).not.toBeNull();
+    expect(container.querySelector('.product-detail-photo-stage img')).toBeNull();
+    expect(screen.getByText(/PRODUCT PROFILE VISUAL · PHOTO PENDING/i)).toBeInTheDocument();
     fireEvent.change(screen.getAllByLabelText(/Colour preference/)[0], { target: { value: 'Tile Red' } });
     expect(screen.getAllByLabelText(/Colour preference/)[0]).toHaveValue('Tile Red');
-    expect(container.querySelector('.product-detail-colour-overlay')).not.toBeNull();
     window.location.hash = '';
   });
 
-  it('shows dedicated product visualisations for all ten remaining product families', () => {
+  it('shows clearly labelled profile visuals instead of unapproved photos for unverified product families', () => {
     const { container } = render(<App />);
     const ids = ['versatile', 'glazed-tile', 'elegantile', 'decra', 'ridge-caps', 'flashings', 'gutters', 'roll-tops', 'valley-trays', 'roofing-fasteners'];
     for (const id of ids) {
       const card = container.querySelector(`[data-product-id="${id}"]`);
-      expect(card?.getAttribute('data-image-status')).toBe('product-visualisation');
-      expect(card?.querySelector('img.product-card__photo')).toHaveAttribute('src', `/images/ai-product-visuals/${id}.svg`);
+      expect(card?.getAttribute('data-image-status')).toBe('profile-visual');
+      expect(card?.querySelector('.product-profile-visual')).not.toBeNull();
+      expect(card?.querySelector('img.product-card__photo')).toBeNull();
     }
-    expect(screen.getAllByText(/PRODUCT VISUALISATION/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/PROFILE VISUAL · PHOTO PENDING/i).length).toBeGreaterThan(0);
   });
 
   it('shows real manufacturer photos where verified and profile visuals for the remaining catalogue cards', () => {
@@ -92,9 +93,9 @@ describe('Panda Mabati storefront', () => {
     const dTile = container.querySelector('[data-product-id="d-tile"]');
     const versatile = container.querySelector('[data-product-id="versatile"]');
     expect(dTile?.getAttribute('data-image-status')).toBe('verified-photo');
-    expect(versatile?.getAttribute('data-image-status')).toBe('product-visualisation');
+    expect(versatile?.getAttribute('data-image-status')).toBe('profile-visual');
     expect(screen.getAllByText(/Genuine Panda photos: 4 of 15 product families/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/PRODUCT VISUALISATION · CONFIRM SPEC/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/PROFILE VISUAL · PHOTO PENDING/i).length).toBeGreaterThan(0);
   });
 
   it('renders the quotation builder and PDF download action', () => {
