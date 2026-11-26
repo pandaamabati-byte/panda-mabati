@@ -70,6 +70,8 @@ export const PRODUCT_IMAGE_LIBRARY: ProductImageAsset[] = [
     ["ridge-caps", "Ridge Caps and Roll Tops", "https://pandamabatifactory.co.ke/wp/"],
     ["flashings", "Roof Flashings", "https://pandamabati.com/"],
     ["gutters", "Rainwater Gutters", "https://pandamabati.com/"],
+    ["roll-tops", "Roll Tops", "https://pandamabatifactory.co.ke/wp/"],
+    ["valley-trays", "Valley Trays", "https://pandamabatifactory.co.ke/wp/"],
     ["roofing-fasteners", "Roofing Nails and Fasteners", "https://pandamabati.com/"],
   ].map(([productId, name, sourceUrl]) => ({
     id: productId + "-primary-pending",
