@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowUpRight, Check, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Check, Layers3, MessageCircle, ShieldCheck } from "lucide-react";
 import pandaMabatiLogo from "../../assets/panda-mabati-logo.jpg";
 import type { Product } from "./productModel";
 import {
