@@ -32,9 +32,12 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const [gauge, setGauge] = useState(variants[0]?.gauge ?? "G30");
   const [finish, setFinish] = useState(variants[0]?.finish ?? "");
   const [specialGauge, setSpecialGauge] = useState("G30");
-  const [specialLength, setSpecialLength] = useState(product.id === "d-tile" ? 2 : 1);\n  const [variantLength, setVariantLength] = useState(variants[0]?.sheetLengthM ?? 0);
+  const [specialLength, setSpecialLength] = useState(product.id === "d-tile" ? 2 : 1);
+  const [variantLength, setVariantLength] = useState(variants[0]?.sheetLengthM ?? 0);
 
-  const colours = [...new Set(variants.map((v) => v.colour))];\n  const variantLengths = [...new Set(variants.filter((v) => v.colour === colour && v.sheetLengthM).map((v) => v.sheetLengthM as number))].sort((a,b)=>a-b);
+  const colours = [...new Set(variants.map((v) => v.colour))];
+  const variantLengths = [...new Set(variants.filter((v) => v.colour === colour && v.sheetLengthM).map((v) => v.sheetLengthM as number))].sort((a,b)=>a-b);
+  const variantLengths = [...new Set(variants.filter((v) => v.colour === colour && v.sheetLengthM).map((v) => v.sheetLengthM as number))].sort((a,b)=>a-b);
   const gauges = [...new Set(variants.map((v) => v.gauge))];
   const finishes = [...new Set(variants.map((v) => v.finish))];
   const specialGauges = [...new Set(priceOptions.map((option) => option.gauge).filter(Boolean))] as string[];
@@ -45,8 +48,8 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   )].sort((a, b) => a - b);
 
   const selected = useMemo(
-    () => variants.find((v) => v.colour === colour && v.gauge === gauge && v.finish === finish) ?? variants[0],
-    [variants, colour, gauge, finish],
+    () => variants.find((v) => v.colour === colour && v.gauge === gauge && v.finish === finish && (v.sheetLengthM === undefined || v.sheetLengthM === variantLength)) ?? variants.find((v) => v.colour === colour && v.gauge === gauge && v.finish === finish) ?? variants[0],
+    [variants, colour, gauge, finish, variantLength],
   );
   const selectedPriceOption = useMemo(
     () => priceOptions.find((option) => option.sheetLengthM === specialLength && (!option.gauge || option.gauge === specialGauge)) ?? priceOptions[0],
@@ -58,10 +61,8 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const selectedPrice = selected?.unitPriceKes ?? selectedPriceOption?.unitPriceKes ?? priceInfo?.unitPriceKes;
   const selectedPriceUnit = selected?.priceUnit ?? selectedPriceOption?.priceUnit ?? priceInfo?.priceUnit;
   const selectedLength = selected?.sheetLengthM ?? selectedPriceOption?.sheetLengthM;
-  const priceDisplay = selectedPriceOption?.display ?? priceInfo?.display;
-  const priceNote = selectedPriceOption?.minimumOrder
-    ? `Marketplace minimum order: ${selectedPriceOption.minimumOrder}. No colour variants are offered in this selection.`
-    : priceInfo?.note;
+  const priceDisplay = selected ? `${getVariantPriceLabel(selected)} · ${selected.sheetLengthM ? `${selected.sheetLengthM}m sheet` : ""}` : selectedPriceOption?.display ?? priceInfo?.display;
+  const priceNote = selected?.minimumOrder ? `Viwanda listing minimum order: ${selected.minimumOrder}.` : selectedPriceOption?.minimumOrder ? `Marketplace minimum order: ${selectedPriceOption.minimumOrder}.` : priceInfo?.note;
 
   const verifiedImage = getVerifiedProductImage(product.id, selected?.id) ?? getVerifiedProductImage(product.id);
   const previewImage = verifiedImage?.src;
@@ -162,7 +163,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
                 <label>Colour
                   <select value={colour} onChange={(e) => {
                     const v = variants.find((item) => item.colour === e.target.value);
-                    if (v) { setColour(v.colour); setGauge(v.gauge); setFinish(v.finish); if (v.sheetLengthM) setVariantLength(v.sheetLengthM); if (v.sheetLengthM) setVariantLength(v.sheetLengthM); }
+                    if (v) { setColour(v.colour); setGauge(v.gauge); setFinish(v.finish); if (v.sheetLengthM) setVariantLength(v.sheetLengthM); }
                   }}>
                     {colours.map((v) => <option key={v}>{v}</option>)}
                   </select>
@@ -170,7 +171,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
                 <label>Gauge
                   <select value={gauge} onChange={(e) => {
                     const v = variants.find((item) => item.gauge === e.target.value);
-                    if (v) { setColour(v.colour); setGauge(v.gauge); setFinish(v.finish); }
+                    if (v) { setColour(v.colour); setGauge(v.gauge); setFinish(v.finish); if (v.sheetLengthM) setVariantLength(v.sheetLengthM); }
                   }}>
                     {gauges.map((v) => <option key={v}>{v}</option>)}
                   </select>
@@ -183,6 +184,9 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
                     {finishes.map((v) => <option key={v}>{v}</option>)}
                   </select>
                 </label>
+                {variantLengths.length > 0 && <label>Sheet length
+                  <select value={String(variantLength)} onChange={(e) => setVariantLength(Number(e.target.value))}>{variantLengths.map((v)=><option key={v} value={v}>{v}m</option>)}</select>
+                </label>}
               </div>
               <div className="variant-selection">
                 <div className="variant-swatch" data-finish={finish.toLowerCase()} title={`Indicative colour swatch: ${colour}`} style={{ backgroundColor: swatchColour }}>
@@ -198,9 +202,9 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
               <div className="variant-list">
                 {variants.map((v) => (
                   <button key={v.id} className={selected?.id === v.id ? "variant-chip variant-chip--active" : "variant-chip"} onClick={() => {
-                    setColour(v.colour); setGauge(v.gauge); setFinish(v.finish);
+                    setColour(v.colour); setGauge(v.gauge); setFinish(v.finish); if (v.sheetLengthM) setVariantLength(v.sheetLengthM);
                   }}>
-                    <span>{v.colour}</span><small>{v.finish} · {v.gauge}</small>
+                    <span>{v.colour}</span><small>{v.finish} · {v.gauge}{v.sheetLengthM ? ` · ${v.sheetLengthM}m` : ""}</small>
                   </button>
                 ))}
               </div>
