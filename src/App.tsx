@@ -438,9 +438,9 @@ function App() {
           </div>
           <p className="catalogue-note">
             {catalogueSource === "firestore"
-              ? "Live catalogue connected; published products are shown alongside additional catalogue entries awaiting verification. "
+              ?  "Live catalogue connected; Panda Mabati product groups are shown alongside live catalogue records. "
               : "Showing the local catalogue until the live catalogue is available. "}
-            Some cards use illustrative artwork until verified manufacturer photographs are attached. Published catalogue prices are displayed on product pages; project totals include selected quantities and exclude delivery unless stated.
+            Cards without a sourced product photograph use clearly labelled illustrative profile artwork. Published catalogue prices are displayed on product pages; project totals include selected quantities and exclude delivery unless stated.
           </p>
         </section>
 
