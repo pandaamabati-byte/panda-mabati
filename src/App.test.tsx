@@ -36,7 +36,7 @@ describe('Panda Mabati storefront', () => {
     expect(screen.getAllByText(/Showing \d+ of \d+ products/)[0].textContent).not.toBe('Showing 14 of 14 products')
 
     fireEvent.click(screen.getAllByRole('button', { name: 'All products' })[0])
-    fireEvent.change(screen.getByRole('searchbox', { name: /search roofing products/i }), { target: { value: 'corrugated' } })
+    fireEvent.change(screen.getAllByRole('searchbox', { name: /search roofing products/i })[0], { target: { value: 'corrugated' } })
     expect(screen.getAllByRole('button', { name: 'Corrugated Roofing' }).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/Showing \d+ of \d+ products/)[0].textContent).not.toBe('Showing 14 of 14 products')
   })
