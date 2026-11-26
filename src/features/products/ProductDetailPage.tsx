@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, ArrowUpRight, Check, Layers3, MessageCircle, ShieldCheck } from "lucide-react";
 import type { Product } from "./productModel";
 import {
@@ -47,14 +47,14 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
       .map((option) => option.sheetLengthM),
   )].sort((a, b) => a - b);
 
-  const selected = useMemo(
-    () => variants.find((v) => v.colour === colour && v.gauge === gauge && v.finish === finish && (v.sheetLengthM === undefined || v.sheetLengthM === variantLength)) ?? variants.find((v) => v.colour === colour && v.gauge === gauge && v.finish === finish) ?? variants[0],
-    [variants, colour, gauge, finish, variantLength],
-  );
-  const selectedPriceOption = useMemo(
-    () => priceOptions.find((option) => option.sheetLengthM === specialLength && (!option.gauge || option.gauge === specialGauge)) ?? priceOptions[0],
-    [priceOptions, specialGauge, specialLength],
-  );
+  const selected =
+    variants.find((v) => v.colour === colour && v.gauge === gauge && v.finish === finish && (v.sheetLengthM === undefined || v.sheetLengthM === variantLength)) ??
+    variants.find((v) => v.colour === colour && v.gauge === gauge && v.finish === finish) ??
+    variants[0];
+
+  const selectedPriceOption =
+    priceOptions.find((option) => option.sheetLengthM === specialLength && (!option.gauge || option.gauge === specialGauge)) ??
+    priceOptions[0];
 
   const label = selected ? [selected.colour, selected.finish, selected.gauge, selected.sheetLengthM ? `${selected.sheetLengthM}m` : ""].filter(Boolean).join(" · ") : undefined;
   const optionLabel = variants.length ? label : selectedPriceOption?.label ?? priceInfo?.cartLabel;
