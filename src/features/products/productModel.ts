@@ -14,6 +14,8 @@ export type Product = {
   effectiveCoverageM?: number;
   colours?: string[];
   gaugesMm?: number[];
+  category?: string;
+  sourceName?: string;
 };
 
 export const FALLBACK_PRODUCTS: Product[] = [
@@ -106,6 +108,8 @@ export function normalizeProduct(
 
   if (isNonEmptyString(data.imageUrl)) product.imageUrl = data.imageUrl.trim();
   if (isNonEmptyString(data.sourceUrl)) product.sourceUrl = data.sourceUrl.trim();
+  if (isNonEmptyString(data.category)) product.category = data.category.trim();
+  if (isNonEmptyString(data.sourceName)) product.sourceName = data.sourceName.trim();
 
   if (isPositiveNumber(data.effectiveCoverageM)) {
     product.effectiveCoverageM = data.effectiveCoverageM;
