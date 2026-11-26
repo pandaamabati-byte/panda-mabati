@@ -9,6 +9,8 @@ import {
 describe("product image library", () => {
   it("exposes only sourced generic product photos and keeps unverified variants hidden", () => {
     expect(PRODUCT_IMAGE_LIBRARY.length).toBeGreaterThan(0);
+    expect(getVerifiedProductImage("eurotile")?.src).toMatch(/^data:image\/webp;base64,/);
+    expect(getVerifiedProductImage("roman-tile")?.src).toMatch(/^data:image\/webp;base64,/);
     expect(getVerifiedProductImage("box-profile")?.src).toContain("pandamabati.com/wp-content/uploads");
     expect(getVerifiedProductImage("corrugated")?.src).toContain("Corrugated-Roofing-Sheets.jpg");
     expect(getVerifiedProductImage("startile")?.src).toContain("download-1.jpg");
@@ -38,13 +40,13 @@ describe("product image library", () => {
   });
 
   it("tracks image-library coverage for every live catalogue product", () => {
-    expect(PRODUCT_IMAGE_TARGETS).toHaveLength(15);
+    expect(PRODUCT_IMAGE_TARGETS).toHaveLength(16);
     expect(PRODUCT_IMAGE_TARGETS).toContain("eurotile");
     for (const id of PRODUCT_IMAGE_TARGETS) {
       const status = getProductImageStatus(id);
       expect(status.verifiedCount + status.pendingCount).toBeGreaterThan(0);
     }
-    expect(PRODUCT_IMAGE_TARGETS.filter((id) => getProductImageStatus(id).hasGenuinePhoto).sort()).toEqual(["box-profile", "corrugated", "d-tile", "startile"]);
+    expect(PRODUCT_IMAGE_TARGETS.filter((id) => getProductImageStatus(id).hasGenuinePhoto).sort()).toEqual(["box-profile", "corrugated", "d-tile", "eurotile", "roman-tile", "startile"]);
   });
 
   it("tracks pending image coverage for roofing and accessory products", () => {
