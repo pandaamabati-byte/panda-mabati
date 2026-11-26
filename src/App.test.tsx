@@ -62,6 +62,17 @@ describe('Panda Mabati storefront', () => {
     window.location.hash = '';
   });
 
+  it('shows the dedicated Versatile detail visual and updates the colour preference', () => {
+    window.location.hash = '#product/versatile';
+    const { container } = render(<App />);
+    const visual = container.querySelector('.product-detail-photo-stage img');
+    expect(visual).toHaveAttribute('src', '/images/ai-product-visuals/versatile.svg');
+    fireEvent.change(screen.getByLabelText(/Colour preference/), { target: { value: 'Tile Red' } });
+    expect(screen.getByLabelText(/Colour preference/)).toHaveValue('Tile Red');
+    expect(container.querySelector('.product-detail-colour-overlay')).not.toBeNull();
+    window.location.hash = '';
+  });
+
   it('shows dedicated product visualisations for all ten remaining product families', () => {
     const { container } = render(<App />);
     const ids = ['versatile', 'glazed-tile', 'elegantile', 'decra', 'ridge-caps', 'flashings', 'gutters', 'roll-tops', 'valley-trays', 'roofing-fasteners'];
