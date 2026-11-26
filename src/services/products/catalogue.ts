@@ -53,8 +53,15 @@ export async function loadProducts(): Promise<CatalogueResult> {
       );
     }
 
+    // Keep the complete researched local catalogue visible while allowing
+    // published Firestore records to override matching products.
+    const mergedProducts = new Map(
+      FALLBACK_PRODUCTS.map((product) => [product.id, product]),
+    );
+    products.forEach((product) => mergedProducts.set(product.id, product));
+
     return {
-      products,
+      products: Array.from(mergedProducts.values()),
       source: "firestore",
     };
   } catch {

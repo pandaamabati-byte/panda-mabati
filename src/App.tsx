@@ -8,6 +8,7 @@ import { BUSINESS_CONTACT } from "./config/business";
 import { BOX_PROFILE_VARIANTS } from "./features/products/boxProfileVariants";
 import { FALLBACK_PRODUCTS, type Product } from "./features/products/productModel";
 import { loadProducts } from "./services/products/catalogue";
+import ProductDetailPage from "./features/products/ProductDetailPage";
 import "./App.css";
 
 type QuoteLine = {
@@ -17,6 +18,7 @@ type QuoteLine = {
   quantity: number;
   sheetLengthM: number;
   unitPrice: string;
+  variantLabel?: string;
 };
 
 const money = (amount: number) =>
@@ -55,6 +57,7 @@ function RoofArtwork({ tone }: { tone: string }) {
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeProductId, setActiveProductId] = useState(() => window.location.hash.startsWith("#product/") ? decodeURIComponent(window.location.hash.slice(9)) : "");
   const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
   const [catalogueSource, setCatalogueSource] = useState<"fallback" | "firestore">("fallback");
 
@@ -71,7 +74,8 @@ function App() {
       active = false;
     };
   }, []);
-  const [lines, setLines] = useState<QuoteLine[]>([makeLine()]);
+  useEffect(() => { const syncRoute=()=>setActiveProductId(window.location.hash.startsWith("#product/")?decodeURIComponent(window.location.hash.slice(9)):""); window.addEventListener("hashchange",syncRoute); return ()=>window.removeEventListener("hashchange",syncRoute); }, []);
+  const [lines, setLines] = useState<QuoteLine[]>([]);
   const [customer, setCustomer] = useState("");
   const [project, setProject] = useState("");
   const [county, setCounty] = useState("");
@@ -119,10 +123,10 @@ function App() {
     );
   };
 
-  const addLine = () => setLines((current) => [...current, makeLine()]);
+  const addLine = () => setLines((current) => [...current, makeLine("box-profile")]);
   const removeLine = (id: string) =>
     setLines((current) =>
-      current.length > 1 ? current.filter((line) => line.id !== id) : current,
+      current.filter((line) => line.id !== id),
     );
 
   const downloadQuote = () => {
@@ -192,7 +196,7 @@ function App() {
       const amount = rate === null ? null : quantity * rate;
       const productLabel = variant
         ? `${product?.name ?? "Box Profile"} — ${variant.colour} ${variant.finish} ${variant.gauge}`
-        : product?.name ?? "Roofing product";
+        : [product?.name ?? "Roofing product", line.variantLabel].filter(Boolean).join(" — ");
       const nameLines = doc.splitTextToSize(productLabel, 68);
       doc.text(nameLines, left + 2, y);
       doc.text(variant ? `${quantity} x ${line.sheetLengthM}m` : String(quantity), 112, y, { align: "right" });
@@ -255,12 +259,33 @@ function App() {
     doc.save(`Panda-Mabati-Quotation-${new Date().toISOString().slice(0, 10)}.pdf`);
   };
 
+  const orderMessage = [
+    "Hello Panda Mabati, I would like to proceed with an order request.",
+    customer.trim() ? `Customer: ${customer.trim()}` : "",
+    project.trim() ? `Project: ${project.trim()}` : "",
+    county.trim() ? `Delivery / project location: ${county.trim()}` : "",
+    phone.trim() ? `Customer phone: ${phone.trim()}` : "",
+    "Selected products:",
+    ...lines.map((line,index)=>{
+      const product=products.find(item=>item.id===line.productId);
+      const variant=line.productId==="box-profile"?BOX_PROFILE_VARIANTS.find(item=>item.id===line.variantId):undefined;
+      const option=variant?[variant.colour,variant.finish,variant.gauge].join(" · "):line.variantLabel;
+      return `${index+1}. ${product?.name??"Roofing product"}${option?` — ${option}`:""} | Quantity: ${line.quantity}${variant?` sheets × ${line.sheetLengthM}m`:""}`;
+    }),
+    notes.trim() ? `Project notes: ${notes.trim()}` : "",
+    "Please confirm stock, final specifications, delivery cost and the official order total before payment."
+  ].filter(Boolean).join("\n");
+  const orderWhatsAppUrl=`https://wa.me/254705141152?text=${encodeURIComponent(orderMessage)}`;
+
   const navLinks = [
     ["Home", "#home"],
     ["Roofing", "#roofing"],
     ["Products", "#roofing"],
     ["Calculator", "#calculator"],
   ];
+
+  const activeProduct = products.find((product) => product.id === activeProductId);
+  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel) => { setLines((current) => [...current, { ...makeLine(productId), variantId: undefined, variantLabel }]); window.location.hash = "#calculator"; }} />;
 
   return (
     <div className="site-shell">
@@ -363,13 +388,20 @@ function App() {
               <div className="eyebrow">Find your finish</div>
               <h2>Roofing for your kind of home.</h2>
             </div>
-            <p>Start with the look you love. Select a profile to add it to your quotation.</p>
+            <p>Start with the look you love. Select a profile to add it to your cart and quotation.</p>
           </div>
           <div className="product-grid">
             {products.map((product, index) => (
               <article className="product-card" key={product.id}>
                 <div className="product-card__image">
-                  {product.id === "box-profile" ? (
+                  {product.imageUrl ? (
+                    <img
+                      src={product.imageUrl}
+                      alt={`${product.name} roofing product`}
+                      className="product-card__photo"
+                      loading="lazy"
+                    />
+                  ) : product.id === "box-profile" ? (
                     <img
                       src={BOX_PROFILE_VARIANTS[2].image}
                       alt="Box Profile Tile Red Gloss 30G roofing sheet"
@@ -383,9 +415,12 @@ function App() {
                 </div>
                 <div className="product-card__body">
                   <div className="product-card__topline"><span>{product.use}</span><BadgeCheck size={16} /></div>
-                  <h3>{product.name}</h3>
+                  <h3><button className="product-card__title-button" onClick={() => { window.location.hash = `#product/${product.id}`; }}>{product.name}</button></h3>
                   <p className="product-card__short">{product.short}</p>
                   <p className="product-card__description">{product.description}</p>
+                  {product.sourceName && <p className="product-card__source">Catalogue source: {product.sourceName}</p>}
+                  {product.sourceUrl && <a className="product-card__source-link" href={product.sourceUrl} target="_blank" rel="noreferrer">View source listing <ArrowUpRight size={13} /></a>}
+                  <button className="product-card__details" onClick={() => { window.location.hash = `#product/${product.id}`; }}>View product details <ArrowUpRight size={15} /></button>
                   <button
                     className="product-card__link"
                     onClick={() => {
@@ -401,11 +436,9 @@ function App() {
           </div>
           <p className="catalogue-note">
             {catalogueSource === "firestore"
-              ? "Live published catalogue loaded. "
+              ? "Live catalogue connected; published products are shown alongside additional catalogue entries awaiting verification. "
               : "Showing the local catalogue until the live catalogue is available. "}
-            Product illustrations are temporary design placeholders. Actual product photographs,
-            colours, gauges, coverage and technical specifications will be confirmed against Panda
-            Mabati's product catalogue.
+            Some cards use illustrative artwork until verified manufacturer photographs are attached. Product variants, prices, selling units, coverage and technical specifications must be confirmed before ordering.
           </p>
         </section>
 
@@ -424,30 +457,14 @@ function App() {
               </a>
             </div>
             <div className="product-feature__grid">
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><ShieldCheck size={22} /></span>
-                <strong>D-Tile</strong>
-                <small>Tile-inspired character</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><Layers3 size={22} /></span>
-                <strong>Versatile</strong>
-                <small>A distinctive profile</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><Sparkles size={22} /></span>
-                <strong>StarTile</strong>
-                <small>Tile-effect styling</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
-              <a href="#roofing" className="product-feature__item">
-                <span className="product-feature__icon"><Truck size={22} /></span>
-                <strong>Box Profile</strong>
-                <small>Modern ribbed lines</small>
-                <ArrowUpRight className="product-feature__arrow" size={17} />
-              </a>
+              {products.map((product) => (
+                <a href={`#product/${product.id}`} className="product-feature__item" key={product.id}>
+                  <span className="product-feature__icon"><Layers3 size={22} /></span>
+                  <strong>{product.name}</strong>
+                  <small>{product.short}</small>
+                  <ArrowUpRight className="product-feature__arrow" size={17} />
+                </a>
+              ))}
             </div>
           </div>
         </section>
@@ -467,7 +484,7 @@ function App() {
           <div className="quote-builder">
             <div className="quote-builder__main">
               <div className="builder-title">
-                <div><span className="builder-step">01</span><div><h3>Your roofing list</h3><p>Add each profile and required quantity.</p></div></div>
+                <div><span className="builder-step">01</span><div><h3>Your cart & quotation</h3><p>Add products, select options and set your required quantities.</p></div></div>
                 <span className="item-count">{lines.length} {lines.length === 1 ? "item" : "items"}</span>
               </div>
 
@@ -495,6 +512,7 @@ function App() {
                     : null;
                   return (
                     <div className="quote-line" key={line.id}>
+                      {(product?.imageUrl || variant) && <img className="quote-line__thumbnail" src={variant?.image ?? product?.imageUrl} alt={product?.name ?? "Selected roofing product"} loading="lazy" />}
                       <div className="quote-line__index">{String(index + 1).padStart(2, "0")}</div>
                       <div className="quote-line__fields">
                         <label className="field-wide">Roofing profile
@@ -579,10 +597,10 @@ function App() {
                         <span>
                           {variant
                             ? `${variant.colour} · ${variant.finish} · ${variant.gauge}`
-                            : product?.short}
+                            : line.variantLabel || product?.short}
                         </span>
                         <strong>{lineTotal === null ? "Price to be confirmed" : money(lineTotal)}</strong>
-                        <button className="remove-line" onClick={() => removeLine(line.id)} disabled={lines.length === 1} aria-label={`Remove ${product?.name ?? "product"}`}><X size={15} /></button>
+                        <button className="remove-line" onClick={() => removeLine(line.id)} aria-label={`Remove ${product?.name ?? "product"}`}><X size={15} /></button>
                       </div>
                     </div>
                   );
@@ -618,6 +636,8 @@ function App() {
               </div>
               {quote.hasMissingPrice && <div className="price-notice"><ShieldCheck size={16} /><span>Some prices are missing. Your PDF will flag these lines and will not present the subtotal as a final project price.</span></div>}
               <button className="button button--lime button--full" onClick={downloadQuote}><Download size={17} /> Download quotation PDF</button>
+              <a className="button button--dark button--full order-request-button" href={orderWhatsAppUrl} target="_blank" rel="noreferrer" aria-label="Proceed with an order request on WhatsApp"><ArrowUpRight size={17} /> Proceed to order request</a>
+              <p className="order-request-note">This sends your selected cart to Panda Mabati on WhatsApp. Your order is confirmed only after our team verifies stock, specifications, delivery and final pricing.</p>
               <p className="summary-privacy">Your PDF is generated on this device. This prototype does not submit your personal details to a server.</p>
             </aside>
           </div>
@@ -656,7 +676,7 @@ function App() {
             <p>Need help choosing roofing sheets for your project? Contact our sales team.</p>
             <a className="site-footer__contact-link" href={`mailto:${BUSINESS_CONTACT.salesEmail}`}>{BUSINESS_CONTACT.salesEmail}</a>
             <a className="site-footer__contact-link" href={`tel:${BUSINESS_CONTACT.phoneDial}`}>{BUSINESS_CONTACT.contactName} · {BUSINESS_CONTACT.phoneDisplay}</a>
-            <a className="site-footer__contact-button" href="https://wa.me/254713207844" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
+            <a className="site-footer__contact-button" href="https://wa.me/254705141152" target="_blank" rel="noreferrer">Chat on WhatsApp</a>
           </section>
           <section className="site-footer__social">
             <h2>Stay connected</h2>

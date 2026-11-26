@@ -8,9 +8,14 @@ export type Product = {
   published: boolean;
   priceStatus?: "confirmed" | "pending";
   unitPriceKes?: number;
+  priceUnit?: string;
+  imageUrl?: string;
+  sourceUrl?: string;
   effectiveCoverageM?: number;
   colours?: string[];
   gaugesMm?: number[];
+  category?: string;
+  sourceName?: string;
 };
 
 export const FALLBACK_PRODUCTS: Product[] = [
@@ -43,6 +48,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     use: "Modern homes & commercial",
     tone: "box",
     published: true,
+    imageUrl: "https://pandamabati.com/wp-content/uploads/2026/06/download.jpg",
+    sourceName: "Panda Mabati", sourceUrl: "https://pandamabati.com/",
   },
   {
     id: "startile",
@@ -53,6 +60,65 @@ export const FALLBACK_PRODUCTS: Product[] = [
     use: "Design-led homes",
     tone: "star",
     published: true,
+    imageUrl: "https://pandamabati.com/wp-content/uploads/2026/06/download-1.jpg",
+    sourceName: "Panda Mabati", sourceUrl: "https://pandamabati.com/",
+  },
+  {
+    id: "corrugated", name: "Corrugated Roofing", short: "Classic wave profile",
+    description: "Traditional corrugated roofing sheets. Confirm gauge, sheet length, effective cover and current selling unit before ordering.",
+    use: "Residential & utility buildings", tone: "tile", published: true,
+    category: "Roofing sheets", sourceName: "Panda Mabati Factory",
+    imageUrl: "https://pandamabati.com/wp-content/uploads/2026/06/Corrugated-Roofing-Sheets.jpg",
+    sourceUrl: "https://pandamabatifactory.co.ke/wp/", priceStatus: "pending",
+  },
+  {
+    id: "glazed-tile", name: "Glazed Tile", short: "Tile-effect metal roofing",
+    description: "Tile-profile roofing listed in multiple colours, finishes and gauges. Published source prices are pending unit and current-price verification.",
+    use: "Residential homes", tone: "star", published: true,
+    category: "Tile-effect roofing", sourceName: "Panda Mabati Factory",
+    sourceUrl: "https://pandamabatifactory.co.ke/wp/", priceStatus: "pending",
+  },
+  {
+    id: "elegantile", name: "Elegantile", short: "Decorative tile profile",
+    description: "A decorative tile-effect roofing option. Confirm colour, gauge, coverage and current price with the sales team.",
+    use: "Design-led homes", tone: "versatile", published: true,
+    category: "Tile-effect roofing", sourceName: "Panda Mabati Factory",
+    sourceUrl: "https://pandamabatifactory.co.ke/wp/", priceStatus: "pending",
+  },
+  {
+    id: "decra", name: "Decra Roofing", short: "Stone-coated style",
+    description: "Decra roofing is included in the factory catalogue. Confirm the exact system, accessories, coverage and current quotation before purchase.",
+    use: "Premium residential projects", tone: "box", published: true,
+    category: "Specialty roofing", sourceName: "Panda Mabati Factory",
+    sourceUrl: "https://pandamabatifactory.co.ke/wp/", priceStatus: "pending",
+  },
+  {
+    id: "ridge-caps", name: "Ridge Caps", short: "Roof ridge finishing",
+    description: "Ridge-cap and roll-top accessories are listed by the supplied Panda Mabati catalogue. Confirm profile compatibility, dimensions and price.",
+    use: "Roof finishing", tone: "versatile", published: true,
+    category: "Roofing accessories", sourceName: "Panda Mabati",
+    sourceUrl: "https://pandamabati.com/", priceStatus: "pending",
+  },
+  {
+    id: "flashings", name: "Roof Flashings", short: "Weatherproof roof junctions",
+    description: "Roof flashing options are listed in the supplied Panda Mabati range. Confirm flashing type, dimensions, material and price.",
+    use: "Roof junctions & edges", tone: "box", published: true,
+    category: "Roofing accessories", sourceName: "Panda Mabati",
+    sourceUrl: "https://pandamabati.com/", priceStatus: "pending",
+  },
+  {
+    id: "gutters", name: "Rainwater Gutters", short: "Roof drainage accessories",
+    description: "Gutters are listed in the supplied Panda Mabati range. Confirm material, section size, lengths, fittings and current price.",
+    use: "Rainwater management", tone: "tile", published: true,
+    category: "Roofing accessories", sourceName: "Panda Mabati",
+    sourceUrl: "https://pandamabati.com/", priceStatus: "pending",
+  },
+  {
+    id: "roofing-fasteners", name: "Roofing Nails & Fasteners", short: "Fixings for roofing projects",
+    description: "Roofing nails and fasteners are listed as accessories. Confirm fixing type, pack size, compatibility and price.",
+    use: "Roof installation", tone: "star", published: true,
+    category: "Roofing accessories", sourceName: "Panda Mabati",
+    sourceUrl: "https://pandamabati.com/", priceStatus: "pending",
   },
 ];
 
@@ -98,7 +164,13 @@ export function normalizeProduct(
     isPositiveNumber(data.unitPriceKes)
   ) {
     product.unitPriceKes = data.unitPriceKes;
+    if (isNonEmptyString(data.priceUnit)) product.priceUnit = data.priceUnit.trim();
   }
+
+  if (isNonEmptyString(data.imageUrl)) product.imageUrl = data.imageUrl.trim();
+  if (isNonEmptyString(data.sourceUrl)) product.sourceUrl = data.sourceUrl.trim();
+  if (isNonEmptyString(data.category)) product.category = data.category.trim();
+  if (isNonEmptyString(data.sourceName)) product.sourceName = data.sourceName.trim();
 
   if (isPositiveNumber(data.effectiveCoverageM)) {
     product.effectiveCoverageM = data.effectiveCoverageM;
