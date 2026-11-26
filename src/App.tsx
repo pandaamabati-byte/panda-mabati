@@ -397,11 +397,12 @@ function App() {
                 </div>
                 <div className="product-card__body">
                   <div className="product-card__topline"><span>{product.use}</span><BadgeCheck size={16} /></div>
-                  <h3>{product.name}</h3>
+                  <h3><button className="product-card__title-button" onClick={() => { window.location.hash = `#product/${product.id}`; }}>{product.name}</button></h3>
                   <p className="product-card__short">{product.short}</p>
                   <p className="product-card__description">{product.description}</p>
                   {product.sourceName && <p className="product-card__source">Catalogue source: {product.sourceName}</p>}
                   {product.sourceUrl && <a className="product-card__source-link" href={product.sourceUrl} target="_blank" rel="noreferrer">View source listing <ArrowUpRight size={13} /></a>}
+                  <button className="product-card__details" onClick={() => { window.location.hash = `#product/${product.id}`; }}>View product details <ArrowUpRight size={15} /></button>
                   <button
                     className="product-card__link"
                     onClick={() => {
@@ -439,7 +440,7 @@ function App() {
             </div>
             <div className="product-feature__grid">
               {products.map((product) => (
-                <a href="#roofing" className="product-feature__item" key={product.id}>
+                <a href={`#product/${product.id}`} className="product-feature__item" key={product.id}>
                   <span className="product-feature__icon"><Layers3 size={22} /></span>
                   <strong>{product.name}</strong>
                   <small>{product.short}</small>
