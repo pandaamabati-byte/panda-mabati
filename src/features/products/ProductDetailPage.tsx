@@ -34,6 +34,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const [specialGauge, setSpecialGauge] = useState("G30");
   const [specialLength, setSpecialLength] = useState(product.id === "d-tile" ? 2 : 1);
   const [variantLength, setVariantLength] = useState(variants[0]?.sheetLengthM ?? 0);
+  const [imageUnavailable, setImageUnavailable] = useState(false);
 
   const colours = [...new Set(variants.map((v) => v.colour))];
   const variantLengths = [...new Set(variants.filter((v) => v.colour === colour && v.sheetLengthM).map((v) => v.sheetLengthM as number))].sort((a,b)=>a-b);
@@ -100,8 +101,8 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
 
         <section className="product-detail-hero">
           <div className="product-detail-visual">
-            {previewImage ? (
-              <div className="product-detail-photo-stage"><img src={previewImage} alt={verifiedImage?.alt ?? "Real tile-profile roofing sheet reference photograph"} key={previewImage} />{isDTileReference && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} />}</div>
+            {previewImage && !imageUnavailable ? (
+              <div className="product-detail-photo-stage"><img src={previewImage} alt={verifiedImage?.alt ?? "Real tile-profile roofing sheet reference photograph"} key={previewImage} onError={() => setImageUnavailable(true)} />{isDTileReference && <span className="product-detail-colour-overlay" style={{ backgroundColor: swatchColour }} />}</div>
             ) : (
               <div className="product-detail-placeholder">
                 <Layers3 size={58} />
@@ -112,7 +113,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
               </div>
             )}
             <span className="product-detail-photo-note">
-              {isDTileReference ? "REAL TILE-PROFILE REFERENCE · NOT A PANDA D-TILE PHOTO" : verifiedImage?.kind === "variant-photo" ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage ? "VERIFIED PRODUCT PHOTOGRAPH" : "ILLUSTRATIVE · NOT A PRODUCT PHOTO"}
+              {isDTileReference ? "REAL TILE-PROFILE REFERENCE · NOT A PANDA D-TILE PHOTO" : verifiedImage?.kind === "variant-photo" ? "VERIFIED VARIANT PHOTOGRAPH" : previewImage && !imageUnavailable ? "VERIFIED PRODUCT PHOTOGRAPH" : "ILLUSTRATIVE · NOT A PRODUCT PHOTO"}
             </span>
           </div>
 
