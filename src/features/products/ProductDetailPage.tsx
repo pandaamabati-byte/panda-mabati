@@ -238,7 +238,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
               <div className="variant-selection">
                 <div>
                   <span className="eyebrow">Selected selling option</span>
-                  <h3>{selectedPriceOption?.label}</h3>
+                  <h3>{[selectedPriceOption?.label, product.id === "versatile" ? colour : ""].filter(Boolean).join(" · ")}</h3>
                   <p>{product.id === "versatile" ? "Colour is a customer preference for the quotation; Panda sales must confirm the available finish before order." : selectedPriceOption?.minimumOrder ? `Marketplace minimum order: ${selectedPriceOption.minimumOrder}.` : "No colour selector is shown for this product."}</p>
                 </div>
                 <span className="variant-pending">{selectedPriceOption?.display}</span>
