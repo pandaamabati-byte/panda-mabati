@@ -24,7 +24,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     name: "D-Tile",
     short: "Timeless roof character",
     description:
-      "A tile-inspired roofing profile. Confirm the available finish and technical specifications with Panda Mabati.",
+      "A tile-inspired roofing profile. Published market pricing is shown on the product page; add the required quantity to your Panda Mabati quotation.",
     use: "Residential homes",
     tone: "tile",
     published: true,
@@ -34,7 +34,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     name: "Versatile",
     short: "A distinctive tiled finish",
     description:
-      "A decorative roofing profile for traditional and contemporary homes. Confirm the exact profile and specifications with Panda Mabati.",
+      "A distinctive roofing profile for traditional and contemporary homes. Published G30 and G28 metre rates are shown on the product page.",
     use: "Signature homes",
     tone: "versatile",
     published: true,
