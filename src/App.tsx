@@ -48,10 +48,9 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
   const image = getVerifiedProductImage(product.id);
   const imageStatus = getProductImageStatus(product.id);
   const showPhoto = Boolean(image && !imageUnavailable);
-  const showAiVisual = Boolean(aiVisualSrc && !imageUnavailable);
 
   return (
-    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : showAiVisual ? "product-visualisation" : "profile-visual"} data-photo-coverage={imageStatus.hasGenuinePhoto ? "verified" : "pending"}>
+    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : "profile-visual"} data-photo-coverage={imageStatus.hasGenuinePhoto ? "verified" : "pending"}>
       {showPhoto && image ? (
         <img
           src={image.src}
@@ -558,9 +557,7 @@ function App() {
             </div>
           )}
           <p className="catalogue-note">
-            {catalogueSource === "firestore"
-              ? "Live catalogue connected; Panda Mabati product groups are shown alongside live catalogue records. "
-              : "Showing the local catalogue until the live catalogue is available. "}
+            "Showing the Panda Mabati catalogue. "
             Products without verified photography use a dedicated product visual until an approved product photograph is added. Published catalogue prices are displayed on product pages; project totals include selected quantities and exclude delivery unless stated.
           </p>
         </section>
