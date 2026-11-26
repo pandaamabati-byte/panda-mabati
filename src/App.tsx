@@ -286,7 +286,7 @@ function App() {
   ];
 
   const activeProduct = products.find((product) => product.id === activeProductId);
-  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel) => { setLines((current) => [...current, { ...makeLine(productId), variantId: undefined, variantLabel }]); window.location.hash = "#calculator"; }} />;
+  if (activeProduct) return <ProductDetailPage product={activeProduct} onBack={() => { window.location.hash = "#roofing"; }} onAddToQuote={(productId, variantLabel, price) => { setLines((current) => [...current, { ...makeLine(productId), variantId: undefined, variantLabel, unitPrice: price === undefined ? "" : String(price) }]); window.location.hash = "#calculator"; }} />;
 
   return (
     <div className="site-shell">
