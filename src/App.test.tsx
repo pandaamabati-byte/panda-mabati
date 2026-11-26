@@ -41,6 +41,27 @@ describe('Panda Mabati storefront', () => {
     expect(screen.getAllByText(/Showing \d+ of \d+ products/)[0].textContent).not.toBe('Showing 14 of 14 products')
   })
 
+  it('updates colour selections and the product visual preview across sheet products', () => {
+    window.location.hash = '#product/d-tile';
+    const dTile = render(<App />);
+    fireEvent.change(screen.getByLabelText('Colour'), { target: { value: 'Dark Grey' } });
+    expect(screen.getByRole('heading', { name: /Dark Grey/ })).toBeInTheDocument();
+    expect(dTile.container.querySelector('.product-detail-colour-overlay')).not.toBeNull();
+    dTile.unmount();
+
+    window.location.hash = '#product/box-profile';
+    const box = render(<App />);
+    fireEvent.change(screen.getByLabelText('Colour'), { target: { value: 'Grey' } });
+    expect(screen.getByRole('heading', { name: /Grey/ })).toBeInTheDocument();
+    box.unmount();
+
+    window.location.hash = '#product/versatile';
+    render(<App />);
+    fireEvent.change(screen.getByLabelText(/Colour preference/), { target: { value: 'Tile Red' } });
+    expect(screen.getByText(/Colour preference: Tile Red/)).toBeInTheDocument();
+    window.location.hash = '';
+  });
+
   it('renders the quotation builder and PDF download action', () => {
     render(<App />)
 
