@@ -276,7 +276,7 @@ function App() {
       const product=products.find(item=>item.id===line.productId);
       const variant=line.productId==="box-profile"?BOX_PROFILE_VARIANTS.find(item=>item.id===line.variantId):undefined;
       const option=variant?[variant.colour,variant.finish,variant.gauge].join(" · "):line.variantLabel;
-      return `${index+1}. ${product?.name??"Roofing product"}${option?` — ${option}`:""} | Quantity: ${line.quantity}${line.priceUnit==="metre"?` sheets × ${line.sheetLengthM}m`:""}`;
+      return `${index+1}. ${product?.name??"Roofing product"}${option?` — ${option}`:""} | Quantity: ${line.quantity}${line.priceUnit==="metre"?` ${Number(line.quantity)===1?"sheet":"sheets"} × ${line.sheetLengthM}m`:""}`;
     }),
     notes.trim() ? `Project notes: ${notes.trim()}` : "",
     "Please confirm stock, final specifications, delivery cost and the official order total before payment."
