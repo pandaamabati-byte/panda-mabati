@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import App from './App'
 
@@ -25,6 +25,20 @@ describe('Panda Mabati storefront', () => {
         screen.getAllByRole('heading', { name: profile }).length,
       ).toBeGreaterThan(0)
     }
+  })
+
+
+  it('searches products and filters the catalogue by category', () => {
+    render(<App />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Accessories' }))
+    expect(screen.getByRole('heading', { name: 'Rainwater Gutters' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Box Profile' })).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'All products' }))
+    fireEvent.change(screen.getByRole('searchbox', { name: /search roofing products/i }), { target: { value: 'corrugated' } })
+    expect(screen.getByRole('heading', { name: 'Corrugated Roofing' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Rainwater Gutters' })).not.toBeInTheDocument()
   })
 
   it('renders the quotation builder and PDF download action', () => {
