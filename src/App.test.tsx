@@ -93,7 +93,7 @@ describe('Panda Mabati storefront', () => {
     const dTile = container.querySelector('[data-product-id="d-tile"]');
     const versatile = container.querySelector('[data-product-id="versatile"]');
     expect(dTile?.getAttribute('data-image-status')).toBe('verified-photo')
-    for (const id of ['eurotile', 'roman-tile']) {
+    for (const id of ['eurotile', 'romantile']) {
       const card = container.querySelector(`[data-product-id="${id}"]`)
       expect(card?.getAttribute('data-image-status')).toBe('verified-photo')
       expect(card?.querySelector('img.product-card__photo')?.getAttribute('src')).toMatch(/^data:image\/webp;base64,/)
