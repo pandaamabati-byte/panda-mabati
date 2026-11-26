@@ -369,7 +369,14 @@ function App() {
             {products.map((product, index) => (
               <article className="product-card" key={product.id}>
                 <div className="product-card__image">
-                  {product.id === "box-profile" ? (
+                  {product.imageUrl ? (
+                    <img
+                      src={product.imageUrl}
+                      alt={`${product.name} roofing product`}
+                      className="product-card__photo"
+                      loading="lazy"
+                    />
+                  ) : product.id === "box-profile" ? (
                     <img
                       src={BOX_PROFILE_VARIANTS[2].image}
                       alt="Box Profile Tile Red Gloss 30G roofing sheet"
