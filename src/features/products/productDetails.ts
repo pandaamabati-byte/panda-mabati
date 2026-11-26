@@ -8,7 +8,7 @@ corrugated:make("corrugated",[["Red","Matt","30G"],["Grey","Gloss","30G"],["Gree
 startile:make("startile",[["Tile Red","Matt","28G"],["Sky Blue","Gloss","28G"],["Maroon","Gloss","28G"],["Dark Green","Matt","28G"],["Tile Red","Matt","30G"],["Sky Blue","Gloss","30G"]]),
 "glazed-tile":make("glazed",[["C/Brown","Matt","30G"],["Brick Red","Matt","30G"],["C/Grey","Matt","30G"],["Chocolate","Gloss","30G"],["T/Red","Matt","28G"],["T/Red","Gloss","28G"],["Sky Blue","Gloss","28G"],["Maroon","Gloss","28G"]]),
 elegantile:make("elegantile",[["Wine Red","Matt","28G"],["C/Gray","Matt","28G"],["Green","Matt","30G"]]),
-decra:make("decra",[["Black","Stone-coated","26G"],["Brick Red","Stone-coated","26G"],["Coffee Brown","Stone-coated","26G"],["Black","Stone-coated","26G"]])
+decra:make("decra",[["Black","Stone-coated","26G"],["Brick Red","Stone-coated","26G"],["Coffee Brown","Stone-coated","26G"],["Black","Stone-coated","26G"]]))
 };
 const copy:Record<string,{overview:string;benefits:string[];notes:string[]}={
 "box-profile":{overview:"A geometric ribbed steel roofing profile for residential, commercial and industrial buildings. The factory catalogue lists 28G and 30G colour/finish combinations.",benefits:["Clean linear roof appearance","Colour and finish choices listed by the factory","One factory 28G listing describes 38mm rib depth and 914mm cover width once overlapped"],notes:["Confirm effective cover for the exact profile","Confirm sheet length, steel specification and current price","Anti-condensation backing and crimp-curving are listed options on a factory product page"]},
