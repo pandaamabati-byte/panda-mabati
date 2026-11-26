@@ -65,3 +65,9 @@ const copy:Record<string,{overview:string;benefits:string[];notes:string[]}> = {
 export const getProductVariants=(id:string)=>variants[id]??[];
 export const getProductDetails=(product:Product)=>copy[product.id]??{overview:product.description,benefits:["Roofing product in the Panda Mabati range"],notes:["Select the product and required quantity for your quotation"]};
 export const getVariantPriceLabel=(variant:ProductVariant)=>`KSh ${variant.unitPriceKes.toLocaleString("en-KE")} (catalogue price)`;
+export type ProductPriceInfo={display:string;note:string;unitPriceKes:number;cartLabel:string};
+export const getProductPriceInfo=(id:string):ProductPriceInfo|undefined=>{
+  if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile retail listing; length and seller price vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark"};
+  if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 and G28 length prices; G28 benchmark is KSh 730 per metre. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre"};
+  return undefined;
+};
