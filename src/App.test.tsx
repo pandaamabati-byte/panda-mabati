@@ -1,8 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import App from './App'
 
 describe('Panda Mabati storefront', () => {
+  beforeEach(() => {
+    window.location.hash = '';
+  });
   it('renders the homepage and accessible primary navigation', () => {
     render(<App />)
 
@@ -57,8 +60,8 @@ describe('Panda Mabati storefront', () => {
 
     window.location.hash = '#product/versatile';
     render(<App />);
-    fireEvent.change(screen.getByLabelText(/Colour preference/), { target: { value: 'Tile Red' } });
-    expect(screen.getByLabelText(/Colour preference/)).toHaveValue('Tile Red');
+    fireEvent.change(screen.getAllByLabelText(/Colour preference/)[0], { target: { value: 'Tile Red' } });
+    expect(screen.getAllByLabelText(/Colour preference/)[0]).toHaveValue('Tile Red');
     window.location.hash = '';
   });
 
@@ -67,8 +70,8 @@ describe('Panda Mabati storefront', () => {
     const { container } = render(<App />);
     const visual = container.querySelector('.product-detail-photo-stage img');
     expect(visual).toHaveAttribute('src', '/images/ai-product-visuals/versatile.svg');
-    fireEvent.change(screen.getByLabelText(/Colour preference/), { target: { value: 'Tile Red' } });
-    expect(screen.getByLabelText(/Colour preference/)).toHaveValue('Tile Red');
+    fireEvent.change(screen.getAllByLabelText(/Colour preference/)[0], { target: { value: 'Tile Red' } });
+    expect(screen.getAllByLabelText(/Colour preference/)[0]).toHaveValue('Tile Red');
     expect(container.querySelector('.product-detail-colour-overlay')).not.toBeNull();
     window.location.hash = '';
   });
