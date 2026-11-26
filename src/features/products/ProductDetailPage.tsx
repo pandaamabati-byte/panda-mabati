@@ -29,7 +29,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
   const details = getProductDetails(product);
   const priceInfo = getProductPriceInfo(product.id);
 
-  const [colour, setColour] = useState(variants[0]?.colour ?? "");
+  const [colour, setColour] = useState(variants[0]?.colour ?? (product.id === "versatile" ? "Charcoal Grey" : ""));
   const [gauge, setGauge] = useState(variants[0]?.gauge ?? "G30");
   const [finish, setFinish] = useState(variants[0]?.finish ?? "");
   const [specialGauge, setSpecialGauge] = useState("G30");
@@ -59,7 +59,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
     priceOptions[0];
 
   const label = selected ? [selected.colour, selected.finish, selected.gauge, selected.sheetLengthM ? `${selected.sheetLengthM}m` : ""].filter(Boolean).join(" · ") : undefined;
-  const optionLabel = variants.length ? label : selectedPriceOption?.label ?? priceInfo?.cartLabel;
+  const optionLabel = variants.length ? label : [selectedPriceOption?.label ?? priceInfo?.cartLabel, product.id === "versatile" && colour ? "Colour preference: " + colour : ""].filter(Boolean).join(" · ");
   const selectedPrice = selected?.unitPriceKes ?? selectedPriceOption?.unitPriceKes ?? priceInfo?.unitPriceKes;
   const selectedPriceUnit = selected?.priceUnit ?? selectedPriceOption?.priceUnit ?? priceInfo?.priceUnit;
   const selectedLength = selected?.sheetLengthM ?? selectedPriceOption?.sheetLengthM;
@@ -215,6 +215,9 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
           ) : priceOptions.length ? (
             <div className="variant-panel">
               <div className="variant-controls">
+                {product.id === "versatile" && <label>Colour preference · confirm with sales
+                  <select value={colour} onChange={(e) => setColour(e.target.value)}>{["Charcoal Grey","Tile Red","Brick Red","Maroon","Dark Green","Sky Blue","Chocolate"].map((v) => <option key={v}>{v}</option>)}</select>
+                </label>}
                 {specialGauges.length > 0 && (
                   <label>Gauge
                     <select value={specialGauge} onChange={(e) => {
@@ -236,7 +239,7 @@ export default function ProductDetailPage({ product, onBack, onAddToQuote }: Pro
                 <div>
                   <span className="eyebrow">Selected selling option</span>
                   <h3>{selectedPriceOption?.label}</h3>
-                  <p>{selectedPriceOption?.minimumOrder ? `Marketplace minimum order: ${selectedPriceOption.minimumOrder}.` : "No colour selector is shown for this product."}</p>
+                  <p>{product.id === "versatile" ? "Colour is a customer preference for the quotation; Panda sales must confirm the available finish before order." : selectedPriceOption?.minimumOrder ? `Marketplace minimum order: ${selectedPriceOption.minimumOrder}.` : "No colour selector is shown for this product."}</p>
                 </div>
                 <span className="variant-pending">{selectedPriceOption?.display}</span>
               </div>
