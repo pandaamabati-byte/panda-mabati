@@ -71,6 +71,7 @@ export const getProductPriceInfo=(id:string):ProductPriceInfo|undefined=>{
   if(id==="d-tile") return {display:"From KSh 1,130 per 2m packet",note:"Market benchmark from a Panda Mabati D-Tile marketplace listing; its 2m offer shows a 10-packet minimum and seller prices vary.",unitPriceKes:1130,cartLabel:"2m packet · market benchmark",priceUnit:"packet"};
   if(id==="versatile") return {display:"From KSh 630 per metre (G30)",note:"Panda Mabati Ltd publishes G30 at KSh 630/m and G28 at KSh 730/m. No colour selector is shown.",unitPriceKes:630,cartLabel:"G30 · per metre",priceUnit:"metre"};
   if(id==="gutters") return {display:"KSh 400 per 4m PVC gutter",note:"Panda Mabati Ltd product listing; fittings and delivery are separate.",unitPriceKes:400,cartLabel:"PVC gutter · 4m",priceUnit:"piece"};
+  if(id==="flashings") return {display:"From KSh 500 per piece",note:"Kenya market benchmark range is KSh 500–1,200 per piece depending on flashing type and dimensions.",unitPriceKes:500,cartLabel:"Roof flashing · market estimate",priceUnit:"piece"};
   return undefined;
 };
 
