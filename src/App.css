@@ -539,3 +539,12 @@
 /* Clearly identify generated product concept artwork without confusing it with manufacturer photography. */
 .product-card__image-note--ai{left:10px;right:auto;background:#f0e6d6;color:#5c4022;border:1px solid rgba(92,64,34,.18)}
 .product-card__photo--visualisation{width:100%;height:100%;object-fit:cover;display:block}
+
+/* Product detail: make generated profile artwork read as a clear configurable preview. */
+.product-detail-photo-stage--visualisation{background:linear-gradient(145deg,#f3f5ef,#e2e9e1);padding:14px;}
+.product-detail-photo-stage--visualisation img{object-fit:contain;}
+.variant-chip{min-width:150px;transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.variant-chip:hover{transform:translateY(-1px);border-color:#9caf91}
+.variant-chip--active{border-color:#668b55;background:#f1f6e9;box-shadow:0 0 0 2px #9bb78324}
+.variant-chip:focus-visible,.variant-controls select:focus-visible{outline:3px solid #b9d879;outline-offset:2px}
+@media(max-width:760px){.variant-chip{flex:1 1 145px;min-width:0}}
