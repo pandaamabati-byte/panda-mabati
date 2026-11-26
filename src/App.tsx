@@ -59,6 +59,33 @@ function RoofArtwork({ tone }: { tone: string }) {
   );
 }
 
+function ProductCardVisual({ product, index }: { product: Product; index: number }) {
+  const [imageUnavailable, setImageUnavailable] = useState(false);
+  const image = getVerifiedProductImage(product.id);
+
+  return (
+    <div className="product-card__image">
+      {image && !imageUnavailable ? (
+        <img
+          src={image.src}
+          alt={image.alt}
+          className="product-card__photo"
+          loading="lazy"
+          onError={() => setImageUnavailable(true)}
+        />
+      ) : (
+        <>
+          <RoofArtwork tone={product.tone} />
+          <span className="product-card__image-note">
+            {image ? "PHOTO UNAVAILABLE · ILLUSTRATIVE PREVIEW" : "ILLUSTRATIVE · NOT A PRODUCT PHOTO"}
+          </span>
+        </>
+      )}
+      <span className="product-card__number">0{index + 1}</span>
+    </div>
+  );
+}
+
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeProductId, setActiveProductId] = useState(() => window.location.hash.startsWith("#product/") ? decodeURIComponent(window.location.hash.slice(9)) : "");
@@ -399,22 +426,7 @@ function App() {
           <div className="product-grid">
             {products.map((product, index) => (
               <article className="product-card" key={product.id}>
-                <div className="product-card__image">
-                  {getVerifiedProductImage(product.id) ? (
-                    <img
-                      src={getVerifiedProductImage(product.id)!.src}
-                      alt={getVerifiedProductImage(product.id)!.alt}
-                      className="product-card__photo"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <>
-                      <RoofArtwork tone={product.tone} />
-                      <span className="product-card__image-note">ILLUSTRATIVE · NOT A PRODUCT PHOTO</span>
-                    </>
-                  )}
-                  <span className="product-card__number">0{index + 1}</span>
-                </div>
+                <ProductCardVisual product={product} index={index} />
                 <div className="product-card__body">
                   <div className="product-card__topline"><span>{product.use}</span><BadgeCheck size={16} /></div>
                   <h3><button className="product-card__title-button" onClick={() => { window.location.hash = `#product/${product.id}`; }}>{product.name}</button></h3>
