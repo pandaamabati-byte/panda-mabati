@@ -18,7 +18,7 @@ export const PRODUCT_IMAGE_LIBRARY: ProductImageAsset[] = [
     notes: "Optimized crop from the owner-supplied Panda Mabati catalogue; approved for Eurotile family display. Burgundy is the only photo-confirmed colour.",
   },
   {
-    id: "roman-tile-owner-supplied-production-photo", productId: "roman-tile",
+    id: "romantile-owner-supplied-production-photo", productId: "romantile",
     src: SUPPLIED_PRODUCT_PHOTOS.romantileCharcoal,
     sourceUrl: "https://pandamabati.com/", sourceName: "Panda Mabati · owner-supplied Romantile photograph",
     status: "verified", kind: "product-photo",
@@ -73,7 +73,7 @@ export function getVerifiedProductImage(productId: string, variantId?: string): 
 }
 
 export const PRODUCT_IMAGE_TARGETS = [
-  "eurotile", "roman-tile", "d-tile", "versatile", "box-profile", "corrugated", "startile",
+  "eurotile", "romantile", "d-tile", "versatile", "box-profile", "corrugated", "startile",
   "glazed-tile", "elegantile", "decra", "ridge-caps", "flashings", "gutters", "roll-tops",
   "valley-trays", "roofing-fasteners",
 ] as const;
