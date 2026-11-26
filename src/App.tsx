@@ -67,7 +67,7 @@ function ProductCardVisual({ product, index }: { product: Product; index: number
   const showPhoto = Boolean(image && !imageUnavailable);
 
   return (
-    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : "profile-visual"}>
+    <div className="product-card__image" data-product-id={product.id} data-image-status={showPhoto ? "verified-photo" : "profile-visual"} data-photo-coverage={imageStatus.hasGenuinePhoto ? "verified" : "pending"}>
       {showPhoto && image ? (
         <img
           src={image.src}
