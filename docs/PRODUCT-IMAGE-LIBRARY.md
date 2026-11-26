@@ -2,63 +2,70 @@
 
 ## Purpose
 
-One controlled register for every catalogue photograph and variant photograph. The storefront must never imply that a decorative placeholder, generic roof illustration, tinted base photo, or unverified local file is a genuine manufacturer product photo.
+One controlled register for genuine catalogue photographs and exact variant photographs. Customer discovery, product pages, quotations and orders remain inside Panda Mabati. Manufacturer sites and marketplaces are research/source references only; they are never customer catalogue destinations.
 
 ## Display rules
 
-- A photograph is eligible for storefront display only when its record has `status: "verified"`, a non-empty local `src`, a source page, and descriptive alt text.
-- Variant photography must match the exact product, colour, finish, and gauge. A generic product photograph must not be represented as an exact variant photograph.
+- A photograph is shown as a genuine product photo only when its record has `status: "verified"`, a source URL, and descriptive alt text.
+- A generic product-family photograph must not be represented as a colour-specific variant photograph.
+- Variant photographs must match the exact product, colour, finish and gauge.
 - Colour swatches are indicative references, not photographs. They must never be labelled as live product photography.
-- If no verified photograph exists, show the labelled illustration/placeholder and state that the product photograph is awaiting verification.
-- Preserve the manufacturer's source URL and attribution on each asset record.
-- Prefer locally hosted optimized assets after source and usage rights are confirmed; do not hotlink unstable source-site image URLs in production.
+- Where no suitable genuine image exists, keep the clearly labelled illustrative treatment; do not invent or recolour a product photo.
+- Keep source provenance in the register, not as an external catalogue link in the storefront.
+- Prefer locally hosted optimized copies for production. The currently sourced official homepage images are referenced from their original Panda Mabati URLs and should be copied into the repository before final production hardening.
 
-## Catalogue coverage
+## Verified official product-family photography
 
-The register currently tracks these product groups:
+The following images are linked directly beside the matching product-family sections on the official Panda Mabati homepage:
+
+| Product family | Image | Match type |
+| --- | --- | --- |
+| Box Profile | `/wp-content/uploads/2026/06/download.jpg` | Generic Box Profile family photo |
+| Corrugated Roofing | `/wp-content/uploads/2026/06/Corrugated-Roofing-Sheets.jpg` | Generic Corrugated family photo |
+| StarTile | `/wp-content/uploads/2026/06/download-1.jpg` | Generic StarTile family photo |
+
+These are not colour-specific images. The product detail page may show the family image while the customer selects a catalogue-listed colour/gauge/finish; it must not imply that the photo itself changes to that exact colour.
+
+## Product image coverage
+
+The register tracks:
 
 - D-Tile and Versatile
-- Box Profile (including the three existing local variant files)
+- Box Profile
 - Corrugated, StarTile, Glazed Tile, Elegantile and Decra
 - Rainwater gutters and roof flashings
 - Ridge caps / normal ridge (Kofia), roll tops and valley trays
 - Roofing nails and fasteners
 
-## Current verification status — 26 November 2026
+D-Tile and Versatile remain standard product pages without colour selectors, as instructed. Their price information is handled separately from colour variants.
 
-No image is currently marked verified. The three existing Box Profile JPEGs are present in the repository, but their original manufacturer provenance and exact colour/finish/gauge match have not yet been independently confirmed. They therefore remain pending and are not displayed as genuine product photographs.
+## Price and catalogue source policy
 
-The two manufacturer sites are the source-of-truth research targets:
+- Panda Mabati Factory provides the detailed colour/gauge/finish product listings and factory-listed prices for Box Profile, Corrugated, StarTile, Glazed Tile, Elegantile, Decra and accessories.
+- Panda Mabati Ltd's linked Take App product list provides length-based retail prices for Box Profile/coloured Corrugated, Versatile, Decra, Roll Tops/Valleys and PVC gutters.
+- Where the two Panda sources differ, the customer-facing price schedule uses the Panda Mabati Ltd retail listing as the retail benchmark where it provides a comparable unit, while retaining factory-specific finish distinctions where the retail listing groups them together.
+- D-Tile is not itemized on the supplied Panda Mabati websites. A clearly labelled marketplace benchmark is used for the 2m packet price; it is not presented as a factory-confirmed price.
+- Sheet products priced per metre use sheet count × length × rate in the quotation. Accessories and packet-priced products use their listed selling unit.
+- Delivery, fittings, installation and project-specific extras are excluded unless explicitly included in the listed product.
 
-- [Panda Mabati Factory](https://pandamabatifactory.co.ke/wp/)
-- [Panda Mabati](https://pandamabati.com/)
+## Current image status — 26 November 2026
 
-The factory site lists product variants and accessories, including Box Profile 28G/30G, corrugated sheets, tile profiles, Decra Valley Tray, roll tops and Normal Ridge/Kofia. Some individual product pages explicitly show that a product image is still awaiting upload. Catalogue presence is not proof that a usable photograph exists.
+Three generic official product-family images are now marked verified: Box Profile, Corrugated and StarTile. The three local Box Profile variant JPEGs remain pending because their original manufacturer provenance and exact colour/finish/gauge match have not been confirmed; they are not shown as variant photographs.
 
-D-Tile must be checked with the manufacturer for its exact catalogue name/SKU; it is not currently established as an independently photographed factory product in the researched catalogue.
+D-Tile, Versatile, Glazed Tile, Elegantile, Decra and accessories do not yet have a verified matching image in the current register. Their product pages remain usable with the clearly labelled illustrative treatment; no AI-generated or tinted image is presented as a real product photograph.
 
 ## Asset approval checklist
 
-Before setting any record to `verified`:
+Before adding a variant photo:
 
-1. Confirm that the image is hosted by or supplied directly by Panda Mabati / its factory.
-2. Record the original product page URL and the image's original URL or supplied file name.
-3. Confirm that the image depicts the named product, not a similar profile.
-4. For variant photos, confirm colour, gauge and finish against the product page or a manufacturer-approved schedule.
-5. Download and optimize a local copy without changing the product appearance.
-6. Record a concise alt description, source name, source URL, and verification date.
-7. Test the product card and detail page at desktop and mobile sizes.
-8. Only then set status to `verified`.
-
-## Remaining work
-
-- Obtain and locally store genuine manufacturer product photos for every available profile and accessory.
-- Verify each image-to-product and image-to-variant match.
-- Obtain the missing D-Tile / Versatile naming and variant schedule from Panda Mabati.
-- Confirm whether gutters, flashings, valleys and ridge accessories have product-specific photos or only catalogue text.
-- Build a complete, approved variant photo set so changing a colour/gauge/finish selects the matching photograph. If a matching photograph does not exist, retain the honest swatch-only state.
-- Confirm all product prices, units and technical dimensions separately before exposing them as confirmed storefront data.
+1. Record the original source page and image URL or supplied file name.
+2. Confirm that the image depicts the named Panda Mabati product.
+3. For variant photos, confirm colour, gauge and finish against the exact product record.
+4. Download and optimize a local copy without altering product appearance.
+5. Record alt text, source name, source URL and verification date.
+6. Test card and detail-page rendering at desktop and mobile sizes.
+7. Only then set the exact asset record to `verified`.
 
 ## Deployment gate
 
-The first Cloudflare attempt for this branch failed on an earlier intermediate commit while the code was still being updated. The subsequent source changes removed the unused import and completed the pending catalogue records. The current branch head must receive a fresh successful Cloudflare build before its preview is reviewed. No change from this branch is deployed to production.
+The catalogue, pricing and image-library changes are on `feat/product-image-library` / PR #2. They must pass a fresh Cloudflare preview build and browser review before merge. Production `main` remains unchanged.
